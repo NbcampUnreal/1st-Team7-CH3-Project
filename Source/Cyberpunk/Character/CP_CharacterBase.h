@@ -1,9 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+
 #include "CP_CharacterBase.generated.h"
 
 UCLASS()
@@ -25,5 +24,11 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "CPCharacter")
+	int32 Hp;
 
 };
