@@ -3,3 +3,11 @@
 
 #include "AI/CP_EnemyAIController.h"
 
+ACP_EnemyAIController::ACP_EnemyAIController()
+{
+}
+
+void ACP_EnemyAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+}
