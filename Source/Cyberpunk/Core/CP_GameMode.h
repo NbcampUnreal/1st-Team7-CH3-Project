@@ -3,17 +3,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
 
-#include "CF_GameMode.generated.h"
+#include "CP_GameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CYBERPUNK_API ACF_GameMode : public AGameMode
+class CYBERPUNK_API ACP_GameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
+
 public:
 
-	ACF_GameMode();
+	ACP_GameMode();
+	
 };

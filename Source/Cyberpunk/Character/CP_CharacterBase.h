@@ -11,24 +11,40 @@ class CYBERPUNK_API ACP_CharacterBase : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+
 	ACP_CharacterBase();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, Category = "CPCharacter")
-	int32 Hp;
+	virtual void Die();
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	int32 MaxHp = 1;
+
+	// 버프 효과 고려해서 CurrentHp, BaseHp 나눔.
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	int32 CurrentHp = 1;
+
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	int32 BaseHp = 1;
+
+	// 버프 효과 고려해서 Current Armor, Base Armor 나눔.
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	int32 CurrentArmor = 1;
+
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	int32 BaseArmor = 1;
 
 };
