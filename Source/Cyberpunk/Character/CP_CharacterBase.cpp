@@ -13,6 +13,10 @@ void ACP_CharacterBase::BeginPlay()
 	
 }
 
+void ACP_CharacterBase::Tick(float DeltaTime)
+{
+}
+
 void ACP_CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
