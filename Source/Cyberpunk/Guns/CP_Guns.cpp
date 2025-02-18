@@ -29,10 +29,7 @@ void ACP_Guns::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (BarrelMesh)
-    {
-        BarrelMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BarrelSocket"));
-    }
+    BarrelMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BarrelSocket"));
     BodyMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BodySocket"));
     TriggerMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("TriggerSocket"));
     ScopeMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ScopeSocket"));
@@ -50,21 +47,21 @@ void ACP_Guns::SetBarrel(USkeletalMeshComponent* SelectedBarrel)
 
     if (BarrelMesh)
     {
-        // SkeletalMeshAsset 이름을 확인하여 태그 추가
+        // 배럴SkeletalMeshAsset 이름을 확인하여 태그 추가
         FString MeshName = BarrelMesh->GetSkeletalMeshAsset()->GetName();
-        UE_LOG(LogTemp, Log, TEXT("Selected Barrel: %s"), *MeshName);
+        UE_LOG(LogTemp, Warning, TEXT("Selected Barrel: %s"), *MeshName);
 
         if (MeshName == "SK_BarrelBeam" || MeshName == "SK_BarrelBeamScatter")
         {
             // 히트스캔 방식
             BarrelMesh->ComponentTags.Add(FName("Hitscan"));
-            UE_LOG(LogTemp, Log, TEXT("Fire Mode: Hitscan"));
+            UE_LOG(LogTemp, Warning, TEXT("Fire Mode: Hitscan"));
         }
         else if (MeshName == "SK_BarrelBulletScatter" || MeshName == "SK_BarrelBullet")
         {
             // 프로젝타일 방식
             BarrelMesh->ComponentTags.Add(FName("Projectile"));
-            UE_LOG(LogTemp, Log, TEXT("Fire Mode: Projectile"));
+            UE_LOG(LogTemp, Warning, TEXT("Fire Mode: Projectile"));
         }
     }
     else
@@ -93,7 +90,7 @@ void ACP_Guns::Fire()
         // 발사 효과를 처리 (히트스캔 또는 프로젝타일 처리)
         if (BarrelMesh->ComponentHasTag(FName("Hitscan")))
         {
-            UE_LOG(LogTemp, Log, TEXT("Hit scan Fire! Ammo left: %d"), AmmoCount);
+            UE_LOG(LogTemp, Warning, TEXT("Hit scan Fire! Ammo left: %d"), AmmoCount);
             AmmoCount--;
             // 히트스캔 발사 처리 로직
             
@@ -102,7 +99,7 @@ void ACP_Guns::Fire()
         // 프로젝타일 발사 방식
         else if (BarrelMesh->ComponentHasTag(FName("Projectile")))
         {
-            UE_LOG(LogTemp, Log, TEXT("Projectile Fire! Ammo left: %d"), AmmoCount);
+            UE_LOG(LogTemp, Warning, TEXT("Projectile Fire! Ammo left: %d"), AmmoCount);
             AmmoCount--;
             // 프로젝타일 발사 처리 로직
         }
@@ -120,7 +117,3 @@ void ACP_Guns::Reload()
     // 기본적인 재장전 기능
 }
 
-void ACP_Guns::AttachAttachment(const FString& AttachmentName)
-{
-    // 기본적인 부착물 장착 기능
-}

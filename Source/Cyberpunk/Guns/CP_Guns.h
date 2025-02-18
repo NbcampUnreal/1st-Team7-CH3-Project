@@ -26,9 +26,6 @@ public:
     // 총기의 재장전 기능
     virtual void Reload();
 
-    // 부착물 장착 기능
-    virtual void AttachAttachment(const FString& AttachmentName);
-
     // 총기의 남은 탄약 수
     int32 AmmoCount;
 
