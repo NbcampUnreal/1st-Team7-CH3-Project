@@ -1,119 +1,84 @@
 #include "CP_Guns.h"
+#include "CP_BarrelInfo.h"
+#include "CP_BodyInfo.h"
+#include "CP_TriggerInfo.h"
 
 ACP_Guns::ACP_Guns()
 {
     PrimaryActorTick.bCanEverTick = true;
-    AmmoCount = 30;
-    MaxAmmo = 30;
-    bIsReloading = false;
-    ReloadTime = 2.0f;
 
-    // Root 씬 컴포넌트 생성
     RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
     RootComponent = RootScene;
 
-    // 총기 부품들 (스켈레탈 메쉬) 
     BarrelMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BarrelMesh"));
-    BodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BodyMesh"));
-    TriggerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TriggerMesh"));
-    ScopeMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ScopeMesh"));
+    BarrelMesh->SetupAttachment(RootScene);
 
-    // 총기 부품들을 Root 씬 컴포넌트에 연결
-    BarrelMesh->SetupAttachment(RootScene, TEXT("BarrelSocket"));
-    BodyMesh->SetupAttachment(RootScene, TEXT("BodySocket"));
-    TriggerMesh->SetupAttachment(RootScene, TEXT("TriggerSocket"));
-    ScopeMesh->SetupAttachment(RootScene, TEXT("ScopeSocket"));
+    BodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BodyMesh"));
+    BodyMesh->SetupAttachment(RootScene);
+
+    TriggerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TriggerMesh"));
+    TriggerMesh->SetupAttachment(RootScene);
+
+    ScopeMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ScopeMesh"));
+    ScopeMesh->SetupAttachment(RootScene);
 }
 
-void ACP_Guns::BeginPlay()
+void ACP_Guns::Fire()
 {
-    Super::BeginPlay();
+    // 총기 발사 로직 구현
+}
 
-    BarrelMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BarrelSocket"));
-    BodyMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("BodySocket"));
-    TriggerMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("TriggerSocket"));
-    ScopeMesh->AttachToComponent(RootScene, FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("ScopeSocket"));
-
-
-    if (BarrelMesh)
-    {
-        SetBarrel(BarrelMesh);
-    }
+void ACP_Guns::Reload()
+{
+    // 재장전 로직 구현
 }
 
 void ACP_Guns::SetBarrel(USkeletalMeshComponent* SelectedBarrel)
 {
-    BarrelMesh = SelectedBarrel;
-
-    if (BarrelMesh)
+    if (SelectedBarrel)
     {
-        // 배럴SkeletalMeshAsset 이름을 확인하여 태그 추가
-        FString MeshName = BarrelMesh->GetSkeletalMeshAsset()->GetName();
-        UE_LOG(LogTemp, Warning, TEXT("Selected Barrel: %s"), *MeshName);
-
-        if (MeshName == "SK_BarrelBeam" || MeshName == "SK_BarrelBeamScatter")
-        {
-            // 히트스캔 방식
-            BarrelMesh->ComponentTags.Add(FName("Hitscan"));
-            UE_LOG(LogTemp, Warning, TEXT("Fire Mode: Hitscan"));
-        }
-        else if (MeshName == "SK_BarrelBulletScatter" || MeshName == "SK_BarrelBullet")
-        {
-            // 프로젝타일 방식
-            BarrelMesh->ComponentTags.Add(FName("Projectile"));
-            UE_LOG(LogTemp, Warning, TEXT("Fire Mode: Projectile"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("BarrelMesh is null!"));
+        BarrelMesh->SetSkeletalMesh(SelectedBarrel->SkeletalMesh);
     }
 }
 
-
-void ACP_Guns::Tick(float DeltaTime)
+void ACP_Guns::SetBody(USkeletalMeshComponent* SelectedBody)
 {
-    Super::Tick(DeltaTime);
-
-    // 매 틱마다 Fire() 함수 호출 (테스트용)
-    if (AmmoCount > 0)
+    if (SelectedBody)
     {
-        Fire();
+        BodyMesh->SetSkeletalMesh(SelectedBody->SkeletalMesh);
     }
 }
 
-
-void ACP_Guns::Fire()
+void ACP_Guns::SetTrigger(USkeletalMeshComponent* SelectedTrigger)
 {
-    if (AmmoCount > 0)
+    if (SelectedTrigger)
     {
-        // 발사 효과를 처리 (히트스캔 또는 프로젝타일 처리)
-        if (BarrelMesh->ComponentHasTag(FName("Hitscan")))
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Hit scan Fire! Ammo left: %d"), AmmoCount);
-            AmmoCount--;
-            // 히트스캔 발사 처리 로직
-            
-
-        }
-        // 프로젝타일 발사 방식
-        else if (BarrelMesh->ComponentHasTag(FName("Projectile")))
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Projectile Fire! Ammo left: %d"), AmmoCount);
-            AmmoCount--;
-            // 프로젝타일 발사 처리 로직
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Out of ammo!"));
-        Reload();
+        TriggerMesh->SetSkeletalMesh(SelectedTrigger->SkeletalMesh);
     }
 }
 
-
-void ACP_Guns::Reload()
+void ACP_Guns::SetScope(USkeletalMeshComponent* SelectedScope)
 {
-    // 기본적인 재장전 기능
+    if (SelectedScope)
+    {
+        ScopeMesh->SetSkeletalMesh(SelectedScope->SkeletalMesh);
+    }
 }
 
+void ACP_Guns::SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger)
+{
+    if (Barrel)
+    {
+        SetBarrel(Barrel->GetBarrelMesh());
+    }
+
+    if (Body)
+    {
+        SetBody(Body->GetBodyMesh());
+    }
+
+    if (Trigger)
+    {
+        SetTrigger(Trigger->GetTriggerMesh());
+    }
+}

@@ -2,6 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "CP_GunInfo.h"
+#include "CP_BarrelInfo.h"
+#include "CP_BodyInfo.h"
+#include "CP_TriggerInfo.h"
 #include "CP_Guns.generated.h"
 
 UCLASS()
@@ -14,11 +18,9 @@ public:
     ACP_Guns();
 
 protected:
-    virtual void BeginPlay() override;
 
 public:
-    // 매 tick마다 호출되는 함수
-    virtual void Tick(float DeltaTime) override;
+
 
     // 총기의 발사 기능
     virtual void Fire();
@@ -45,18 +47,30 @@ public:
     USceneComponent* RootScene;
 
     // 총기 부품들 (스켈레탈 메쉬)
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     USkeletalMeshComponent* BarrelMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     USkeletalMeshComponent* BodyMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     USkeletalMeshComponent* TriggerMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     USkeletalMeshComponent* ScopeMesh;
 
     // 배럴 설정 함수
     void SetBarrel(USkeletalMeshComponent* SelectedBarrel);
+
+    // 바디 설정 함수
+    void SetBody(USkeletalMeshComponent* SelectedBody);
+
+    // 트리거 설정 함수
+    void SetTrigger(USkeletalMeshComponent* SelectedTrigger);
+
+    // 스코프 설정 함수
+    void SetScope(USkeletalMeshComponent* SelectedScope);
+
+    // 총기 부품들을 설정하는 함수
+    void SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger);
 };
