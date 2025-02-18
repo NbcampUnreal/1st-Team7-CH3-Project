@@ -12,7 +12,7 @@ class CYBERPUNK_API ACP_BarrelInfo : public ACP_GunInfo
 
 public:
     ACP_BarrelInfo();
-
+    // ¹é¾÷¿ë
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
     USkeletalMeshComponent* BarrelMesh;
