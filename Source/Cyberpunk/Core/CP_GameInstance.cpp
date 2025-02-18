@@ -8,5 +8,5 @@ UCP_GameInstance::UCP_GameInstance()
 
 void UCP_GameInstance::Init()
 {
-	Super::Init();
+	
 }
