@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_CharacterBase.h"
-
 #include "CP_Emeny.generated.h"
 
 /**
