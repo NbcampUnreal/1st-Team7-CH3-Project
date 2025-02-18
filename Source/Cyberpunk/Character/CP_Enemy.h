@@ -1,0 +1,31 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Character/CP_CharacterBase.h"
+
+#include "CP_Enemy.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class CYBERPUNK_API ACP_Enemy : public ACP_CharacterBase
+{
+	GENERATED_BODY()
+	
+public:
+
+	ACP_Enemy();
+
+protected:
+
+	virtual void BeginPlay() override;
+
+public:
+
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+protected:
+
+	virtual void Die() override;
+};
