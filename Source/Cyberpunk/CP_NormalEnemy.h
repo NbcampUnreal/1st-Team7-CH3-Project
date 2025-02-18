@@ -1,21 +1,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/CP_CharacterBase.h"
-#include "CP_Emeny.generated.h"
+#include "Character/CP_Enemy.h"
+
+#include "CP_NormalEnemy.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class CYBERPUNK_API ACP_Emeny : public ACP_CharacterBase
+class CYBERPUNK_API ACP_NormalEnemy : public ACP_Enemy
 {
 	GENERATED_BODY()
 	
-
 public:
-
-	ACP_Emeny();
+	
+	ACP_NormalEnemy();
 
 protected:
 
@@ -27,5 +27,5 @@ public:
 
 protected:
 
-	virtual void Die();
+	virtual void Die() override;
 };
