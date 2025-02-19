@@ -25,7 +25,7 @@ void ACP_CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 float ACP_CharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	float NewDamage = TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
 	CP_LOG(Log, TEXT("%s is damaged by %s, Damage : %f"), *GetName(), *DamageCauser->GetName(), NewDamage);
 
