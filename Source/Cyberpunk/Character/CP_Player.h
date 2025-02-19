@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+struct FInputActionValue;
 
 UCLASS()
 class CYBERPUNK_API ACP_Player : public ACP_CharacterBase
@@ -22,6 +23,32 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Movement Function
+public:
+	UFUNCTION()
+	void Move(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void Look(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StartCrouch(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StopCrouch(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StartJump(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StopJump(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StartSprint(const FInputActionValue& _value);
+
+	UFUNCTION()
+	void StopSprint(const FInputActionValue& _value);
 
 public:
 	// Camera
