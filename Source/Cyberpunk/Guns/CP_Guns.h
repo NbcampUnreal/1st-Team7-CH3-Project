@@ -59,6 +59,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     USkeletalMeshComponent* ScopeMesh;
 
+
     // 배럴 설정 함수
     void SetBarrel(USkeletalMeshComponent* SelectedBarrel);
 

@@ -13,9 +13,9 @@ class CYBERPUNK_API ACP_BodyInfo : public ACP_GunInfo
 public:
     ACP_BodyInfo();
 
-
+    // BodyMesh 초기화
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
-    USkeletalMeshComponent* BodyMesh; 
+    USkeletalMeshComponent* BodyMesh;
 
     // 바디 이름
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
@@ -29,7 +29,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
     float MovementSpeed;
 
+    // Body 정보 초기화 함수
     void InitializeBodyInfo(const FString& MeshName);
 
+    // BodyMesh 반환 함수
     USkeletalMeshComponent* GetBodyMesh() const;
+
+protected:
+    // RootComponent는 SceneComponent로 설정
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* RootSceneComponent;
 };
+

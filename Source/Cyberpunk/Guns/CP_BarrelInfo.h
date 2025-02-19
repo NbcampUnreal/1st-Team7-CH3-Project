@@ -12,9 +12,9 @@ class CYBERPUNK_API ACP_BarrelInfo : public ACP_GunInfo
 
 public:
     ACP_BarrelInfo();
-    // 백업용
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
+    // BarrelMesh 초기화
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     USkeletalMeshComponent* BarrelMesh;
 
     // 배럴 이름
@@ -29,9 +29,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     float Damage;
 
-    // 배럴 메쉬를 반환하는 함수
+    // 배럴 정보 초기화 함수
+    void InitializeBarrelInfo(const FString& MeshName);
+
+    // BarrelMesh 반환 함수
     USkeletalMeshComponent* GetBarrelMesh() const;
 
-    // 배럴 정보 초기화
-    void InitializeBarrelInfo(const FString& MeshName);
+protected:
+    // RootComponent는 SceneComponent로 설정
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* RootSceneComponent;
 };

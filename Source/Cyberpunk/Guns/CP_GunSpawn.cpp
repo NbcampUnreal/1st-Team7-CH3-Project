@@ -4,6 +4,7 @@
 #include "CP_BodyInfo.h"
 #include "CP_TriggerInfo.h"
 #include "Engine/World.h"
+#include "Components/SphereComponent.h"  // SphereComponent 추가
 
 // 생성자에서 Tick 활성화
 ACP_GunSpawn::ACP_GunSpawn()
@@ -14,9 +15,14 @@ ACP_GunSpawn::ACP_GunSpawn()
     RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
     RootComponent = RootScene;
 
-    // 플랫폼 메쉬를 설정
-    PlatformMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlatformMesh"));
-    PlatformMesh->SetupAttachment(RootScene);
+    // PlatformMesh와 충돌 영역 설정 (SphereComponent)
+    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+    CollisionComponent->InitSphereRadius(100.0f);  // 충돌 범위 설정
+    CollisionComponent->SetCollisionProfileName(TEXT("Trigger"));
+    CollisionComponent->SetupAttachment(RootComponent);
+
+    // 충돌 감지 이벤트 연결
+    CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ACP_GunSpawn::OnItemOverlap);
 }
 
 void ACP_GunSpawn::BeginPlay()
@@ -27,75 +33,143 @@ void ACP_GunSpawn::BeginPlay()
     SpawnGunParts();
 }
 
-void ACP_GunSpawn::Tick(float DeltaTime)
+void ACP_GunSpawn::OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+    UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+    const FHitResult& SweepResult)
 {
-    Super::Tick(DeltaTime);
-
-    // SpawnedPart가 유효하면 자기 자신을 중심으로 회전
-    if (SpawnedPart)
+    // 겹친 파츠의 정보를 출력
+    if (OtherActor)
     {
-        FRotator RotationSpeed(0, 100 * DeltaTime, 0); // Yaw 방향(위에서 봤을 때 반시계 방향)
-        SpawnedPart->AddLocalRotation(RotationSpeed);
+        if (SpawnedPart) // Overlap이 발생했을 때, 스폰된 파츠의 정보를 가져옴
+        {
+            // Barrel인지 체크
+            if (ACP_BarrelInfo* BarrelInfo = Cast<ACP_BarrelInfo>(SpawnedPart))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Spawned Barrel Info: %s | Hitscan: %s | Damage: %f"),
+                    *BarrelInfo->PartName, BarrelInfo->bIsHitscan ? TEXT("Yes") : TEXT("No"), BarrelInfo->Damage);
+            }
+            // Body인지 체크
+            else if (ACP_BodyInfo* BodyInfo = Cast<ACP_BodyInfo>(SpawnedPart))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Spawned Body Info: %s | Damage: %f | MovementSpeed: %f"),
+                    *BodyInfo->PartName, BodyInfo->Damage, BodyInfo->MovementSpeed);
+            }
+            // Trigger인지 체크
+            else if (ACP_TriggerInfo* TriggerInfo = Cast<ACP_TriggerInfo>(SpawnedPart))
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Spawned Trigger Info: %s | Damage: %f | MagazineCapacity: %d"),
+                    *TriggerInfo->PartName, TriggerInfo->Damage, TriggerInfo->MagazineCapacity);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("Unknown part spawned: %s"), *SpawnedPart->GetName());
+            }
+
+            // 파츠를 먹었으면 파괴
+            SpawnedPart->Destroy();
+            SpawnedPart = nullptr;  // 파츠를 null로 설정하여 참조 해제
+        }
+
+        Destroy();  // 현재 Actor도 삭제
     }
 }
 
+
+void ACP_GunSpawn::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    
+    if (SpawnedPart)
+    {
+        float Amplitude = 0.2f;  // 위아래 이동 범위
+        float Speed = 0.7f;       // 움직이는 속도
+
+        // Spawn된 파츠의 초기 위치를 기준으로 Z축 이동
+        FVector SpawnLocation = SpawnedPart->GetActorLocation();
+
+        // 사인파를 이용한 부드러운 이동
+        float Offset = Amplitude * FMath::Sin(GetWorld()->GetTimeSeconds() * Speed);
+
+        // 현재 위치를 기준으로 X, Y는 그대로 두고, Z축만 변동
+        FVector NewLocation = FVector(SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z + Offset);
+
+        // 새 위치로 파츠 이동
+        SpawnedPart->SetActorLocation(NewLocation);
+    }
+
+
+}
+
+
 void ACP_GunSpawn::SpawnGunParts()
 {
-    if (BarrelMeshes.Num() > 0 && BodyMeshes.Num() > 0 && TriggerMeshes.Num() > 0)
+    if (BarrelClass && BodyClass && TriggerClass)  // BarrelMeshes가 아니라, AActor 클래스를 활용해야 함
     {
-        // 각 파츠에서 랜덤으로 하나를 선택
-        int32 RandomBarrelIndex = FMath::RandRange(0, BarrelMeshes.Num() - 1);
-        int32 RandomBodyIndex = FMath::RandRange(0, BodyMeshes.Num() - 1);
-        int32 RandomTriggerIndex = FMath::RandRange(0, TriggerMeshes.Num() - 1);
+        TSubclassOf<AActor> SelectedClass = nullptr;
 
-        // 선택된 파츠에 대한 스켈레탈 메쉬 설정
-        USkeletalMeshComponent* SpawnedBarrel = NewObject<USkeletalMeshComponent>(this);
-        USkeletalMeshComponent* SpawnedBody = NewObject<USkeletalMeshComponent>(this);
-        USkeletalMeshComponent* SpawnedTrigger = NewObject<USkeletalMeshComponent>(this);
-
-        // 하나의 파츠만 스폰
-        USkeletalMeshComponent* SelectedPart = nullptr;
-
-        // 랜덤으로 선택된 파츠를 하나만 스폰
-        if (FMath::RandBool()) // Barrel 선택
+        // 랜덤으로 Barrel, Body, Trigger 중 하나 선택
+        int32 RandomIndex = FMath::RandRange(0, 2);
+        if (RandomIndex == 0)
         {
-            SelectedPart = SpawnedBarrel;
-            if (SelectedPart && BarrelMeshes.IsValidIndex(RandomBarrelIndex))
+            SelectedClass = BarrelClass;
+        }
+        else if (RandomIndex == 1)
+        {
+            SelectedClass = BodyClass;
+        }
+        else
+        {
+            SelectedClass = TriggerClass;
+        }
+
+        if (SelectedClass)
+        {
+            FVector RootLocation = GetActorLocation();  // Root 위치
+            UE_LOG(LogTemp, Warning, TEXT("Root Location: %s"), *RootLocation.ToString());  // 로그로 RootLocation 확인
+
+            // Z축을 확실히 올려서 위치 수정
+            FVector SpawnLocation = FVector(RootLocation.X, RootLocation.Y, RootLocation.Z);  // Z축을 2000으로 설정
+            UE_LOG(LogTemp, Warning, TEXT("Spawn Location: %s"), *SpawnLocation.ToString());  // 로그로 SpawnLocation 확인
+
+            FRotator SpawnRotation = FRotator::ZeroRotator;
+            AActor* NewPart = GetWorld()->SpawnActor<AActor>(SelectedClass, SpawnLocation, SpawnRotation);
+            if (NewPart)
             {
-                SelectedPart->SetSkeletalMesh(BarrelMeshes[RandomBarrelIndex]);
+                // Body 파츠의 경우, 랜덤으로 메시 초기화
+                if (ACP_BodyInfo* BodyInfo = Cast<ACP_BodyInfo>(NewPart))
+                {
+                    TArray<FString> MeshNames = { "SK_BodyTesla", "SK_BodyNormal", "SK_BodyFire" };
+                    FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
+                    BodyInfo->InitializeBodyInfo(RandomMeshName);
+                }
+
+                // Barrel 파츠의 경우, 랜덤으로 메시 초기화
+                else if (ACP_BarrelInfo* BarrelInfo = Cast<ACP_BarrelInfo>(NewPart))
+                {
+                    TArray<FString> MeshNames = { "SK_BarrelBeam", "SK_BarrelBeamScatter", "SK_BarrelBulletScatter", "SK_BarrelRocketScatter" };
+                    FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
+                    BarrelInfo->InitializeBarrelInfo(RandomMeshName);
+                }
+
+                // Trigger 파츠의 경우, 랜덤으로 메시 초기화
+                else if (ACP_TriggerInfo* TriggerInfo = Cast<ACP_TriggerInfo>(NewPart))
+                {
+                    TArray<FString> MeshNames = { "SK_TriggerAuto", "SK_TriggerBurst", "SK_StockStandard", "SK_StockHeavy" };
+                    FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
+                    TriggerInfo->InitializeTriggerInfo(RandomMeshName);
+                }
+
+                // Scale을 X, Y, Z 모두 2배로 설정
+                NewPart->SetActorScale3D(FVector(2.0f, 2.0f, 2.0f));
+
+                SpawnedPart = NewPart;  // 스폰된 파츠 저장
+
+                UE_LOG(LogTemp, Warning, TEXT("Spawned Part: %s"), *NewPart->GetName());
             }
         }
-        else if (FMath::RandBool()) // Body 선택
-        {
-            SelectedPart = SpawnedBody;
-            if (SelectedPart && BodyMeshes.IsValidIndex(RandomBodyIndex))
-            {
-                SelectedPart->SetSkeletalMesh(BodyMeshes[RandomBodyIndex]);
-            }
-        }
-        else // Trigger 선택
-        {
-            SelectedPart = SpawnedTrigger;
-            if (SelectedPart && TriggerMeshes.IsValidIndex(RandomTriggerIndex))
-            {
-                SelectedPart->SetSkeletalMesh(TriggerMeshes[RandomTriggerIndex]);
-            }
-        }
-
-        if (SelectedPart)
-        {
-            SelectedPart->SetupAttachment(RootComponent); // RootComponent에 붙이기
-            SelectedPart->RegisterComponent(); // 컴포넌트 등록
-            SelectedPart->SetWorldLocation(GetActorLocation() + FVector(0, 0, 50)); // Z축으로 +50만큼 위로 스폰
-            SelectedPart->SetWorldScale3D(FVector(2.0f, 2.0f, 2.0f)); // 스케일을 2배로 설정
-            SpawnedPart = SelectedPart; // 스폰된 파츠를 SpawnedPart에 저장
-        }
-
-        // 디버깅을 위한 로그 출력
-        UE_LOG(LogTemp, Warning, TEXT("Spawned Part: %s"), *SelectedPart->GetName());
     }
     else
     {
-        UE_LOG(LogTemp, Warning, TEXT("Missing part meshes for spawn!"));
+        UE_LOG(LogTemp, Warning, TEXT("Missing part classes for spawn!"));
     }
 }

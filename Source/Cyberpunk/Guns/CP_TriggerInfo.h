@@ -34,4 +34,9 @@ public:
 
     // 트리거 메쉬를 반환하는 함수
     USkeletalMeshComponent* GetTriggerMesh() const;
+
+protected:
+    // RootComponent는 SceneComponent로 설정
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* RootSceneComponent;
 };

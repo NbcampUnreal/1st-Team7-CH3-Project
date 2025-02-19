@@ -3,9 +3,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "CP_Guns.h"
-#include "CP_BarrelInfo.h"  // BarrelInfo 헤더 파일 인클루드
-#include "CP_BodyInfo.h"    // BodyInfo 헤더 파일 인클루드
-#include "CP_TriggerInfo.h" // TriggerInfo 헤더 파일 인클루드
+#include "CP_BarrelInfo.h"
+#include "CP_BodyInfo.h"
+#include "CP_TriggerInfo.h"
+#include "Components/SphereComponent.h"
 #include "CP_GunSpawn.generated.h"
 
 UCLASS()
@@ -18,10 +19,11 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+    FVector InitialLocation;
 
 private:
     UPROPERTY()
-    USkeletalMeshComponent* SpawnedPart;
+    AActor* SpawnedPart;
 
 public:
     virtual void Tick(float DeltaTime) override;
@@ -30,28 +32,26 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     USceneComponent* RootScene;
 
-    // 스폰 플랫폼 (네모난 판)
+    // 충돌 감지 컴포넌트
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    USkeletalMeshComponent* PlatformMesh;
+    USphereComponent* CollisionComponent;
 
-    // Barrel 파츠에 대한 스켈레탈 메쉬 배열
+    // 스폰할 총기 파츠의 클래스 (Barrel, Body, Trigger)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Parts")
-    TArray<USkeletalMesh*> BarrelMeshes;
+    TSubclassOf<ACP_BarrelInfo> BarrelClass;
 
-    // Body 파츠에 대한 스켈레탈 메쉬 배열
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Parts")
-    TArray<USkeletalMesh*> BodyMeshes;
+    TSubclassOf<ACP_BodyInfo> BodyClass;
 
-    // Trigger 파츠에 대한 스켈레탈 메쉬 배열
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun Parts")
-    TArray<USkeletalMesh*> TriggerMeshes;
+    TSubclassOf<ACP_TriggerInfo> TriggerClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gun")
-    ACP_Guns* Gun;  // 총기 인스턴스를 참조할 변수
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    USceneComponent* RotationPivot; // 회전 중심점
-
-    // 파츠 스폰 함수
+    // 총기 파츠 스폰 함수
     void SpawnGunParts();
+
+    // Overlap 이벤트 처리 함수
+    UFUNCTION()
+    void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+        const FHitResult& SweepResult);
 };
