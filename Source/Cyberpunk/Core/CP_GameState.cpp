@@ -45,7 +45,7 @@ void ACP_GameState::OnGameOver()
 		if (ACP_PlayerController* CP_PlayerController = Cast<ACP_PlayerController>(PlayerController))
 		{
 			CP_PlayerController->SetPause(true);
-			// CP_PlayerController->ShowMainMenu(true); //미구현
+			// CP_PlayerController->ShowMainMenu(); //미구현
 		}
 	}
 }
