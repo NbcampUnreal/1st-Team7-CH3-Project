@@ -24,8 +24,15 @@ protected:
 public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	virtual void AttackNormal();
 protected:
 
 	virtual void Die() override;
+	
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "EnemySettings")
+	float AttackDamage = 1;
+
 };
