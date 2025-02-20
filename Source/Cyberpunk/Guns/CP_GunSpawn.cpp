@@ -125,11 +125,9 @@ void ACP_GunSpawn::SpawnGunParts()
         if (SelectedClass)
         {
             FVector RootLocation = GetActorLocation();  // Root 위치
-            UE_LOG(LogTemp, Warning, TEXT("Root Location: %s"), *RootLocation.ToString());  // 로그로 RootLocation 확인
 
             // Z축을 확실히 올려서 위치 수정
-            FVector SpawnLocation = FVector(RootLocation.X, RootLocation.Y, RootLocation.Z);  // Z축을 2000으로 설정
-            UE_LOG(LogTemp, Warning, TEXT("Spawn Location: %s"), *SpawnLocation.ToString());  // 로그로 SpawnLocation 확인
+            FVector SpawnLocation = FVector(RootLocation.X, RootLocation.Y, RootLocation.Z); 
 
             FRotator SpawnRotation = FRotator::ZeroRotator;
             AActor* NewPart = GetWorld()->SpawnActor<AActor>(SelectedClass, SpawnLocation, SpawnRotation);
@@ -140,7 +138,7 @@ void ACP_GunSpawn::SpawnGunParts()
                 {
                     TArray<FString> MeshNames = { "SK_BodyTesla", "SK_BodyNormal", "SK_BodyFire" };
                     FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
-                    BodyInfo->InitializeBodyInfo(RandomMeshName);
+                    BodyInfo->Initialize(RandomMeshName);
                 }
 
                 // Barrel 파츠의 경우, 랜덤으로 메시 초기화
@@ -148,7 +146,7 @@ void ACP_GunSpawn::SpawnGunParts()
                 {
                     TArray<FString> MeshNames = { "SK_BarrelBeam", "SK_BarrelBeamScatter", "SK_BarrelBulletScatter", "SK_BarrelRocketScatter" };
                     FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
-                    BarrelInfo->InitializeBarrelInfo(RandomMeshName);
+                    BarrelInfo->Initialize(RandomMeshName);
                 }
 
                 // Trigger 파츠의 경우, 랜덤으로 메시 초기화
@@ -156,7 +154,7 @@ void ACP_GunSpawn::SpawnGunParts()
                 {
                     TArray<FString> MeshNames = { "SK_TriggerAuto", "SK_TriggerBurst", "SK_StockStandard", "SK_StockHeavy" };
                     FString RandomMeshName = MeshNames[FMath::RandRange(0, MeshNames.Num() - 1)];
-                    TriggerInfo->InitializeTriggerInfo(RandomMeshName);
+                    TriggerInfo->Initialize(RandomMeshName);
                 }
 
                 // Scale을 X, Y, Z 모두 2배로 설정

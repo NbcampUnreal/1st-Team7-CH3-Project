@@ -2,10 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_GunInfo.h"
 #include "CP_BarrelInfo.h"
 #include "CP_BodyInfo.h"
 #include "CP_TriggerInfo.h"
+#include "CP_Projectile.h"
+#include "Kismet/GameplayStatics.h"
 #include "CP_Guns.generated.h"
 
 UCLASS()
@@ -14,64 +15,59 @@ class CYBERPUNK_API ACP_Guns : public AActor
     GENERATED_BODY()
 
 public:
-    // 총기의 기본 설정
     ACP_Guns();
 
 protected:
+    // virtual void BeginPlay() override;
 
 public:
+    // 루트 씬 컴포넌트
+    UPROPERTY(VisibleAnywhere)
+    USceneComponent* RootScene;  // RootComponent
 
-
-    // 총기의 발사 기능
-    virtual void Fire();
-
-    // 총기의 재장전 기능
-    virtual void Reload();
-
-    // 총기의 남은 탄약 수
-    int32 AmmoCount;
-
-    // 최대 탄약 수
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-    int32 MaxAmmo;
-
-    // 재장전 중 여부
-    bool bIsReloading;
-
-    // 재장전 시간
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-    float ReloadTime;
-
-    // Root 씬 컴포넌트
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    USceneComponent* RootScene;
-
-    // 총기 부품들 (스켈레탈 메쉬)
+    // 파츠 메쉬 컴포넌트
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BarrelMesh;
+    USkeletalMeshComponent* BarrelMesh;  // Barrel Mesh
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BodyMesh;
+    USkeletalMeshComponent* BodyMesh;  // Body Mesh
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* TriggerMesh;
+    USkeletalMeshComponent* TriggerMesh;  // Trigger Mesh
+
+    // 파츠 정보
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
+    ACP_BarrelInfo* BarrelInfo;  // BarrelInfo (배럴 정보)
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* ScopeMesh;
+    ACP_BodyInfo* BodyInfo;  // BodyInfo (몸체 정보)
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
+    ACP_TriggerInfo* TriggerInfo;  // TriggerInfo (트리거 정보)
 
-    // 배럴 설정 함수
-    void SetBarrel(USkeletalMeshComponent* SelectedBarrel);
+    // 발사 타이머 설정
+    float FireTimer;
 
-    // 바디 설정 함수
-    void SetBody(USkeletalMeshComponent* SelectedBody);
+    // 발사 간격 설정
+    UPROPERTY(EditAnywhere, Category = "Gun Properties")
+    float FireRate;
 
-    // 트리거 설정 함수
-    void SetTrigger(USkeletalMeshComponent* SelectedTrigger);
+    // 발사 함수
+    void Fire();
 
-    // 스코프 설정 함수
-    void SetScope(USkeletalMeshComponent* SelectedScope);
+    // 발사할 때 사용하는 함수
+    void FireProjectile();
 
-    // 총기 부품들을 설정하는 함수
+    // 기본 파츠 설정 함수
     void SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger);
+
+    // 타이머를 갱신하는 함수 (매 프레임 호출)
+    virtual void Tick(float DeltaTime) override;
+
+    // 기본 파츠 로드 함수
+    void LoadGunParts();
+
+    // 프로젝타일 클래스는 블루프린트에서 설정할 수 있도록 공개
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
+    TSubclassOf<ACP_Projectile> ProjectileClass;  // 프로젝타일 클래스
 };

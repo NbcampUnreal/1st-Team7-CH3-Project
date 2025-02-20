@@ -11,7 +11,7 @@ ACP_TriggerInfo::ACP_TriggerInfo()
     TriggerMesh->SetupAttachment(RootSceneComponent);  // TriggerMesh는 RootComponent의 자식
 }
 
-void ACP_TriggerInfo::InitializeTriggerInfo(const FString& MeshName)
+void ACP_TriggerInfo::Initialize(const FString& MeshName)
 {
     if (MeshName == "SK_TriggerAuto")
     {
@@ -87,7 +87,7 @@ void ACP_TriggerInfo::InitializeTriggerInfo(const FString& MeshName)
     }
 }
 
-USkeletalMeshComponent* ACP_TriggerInfo::GetTriggerMesh() const
+USkeletalMeshComponent* ACP_TriggerInfo::GetMesh() const
 {
     return TriggerMesh;
 }

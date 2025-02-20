@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_GunInfo.h"
+#include "GunPart.h"  
 #include "CP_BarrelInfo.generated.h"
 
 UCLASS()
-class CYBERPUNK_API ACP_BarrelInfo : public ACP_GunInfo
+class CYBERPUNK_API ACP_BarrelInfo : public AActor, public IGunPart
 {
     GENERATED_BODY()
 
@@ -30,10 +30,10 @@ public:
     float Damage;
 
     // 배럴 정보 초기화 함수
-    void InitializeBarrelInfo(const FString& MeshName);
+    virtual void Initialize(const FString& MeshName) override;
 
     // BarrelMesh 반환 함수
-    USkeletalMeshComponent* GetBarrelMesh() const;
+    virtual USkeletalMeshComponent* GetMesh() const override;
 
 protected:
     // RootComponent는 SceneComponent로 설정

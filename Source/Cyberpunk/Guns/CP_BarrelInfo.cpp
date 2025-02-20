@@ -1,4 +1,5 @@
 #include "CP_BarrelInfo.h"
+#include "GunPart.h"  // IGunPart 인터페이스 포함
 
 ACP_BarrelInfo::ACP_BarrelInfo()
 {
@@ -11,8 +12,9 @@ ACP_BarrelInfo::ACP_BarrelInfo()
     BarrelMesh->SetupAttachment(RootSceneComponent);  // BarrelMesh는 RootComponent의 자식
 }
 
-void ACP_BarrelInfo::InitializeBarrelInfo(const FString& MeshName)
+void ACP_BarrelInfo::Initialize(const FString& MeshName)
 {
+    // Barrel 파츠 정보 저장 
     if (MeshName == "SK_BarrelBeam")
     {
         PartName = "SK_BarrelBeam";
@@ -70,7 +72,7 @@ void ACP_BarrelInfo::InitializeBarrelInfo(const FString& MeshName)
     }
 }
 
-USkeletalMeshComponent* ACP_BarrelInfo::GetBarrelMesh() const
+USkeletalMeshComponent* ACP_BarrelInfo::GetMesh() const
 {
     return BarrelMesh;
 }

@@ -1,4 +1,5 @@
 #include "CP_BodyInfo.h"
+#include "GunPart.h"
 
 ACP_BodyInfo::ACP_BodyInfo()
 {
@@ -11,7 +12,7 @@ ACP_BodyInfo::ACP_BodyInfo()
     BodyMesh->SetupAttachment(RootSceneComponent);  // BodyMesh는 RootComponent의 자식
 }
 
-void ACP_BodyInfo::InitializeBodyInfo(const FString& MeshName)
+void ACP_BodyInfo::Initialize(const FString& MeshName)
 {
     if (MeshName == "SK_BodyTesla")
     {
@@ -70,7 +71,7 @@ void ACP_BodyInfo::InitializeBodyInfo(const FString& MeshName)
     }
 }
 
-USkeletalMeshComponent* ACP_BodyInfo::GetBodyMesh() const
+USkeletalMeshComponent* ACP_BodyInfo::GetMesh() const
 {
     return BodyMesh;
 }

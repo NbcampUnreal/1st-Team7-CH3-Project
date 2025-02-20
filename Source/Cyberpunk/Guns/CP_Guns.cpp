@@ -2,6 +2,7 @@
 #include "CP_BarrelInfo.h"
 #include "CP_BodyInfo.h"
 #include "CP_TriggerInfo.h"
+#include "Kismet/GameplayStatics.h"
 
 ACP_Guns::ACP_Guns()
 {
@@ -19,66 +20,137 @@ ACP_Guns::ACP_Guns()
     TriggerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TriggerMesh"));
     TriggerMesh->SetupAttachment(RootScene);
 
-    ScopeMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ScopeMesh"));
-    ScopeMesh->SetupAttachment(RootScene);
+    BarrelInfo = CreateDefaultSubobject<ACP_BarrelInfo>(TEXT("BarrelInfo"));
+
+    FireTimer = 0.0f;
+
+    // 기본 파츠 로드 (배럴, 바디, 트리거)
+    LoadGunParts();
+}
+
+void ACP_Guns::LoadGunParts()
+{
+    // 배럴 메쉬 로드
+    USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
+    if (BarrelSkeletalMesh)
+    {
+        BarrelMesh->SetSkeletalMesh(BarrelSkeletalMesh);
+
+        // BarrelInfo 초기화
+        if (BarrelInfo)
+        {
+            BarrelInfo->Initialize("SK_BarrelBulletScatter");  // 메쉬 이름을 전달
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("BarrelInfo is null"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to load Barrel Mesh"));
+    }
+
+    // 바디 메쉬 로드
+    USkeletalMesh* BodySkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BodyNormal.SK_BodyNormal")));
+    if (BodySkeletalMesh)
+    {
+        BodyMesh->SetSkeletalMesh(BodySkeletalMesh);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to load Body Mesh"));
+    }
+
+    // 트리거 메쉬 로드
+    USkeletalMesh* TriggerSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerSingle.SK_TriggerSingle")));
+    if (TriggerSkeletalMesh)
+    {
+        TriggerMesh->SetSkeletalMesh(TriggerSkeletalMesh);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Failed to load Trigger Mesh"));
+    }
+}
+
+void ACP_Guns::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    // 발사 간격 설정 (초당 1회 발사)
+    FireTimer += DeltaTime;
+    if (FireTimer >= 1.0f)  // 1초마다 발사
+    {
+        Fire();
+        FireTimer = 0.0f;  // 타이머 리셋
+    }
 }
 
 void ACP_Guns::Fire()
 {
-    // 총기 발사 로직 구현
+    // 클래스 멤버인 BarrelInfo를 바로 사용
+    if (BarrelInfo)
+    {
+        if (BarrelInfo->bIsHitscan)
+        {
+            // FireHitscan();
+        }
+        else
+        {
+            FireProjectile();
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ACP_Guns::Fire - BarrelInfo not found!"));
+    }
 }
 
-void ACP_Guns::Reload()
+void ACP_Guns::FireProjectile()
 {
-    // 재장전 로직 구현
-}
+    FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
+    FRotator MuzzleRotation = BarrelMesh->GetSocketRotation(FName("Muzzle"));
 
-void ACP_Guns::SetBarrel(USkeletalMeshComponent* SelectedBarrel)
-{
-    if (SelectedBarrel)
+    // MuzzleRotation의 Pitch를 0으로 설정하여 수평으로 향하게 함
+    MuzzleRotation.Pitch = 0.0f;
+
+    // 발사 방향 계산 (수평 방향으로 나오도록)
+    FVector LaunchDirection = MuzzleRotation.Vector();  // 발사 방향
+    FVector Velocity = LaunchDirection * 3000.f;  // 발사 속도 설정
+
+    UE_LOG(LogTemp, Log, TEXT("MuzzleLocation: %s, MuzzleRotation: %s, LaunchDirection: %s"), *MuzzleLocation.ToString(), *MuzzleRotation.ToString(), *LaunchDirection.ToString());
+
+    if (ProjectileClass)
     {
-        BarrelMesh->SetSkeletalMesh(SelectedBarrel->SkeletalMesh);
+        ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, MuzzleRotation);
+        if (Projectile)
+        {
+            // 발사한 총기의 정보를 Projectile에 설정
+            Projectile->SetOwner(this);
+
+            // 물리 시뮬레이션을 비활성화 (불필요한 물리적 상호작용을 막기 위해)
+            if (Projectile->ProjectileMesh)
+            {
+                Projectile->ProjectileMesh->SetSimulatePhysics(false);
+            }
+
+            // 수동으로 초기 속도 설정 (Velocity에 초기 속도 지정)
+            if (Projectile->ProjectileMovement)
+            {
+                Projectile->ProjectileMovement->Velocity = Velocity;  // 수동으로 속도 설정
+                Projectile->ProjectileMovement->Activate();  // Activate 호출
+            }
+
+            UE_LOG(LogTemp, Log, TEXT("Projectile fired successfully!"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Failed to spawn Projectile"));
+        }
     }
 }
 
-void ACP_Guns::SetBody(USkeletalMeshComponent* SelectedBody)
-{
-    if (SelectedBody)
-    {
-        BodyMesh->SetSkeletalMesh(SelectedBody->SkeletalMesh);
-    }
-}
 
-void ACP_Guns::SetTrigger(USkeletalMeshComponent* SelectedTrigger)
-{
-    if (SelectedTrigger)
-    {
-        TriggerMesh->SetSkeletalMesh(SelectedTrigger->SkeletalMesh);
-    }
-}
 
-void ACP_Guns::SetScope(USkeletalMeshComponent* SelectedScope)
-{
-    if (SelectedScope)
-    {
-        ScopeMesh->SetSkeletalMesh(SelectedScope->SkeletalMesh);
-    }
-}
 
-void ACP_Guns::SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger)
-{
-    if (Barrel)
-    {
-        SetBarrel(Barrel->GetBarrelMesh());
-    }
-
-    if (Body)
-    {
-        SetBody(Body->GetBodyMesh());
-    }
-
-    if (Trigger)
-    {
-        SetTrigger(Trigger->GetTriggerMesh());
-    }
-}

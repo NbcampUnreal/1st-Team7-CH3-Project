@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_GunInfo.h"
+#include "GunPart.h"
 #include "CP_TriggerInfo.generated.h"
 
-UCLASS()
-class CYBERPUNK_API ACP_TriggerInfo : public ACP_GunInfo
+UCLASS(Blueprintable)
+class CYBERPUNK_API ACP_TriggerInfo : public AActor, public IGunPart
 {
     GENERATED_BODY()
 
@@ -14,7 +14,7 @@ public:
     // Sets default values for this actor's properties
     ACP_TriggerInfo();
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Body Info")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trigger Info")
     USkeletalMeshComponent* TriggerMesh;
 
     // 트리거 이름
@@ -30,10 +30,10 @@ public:
     int32 MagazineCapacity;
 
     // 트리거 정보 초기화 함수
-    void InitializeTriggerInfo(const FString& MeshName);
+    virtual void Initialize(const FString& MeshName) override;
 
     // 트리거 메쉬를 반환하는 함수
-    USkeletalMeshComponent* GetTriggerMesh() const;
+    virtual USkeletalMeshComponent* GetMesh() const override;
 
 protected:
     // RootComponent는 SceneComponent로 설정

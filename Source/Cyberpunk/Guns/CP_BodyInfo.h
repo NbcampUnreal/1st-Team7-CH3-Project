@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_GunInfo.h"
+#include "GunPart.h"
 #include "CP_BodyInfo.generated.h"
 
 UCLASS(Blueprintable)
-class CYBERPUNK_API ACP_BodyInfo : public ACP_GunInfo
+class CYBERPUNK_API ACP_BodyInfo : public AActor,public IGunPart
 {
     GENERATED_BODY()
 
@@ -30,14 +30,13 @@ public:
     float MovementSpeed;
 
     // Body 정보 초기화 함수
-    void InitializeBodyInfo(const FString& MeshName);
+    virtual void Initialize(const FString& MeshName) override;
 
     // BodyMesh 반환 함수
-    USkeletalMeshComponent* GetBodyMesh() const;
+    virtual USkeletalMeshComponent* GetMesh() const override;
 
 protected:
     // RootComponent는 SceneComponent로 설정
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootSceneComponent;
 };
-
