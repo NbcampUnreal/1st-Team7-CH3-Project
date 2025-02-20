@@ -28,6 +28,12 @@ protected:
 
 	virtual void Die();
 
+	// getter, setter
+public:
+
+	bool IsDead();
+
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "CPCharacter")
@@ -48,5 +54,8 @@ protected:
 	// 순수 방어력을 의미
 	UPROPERTY(EditAnywhere, Category = "CPCharacter")
 	int32 BaseArmor = 1;
+
+	UPROPERTY(VisibleAnywhere, Category = "CPCharacter")
+	bool bIsDead = false;
 
 };
