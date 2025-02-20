@@ -1,6 +1,8 @@
 
 #include "Core/CP_GameState.h"
 #include "Character/CP_PlayerController.h"
+#include "Core/CP_PlayerHUD.h"
+#include "Character/CP_NormalEnemy.h"
 
 ACP_GameState::ACP_GameState()
 {
@@ -29,13 +31,11 @@ void ACP_GameState::StartWave()
 		false
 	);*/
 
-
-
-
 }
 
 void ACP_GameState::StartBossWave()
 {
+
 }
 
 void ACP_GameState::OnGameOver()
@@ -45,7 +45,7 @@ void ACP_GameState::OnGameOver()
 		if (ACP_PlayerController* CP_PlayerController = Cast<ACP_PlayerController>(PlayerController))
 		{
 			CP_PlayerController->SetPause(true);
-			// CP_PlayerController->ShowMainMenu(); //미구현
+			// CP_PlayerHUD->ShowMainMenu(); //미구현
 		}
 	}
 }
@@ -70,5 +70,31 @@ void ACP_GameState::KillAll()
 }
 
 void ACP_GameState::SpawnAI()
+{
+
+	AI_Count = ((Wave * 3) + 1) / 2; //2, 3, 5, 6
+
+	for (int32 i = 0; i < AI_Count; ++i)
+	{
+		FVector SpawnLocation = GetRandomSpawnLocation(); // 적이 스폰할 위치
+		
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+
+		ACP_NormalEnemy* SpawnedAI = GetWorld()->SpawnActor<ACP_NormalEnemy>(
+			ACP_NormalEnemy::StaticClass(), 
+			SpawnLocation, 
+			FRotator::ZeroRotator,
+			SpawnParams);
+		if (SpawnedAI)
+		{
+			// 추가적인 컨트롤러 할당 없이 AI 스폰
+		}
+
+	}
+}
+
+FVector ACP_GameState::GetRandomSpawnLocation()
 {
 }
