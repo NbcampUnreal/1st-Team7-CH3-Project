@@ -29,10 +29,14 @@ protected:
 
 	virtual void Die() override;
 	
+	virtual void BreakBones(FHitResult HitInfo);
 
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "EnemySettings")
 	float AttackDamage = 1;
+
+	UPROPERTY(EditAnywhere, Category = "EnemySettings")
+	TSet<FName> BreakingBoneExceptionList;
 
 };
