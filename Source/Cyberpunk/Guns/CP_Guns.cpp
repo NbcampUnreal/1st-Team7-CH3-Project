@@ -117,7 +117,7 @@ void ACP_Guns::FireProjectile()
 
     // 발사 방향 계산 (수평 방향으로 나오도록)
     FVector LaunchDirection = MuzzleRotation.Vector();  // 발사 방향
-    FVector Velocity = LaunchDirection * 3000.f;  // 발사 속도 설정
+    FVector Velocity = LaunchDirection * 8000.f;  // 발사 속도 설정
 
     UE_LOG(LogTemp, Log, TEXT("MuzzleLocation: %s, MuzzleRotation: %s, LaunchDirection: %s"), *MuzzleLocation.ToString(), *MuzzleRotation.ToString(), *LaunchDirection.ToString());
 

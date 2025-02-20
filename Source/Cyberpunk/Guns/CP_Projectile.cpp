@@ -33,22 +33,24 @@ void ACP_Projectile::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 총알 메쉬 스케일 설정
+    // 2초 후 자동 제거
+    SetLifeSpan(2.0f);
+
     if (ProjectileMesh)
     {
         ProjectileMesh->SetWorldScale3D(FVector(0.04f, 0.04f, 0.04f));
-        ProjectileMesh->SetSimulatePhysics(false);  // 물리 시뮬레이션 비활성화
+        ProjectileMesh->SetSimulatePhysics(false);
     }
 
-    // ProjectileMovement 설정
     if (ProjectileMovement)
     {
-        ProjectileMovement->InitialSpeed = 3000000.f;
-        ProjectileMovement->MaxSpeed = 3000000.f;
+        ProjectileMovement->InitialSpeed = 3000.f;
+        ProjectileMovement->MaxSpeed = 40000.f;
         ProjectileMovement->bRotationFollowsVelocity = true;
         ProjectileMovement->bShouldBounce = true;
     }
 }
+
 
 // 발사 함수 추가
 void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
