@@ -94,4 +94,6 @@ void ACP_GameState::SpawnAI()
 
 FVector ACP_GameState::GetRandomSpawnLocation()
 {
+	return FVector();
 }
+
