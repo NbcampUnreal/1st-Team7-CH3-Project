@@ -3,6 +3,7 @@
 #include "Cyberpunk.h"
 
 #include "Engine/DamageEvents.h"
+#include "Components/CapsuleComponent.h"
 
 ACP_Enemy::ACP_Enemy()
 {
@@ -17,10 +18,20 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 {
 	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	CP_LOG(Error, TEXT("Damaged Enemy : %s"), *GetName());
-	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+
+	int32 HpAfterDamage = CurrentHp - NewDamage;
+
+	CurrentHp = FMath::Clamp(HpAfterDamage, 0, HpAfterDamage);
+
+	if (CurrentHp == 0)
 	{
-		const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
-		BreakBones(PointDamageEvent.HitInfo);
+		Die();
+
+		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+		{
+			const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
+			BreakBones(PointDamageEvent.HitInfo);
+		}
 	}
 
 	return NewDamage;
@@ -33,6 +44,27 @@ void ACP_Enemy::AttackNormal()
 void ACP_Enemy::Die()
 {
 	Super::Die();
+
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	if (CapsuleComp == nullptr)
+	{
+		CP_LOG(Warning, TEXT("CapsuleComp == nullptr, Name : "), *GetName());
+		return;
+	}
+
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	FTimerHandle DeadTimerHandle;
+
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, [&]()
+		{
+			if (::IsValid(this) && ::IsValid(GetWorld()))
+			{
+				Destroy();
+			}
+			
+		}, 3.0f, false);
+
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)
