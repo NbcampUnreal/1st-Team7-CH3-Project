@@ -87,10 +87,7 @@ void ACP_GameState::SpawnAI()
 			SpawnLocation, 
 			FRotator::ZeroRotator,
 			SpawnParams);
-		if (SpawnedAI)
-		{
-			// 추가적인 컨트롤러 할당 없이 AI 스폰
-		}
+
 
 	}
 }
