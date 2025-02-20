@@ -36,15 +36,15 @@ void ACP_Projectile::BeginPlay()
     // 총알 메쉬 스케일 설정
     if (ProjectileMesh)
     {
-        ProjectileMesh->SetWorldScale3D(FVector(0.025f, 0.025f, 0.025f));
+        ProjectileMesh->SetWorldScale3D(FVector(0.04f, 0.04f, 0.04f));
         ProjectileMesh->SetSimulatePhysics(false);  // 물리 시뮬레이션 비활성화
     }
 
     // ProjectileMovement 설정
     if (ProjectileMovement)
     {
-        ProjectileMovement->InitialSpeed = 30000.f;
-        ProjectileMovement->MaxSpeed = 30000.f;
+        ProjectileMovement->InitialSpeed = 3000000.f;
+        ProjectileMovement->MaxSpeed = 3000000.f;
         ProjectileMovement->bRotationFollowsVelocity = true;
         ProjectileMovement->bShouldBounce = true;
     }

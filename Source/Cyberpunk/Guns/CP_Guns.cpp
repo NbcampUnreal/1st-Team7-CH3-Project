@@ -30,7 +30,8 @@ ACP_Guns::ACP_Guns()
 
 void ACP_Guns::LoadGunParts()
 {
-    // 배럴 메쉬 로드
+    // 총기 기본 파츠들 생성
+
     USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
     if (BarrelSkeletalMesh)
     {
@@ -39,7 +40,7 @@ void ACP_Guns::LoadGunParts()
         // BarrelInfo 초기화
         if (BarrelInfo)
         {
-            BarrelInfo->Initialize("SK_BarrelBulletScatter");  // 메쉬 이름을 전달
+            BarrelInfo->Initialize("SK_BarrelBulletScatter");  
         }
         else
         {
@@ -51,8 +52,7 @@ void ACP_Guns::LoadGunParts()
         UE_LOG(LogTemp, Warning, TEXT("Failed to load Barrel Mesh"));
     }
 
-    // 바디 메쉬 로드
-    USkeletalMesh* BodySkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BodyNormal.SK_BodyNormal")));
+    USkeletalMesh* BodySkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BodyFire.SK_BodyFire")));
     if (BodySkeletalMesh)
     {
         BodyMesh->SetSkeletalMesh(BodySkeletalMesh);
@@ -62,7 +62,6 @@ void ACP_Guns::LoadGunParts()
         UE_LOG(LogTemp, Warning, TEXT("Failed to load Body Mesh"));
     }
 
-    // 트리거 메쉬 로드
     USkeletalMesh* TriggerSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerSingle.SK_TriggerSingle")));
     if (TriggerSkeletalMesh)
     {
@@ -78,7 +77,7 @@ void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    // 발사 간격 설정 (초당 1회 발사)
+    // 발사 간격 설정 (초당 1회 발사) 이거 테스트용입니다.
     FireTimer += DeltaTime;
     if (FireTimer >= 1.0f)  // 1초마다 발사
     {
@@ -89,12 +88,11 @@ void ACP_Guns::Tick(float DeltaTime)
 
 void ACP_Guns::Fire()
 {
-    // 클래스 멤버인 BarrelInfo를 바로 사용
     if (BarrelInfo)
     {
         if (BarrelInfo->bIsHitscan)
         {
-            // FireHitscan();
+            // FireHitscan(); 
         }
         else
         {
@@ -129,7 +127,7 @@ void ACP_Guns::FireProjectile()
             // 발사한 총기의 정보를 Projectile에 설정
             Projectile->SetOwner(this);
 
-            // 물리 시뮬레이션을 비활성화 (불필요한 물리적 상호작용을 막기 위해)
+            // 물리 시뮬레이션을 비활성화 // 이거 체크 
             if (Projectile->ProjectileMesh)
             {
                 Projectile->ProjectileMesh->SetSimulatePhysics(false);

@@ -23,27 +23,26 @@ protected:
 public:
     // 루트 씬 컴포넌트
     UPROPERTY(VisibleAnywhere)
-    USceneComponent* RootScene;  // RootComponent
+    USceneComponent* RootScene;  
 
     // 파츠 메쉬 컴포넌트
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BarrelMesh;  // Barrel Mesh
+    USkeletalMeshComponent* BarrelMesh; 
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BodyMesh;  // Body Mesh
+    USkeletalMeshComponent* BodyMesh;  
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* TriggerMesh;  // Trigger Mesh
-
-    // 파츠 정보
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_BarrelInfo* BarrelInfo;  // BarrelInfo (배럴 정보)
+    USkeletalMeshComponent* TriggerMesh;  
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_BodyInfo* BodyInfo;  // BodyInfo (몸체 정보)
+    ACP_BarrelInfo* BarrelInfo;  
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_TriggerInfo* TriggerInfo;  // TriggerInfo (트리거 정보)
+    ACP_BodyInfo* BodyInfo;  
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
+    ACP_TriggerInfo* TriggerInfo;  
 
     // 발사 타이머 설정
     float FireTimer;
@@ -67,7 +66,6 @@ public:
     // 기본 파츠 로드 함수
     void LoadGunParts();
 
-    // 프로젝타일 클래스는 블루프린트에서 설정할 수 있도록 공개
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
-    TSubclassOf<ACP_Projectile> ProjectileClass;  // 프로젝타일 클래스
+    TSubclassOf<ACP_Projectile> ProjectileClass;  
 };

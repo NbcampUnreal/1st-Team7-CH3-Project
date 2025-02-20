@@ -4,14 +4,13 @@
 #include "CP_BodyInfo.h"
 #include "CP_TriggerInfo.h"
 #include "Engine/World.h"
-#include "Components/SphereComponent.h"  // SphereComponent 추가
+#include "Components/SphereComponent.h"  
 
-// 생성자에서 Tick 활성화
+
 ACP_GunSpawn::ACP_GunSpawn()
 {
-    PrimaryActorTick.bCanEverTick = true;  // Tick 함수가 호출되도록 설정
+    PrimaryActorTick.bCanEverTick = true; 
 
-    // 기본적으로 루트 씬을 설정
     RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
     RootComponent = RootScene;
 
@@ -37,10 +36,10 @@ void ACP_GunSpawn::OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActo
     UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
     const FHitResult& SweepResult)
 {
-    // 겹친 파츠의 정보를 출력
+    // 충돌 발생
     if (OtherActor)
     {
-        if (SpawnedPart) // Overlap이 발생했을 때, 스폰된 파츠의 정보를 가져옴
+        if (SpawnedPart) // 아이템이 있다면 
         {
             // Barrel인지 체크
             if (ACP_BarrelInfo* BarrelInfo = Cast<ACP_BarrelInfo>(SpawnedPart))
@@ -84,26 +83,20 @@ void ACP_GunSpawn::Tick(float DeltaTime)
         float Amplitude = 0.2f;  // 위아래 이동 범위
         float Speed = 0.7f;       // 움직이는 속도
 
-        // Spawn된 파츠의 초기 위치를 기준으로 Z축 이동
         FVector SpawnLocation = SpawnedPart->GetActorLocation();
 
         // 사인파를 이용한 부드러운 이동
         float Offset = Amplitude * FMath::Sin(GetWorld()->GetTimeSeconds() * Speed);
-
-        // 현재 위치를 기준으로 X, Y는 그대로 두고, Z축만 변동
         FVector NewLocation = FVector(SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z + Offset);
-
-        // 새 위치로 파츠 이동
+        // 파츠 이동 
         SpawnedPart->SetActorLocation(NewLocation);
     }
-
-
 }
 
 
 void ACP_GunSpawn::SpawnGunParts()
 {
-    if (BarrelClass && BodyClass && TriggerClass)  // BarrelMeshes가 아니라, AActor 클래스를 활용해야 함
+    if (BarrelClass && BodyClass && TriggerClass)  
     {
         TSubclassOf<AActor> SelectedClass = nullptr;
 
@@ -124,16 +117,15 @@ void ACP_GunSpawn::SpawnGunParts()
 
         if (SelectedClass)
         {
-            FVector RootLocation = GetActorLocation();  // Root 위치
+            FVector RootLocation = GetActorLocation();  
 
-            // Z축을 확실히 올려서 위치 수정
             FVector SpawnLocation = FVector(RootLocation.X, RootLocation.Y, RootLocation.Z); 
 
             FRotator SpawnRotation = FRotator::ZeroRotator;
             AActor* NewPart = GetWorld()->SpawnActor<AActor>(SelectedClass, SpawnLocation, SpawnRotation);
             if (NewPart)
             {
-                // Body 파츠의 경우, 랜덤으로 메시 초기화
+                // 랜덤 스폰
                 if (ACP_BodyInfo* BodyInfo = Cast<ACP_BodyInfo>(NewPart))
                 {
                     TArray<FString> MeshNames = { "SK_BodyTesla", "SK_BodyNormal", "SK_BodyFire" };
@@ -141,7 +133,7 @@ void ACP_GunSpawn::SpawnGunParts()
                     BodyInfo->Initialize(RandomMeshName);
                 }
 
-                // Barrel 파츠의 경우, 랜덤으로 메시 초기화
+                // 랜덤 스폰
                 else if (ACP_BarrelInfo* BarrelInfo = Cast<ACP_BarrelInfo>(NewPart))
                 {
                     TArray<FString> MeshNames = { "SK_BarrelBeam", "SK_BarrelBeamScatter", "SK_BarrelBulletScatter", "SK_BarrelRocketScatter" };
@@ -149,7 +141,7 @@ void ACP_GunSpawn::SpawnGunParts()
                     BarrelInfo->Initialize(RandomMeshName);
                 }
 
-                // Trigger 파츠의 경우, 랜덤으로 메시 초기화
+                // 랜덤 스폰
                 else if (ACP_TriggerInfo* TriggerInfo = Cast<ACP_TriggerInfo>(NewPart))
                 {
                     TArray<FString> MeshNames = { "SK_TriggerAuto", "SK_TriggerBurst", "SK_StockStandard", "SK_StockHeavy" };
@@ -157,7 +149,7 @@ void ACP_GunSpawn::SpawnGunParts()
                     TriggerInfo->Initialize(RandomMeshName);
                 }
 
-                // Scale을 X, Y, Z 모두 2배로 설정
+                // Scale을 X, Y, Z 모두 2배로 설정 // 그냥 크게 보려고 
                 NewPart->SetActorScale3D(FVector(2.0f, 2.0f, 2.0f));
 
                 SpawnedPart = NewPart;  // 스폰된 파츠 저장

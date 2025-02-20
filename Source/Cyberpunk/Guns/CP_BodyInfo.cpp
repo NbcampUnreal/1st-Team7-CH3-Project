@@ -3,13 +3,11 @@
 
 ACP_BodyInfo::ACP_BodyInfo()
 {
-    // 기본 RootComponent로 SceneComponent를 설정
     RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-    RootComponent = RootSceneComponent;  // RootComponent 설정
+    RootComponent = RootSceneComponent; 
 
-    // BodyMesh 초기화
     BodyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BodyMesh"));
-    BodyMesh->SetupAttachment(RootSceneComponent);  // BodyMesh는 RootComponent의 자식
+    BodyMesh->SetupAttachment(RootSceneComponent);  
 }
 
 void ACP_BodyInfo::Initialize(const FString& MeshName)

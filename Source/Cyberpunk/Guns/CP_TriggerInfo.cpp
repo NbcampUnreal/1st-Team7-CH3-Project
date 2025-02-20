@@ -2,15 +2,16 @@
 
 ACP_TriggerInfo::ACP_TriggerInfo()
 {
-    // 기본 RootComponent로 SceneComponent 설정
     RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-    RootComponent = RootSceneComponent;  // RootComponent 설정
+    RootComponent = RootSceneComponent;  
 
     // TriggerMesh 초기화
     TriggerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TriggerMesh"));
-    TriggerMesh->SetupAttachment(RootSceneComponent);  // TriggerMesh는 RootComponent의 자식
+    TriggerMesh->SetupAttachment(RootSceneComponent);  
 }
 
+
+// GunPart 인터페이스의 Initialize 구현, MeshName으로 정보를 판단합니다.
 void ACP_TriggerInfo::Initialize(const FString& MeshName)
 {
     if (MeshName == "SK_TriggerAuto")
@@ -25,10 +26,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         {
             TriggerMesh->SetSkeletalMesh(LoadedMesh);
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to load Mesh: %s"), *MeshName);
-        }
     }
     else if (MeshName == "SK_TriggerBurst")
     {
@@ -41,10 +38,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         if (LoadedMesh)
         {
             TriggerMesh->SetSkeletalMesh(LoadedMesh);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to load Mesh: %s"), *MeshName);
         }
     }
     else if (MeshName == "SK_StockStandard")
@@ -59,10 +52,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         {
             TriggerMesh->SetSkeletalMesh(LoadedMesh);
         }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to load Mesh: %s"), *MeshName);
-        }
     }
     else if (MeshName == "SK_StockHeavy")
     {
@@ -75,10 +64,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         if (LoadedMesh)
         {
             TriggerMesh->SetSkeletalMesh(LoadedMesh);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("Failed to load Mesh: %s"), *MeshName);
         }
     }
     else
