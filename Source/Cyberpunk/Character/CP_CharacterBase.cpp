@@ -35,5 +35,11 @@ float ACP_CharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEven
 void ACP_CharacterBase::Die()
 {
 	CP_LOG(Log, TEXT("%s is Dead."));
+	bIsDead = true;
+}
+
+bool ACP_CharacterBase::IsDead()
+{
+	return bIsDead;
 }
 

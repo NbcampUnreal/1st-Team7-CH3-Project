@@ -22,14 +22,17 @@ protected:
 
 public:
 
-	// UGameplayStatics::ApplyDamage를 호출하면 이 함수가 대신해서 호출된다.
-	// 데미지를 주고싶을 때 TakeDamage를 직접 호출해도 되지만 UGameplayStatics::ApplyDamage로 호출하는 것을 권장.
-	// 참고로 UGameplayStatics는 "Kismet/GameplayStatics.h" 헤더파일 필요
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 
 	virtual void Die();
+
+	// getter, setter
+public:
+
+	bool IsDead();
+
 
 protected:
 
@@ -51,5 +54,8 @@ protected:
 	// 순수 방어력을 의미
 	UPROPERTY(EditAnywhere, Category = "CPCharacter")
 	int32 BaseArmor = 1;
+
+	UPROPERTY(VisibleAnywhere, Category = "CPCharacter")
+	bool bIsDead = false;
 
 };
