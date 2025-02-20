@@ -15,12 +15,14 @@ public:
 	virtual void BeginPlay() override;
 
 
-
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
 	int32 Wave;
-	int32 AI_Count;
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
 	float WatingTime;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	TSubclassOf<AActor> EnemyClass;
 
-
+	int32 AI_Count;
 	FTimerHandle AIWatingTimerHandel; //ai스폰 이후 대기시간 타이머
 	FTimerHandle PlayTimerHandle; // 총 플레이 타임 타이머
 
