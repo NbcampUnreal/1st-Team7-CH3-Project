@@ -21,6 +21,8 @@ ACP_Guns::ACP_Guns()
     TriggerMesh->SetupAttachment(RootScene);
 
     BarrelInfo = CreateDefaultSubobject<ACP_BarrelInfo>(TEXT("BarrelInfo"));
+    BodyInfo = CreateDefaultSubobject<ACP_BodyInfo>(TEXT("BodyInfo"));
+    TriggerInfo = CreateDefaultSubobject<ACP_TriggerInfo>(TEXT("TriggerInfo"));
 
     FireTimer = 0.0f;
 
