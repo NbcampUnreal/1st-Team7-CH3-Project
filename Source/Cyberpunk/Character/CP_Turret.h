@@ -35,6 +35,8 @@ public:
 	bool GetShouldRotate();
 	void SetShouldRotate(bool bNewShouldRotate);
 
+	float GetAttackRange();
+
 protected:
 
 	void RotatePitch(float DeltaRotation);
@@ -59,5 +61,7 @@ protected:
 
 	bool bShouldRotate = false;
 
+	UPROPERTY(EditAnywhere, Category = "Turret")
+	float AttackRange = 1000.0f;
 };
 
