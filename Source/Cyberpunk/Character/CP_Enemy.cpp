@@ -1,12 +1,17 @@
 #include "Character/CP_Enemy.h"
 
 #include "Cyberpunk.h"
+#include "Core/CP_GameState.h"
+#include "Core/CP_PlayerHUD.h"
+#include "Core/CP_GameInstance.h"
 
 #include "Engine/DamageEvents.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ACP_Enemy::ACP_Enemy()
 {
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ACP_Enemy::BeginPlay()
@@ -33,7 +38,7 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 			BreakBones(PointDamageEvent.HitInfo);
 		}
 	}
-
+	
 	return NewDamage;
 }
 
@@ -65,6 +70,32 @@ void ACP_Enemy::Die()
 			
 		}, 3.0f, false);
 
+	ACP_GameState* GameState = Cast<ACP_GameState>(UGameplayStatics::GetGameState(this));
+	if (GameState == nullptr)
+	{
+		CP_LOG(Warning, TEXT("GameState == nullptr"));
+		return;
+	}
+
+	GameState->AI_Count--;
+
+	
+	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GameInstance == nullptr)
+	{
+		CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+		return;
+	}
+
+	UCP_PlayerHUD* PlayerHUD = GameInstance->GetPlayerHUD();
+
+	if (PlayerHUD == nullptr)
+	{
+		CP_LOG(Warning, TEXT("PlayerHUD == nullptr"));
+		return;
+	}
+
+	PlayerHUD->UpdateEnemiesRemaining(GameState->AI_Count);
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)

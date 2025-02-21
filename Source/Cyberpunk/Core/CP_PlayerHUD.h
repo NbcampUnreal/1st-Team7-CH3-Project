@@ -24,10 +24,16 @@ public:
     void UpdateAmmo(int32 Ammo);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateMaxAmmo(int32 MaxAmmo); // 최대 탄약량 업데이트 함수 추가
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
     void UpdateHealth(int32 Health);
 
     UFUNCTION(BlueprintCallable, Category = "HUD")
     void UpdateEnemiesRemaining(int32 EnemiesRemaining);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateKillCount(int32 KillCount); // 킬카운트 업데이트 함수 추가
 
 protected:
     virtual void NativeConstruct() override;
@@ -43,8 +49,14 @@ protected:
     UTextBlock* AmmoText;
 
     UPROPERTY(meta = (BindWidget))
+    UTextBlock* MaxAmmoText; // 최대 탄약량 텍스트 블록 추가
+
+    UPROPERTY(meta = (BindWidget))
     UTextBlock* HealthText;
 
     UPROPERTY(meta = (BindWidget))
     UTextBlock* EnemiesRemainingText;
+
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* KillCountText; // 킬카운트 텍스트 블록 추가
 };
