@@ -33,7 +33,7 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 			BreakBones(PointDamageEvent.HitInfo);
 		}
 	}
-
+	
 	return NewDamage;
 }
 
