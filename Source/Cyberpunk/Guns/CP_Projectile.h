@@ -4,8 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
-#include "NiagaraComponent.h"  // Niagara 시스템을 사용하기 위한 헤더 추가
-#include "NiagaraFunctionLibrary.h"  // Niagara 시스템 함수 라이브러리 추가
+#include "NiagaraComponent.h"  
+#include "NiagaraFunctionLibrary.h"  
 #include "CP_Projectile.generated.h"
 
 UCLASS()

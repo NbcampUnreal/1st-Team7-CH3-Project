@@ -23,6 +23,10 @@ ACP_Guns::ACP_Guns()
     NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
     NiagaraEffect->SetupAttachment(RootScene);  
 
+    AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+    AudioComponent->SetupAttachment(RootScene);
+
+
     FireTimer = 0.0f;
  
     // 기본 파츠 로드 (배럴, 바디, 트리거)
@@ -61,7 +65,7 @@ void ACP_Guns::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     NiagaraEffect->Deactivate();
     FireTimer += DeltaTime;
-    if (FireTimer >= 0.3f)
+    if (FireTimer >= 0.1f)
     {
         Fire();
         FireTimer = 0.0f;
@@ -103,6 +107,11 @@ void ACP_Guns::FireProjectile()
             0.1f,
             false
         );
+    }
+
+    if (AudioComponent)
+    {
+        AudioComponent->Play();  
     }
 
     if (ProjectileClass)

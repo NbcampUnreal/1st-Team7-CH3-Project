@@ -7,7 +7,9 @@
 #include "CP_TriggerInfo.h"
 #include "CP_Projectile.h"
 #include "Kismet/GameplayStatics.h"
-#include "NiagaraComponent.h"  // Niagara 시스템 추가
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
+#include "NiagaraComponent.h"  
 #include "CP_Guns.generated.h"
 
 UCLASS()
@@ -44,6 +46,10 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     ACP_TriggerInfo* TriggerInfo;
+
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sound")
+    UAudioComponent* AudioComponent;
 
     // 발사 타이머 설정
     float FireTimer;

@@ -11,7 +11,6 @@ class CYBERPUNK_API ACP_TriggerInfo : public AActor, public IGunPart
     GENERATED_BODY()
 
 public:
-    // Sets default values for this actor's properties
     ACP_TriggerInfo();
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trigger Info")

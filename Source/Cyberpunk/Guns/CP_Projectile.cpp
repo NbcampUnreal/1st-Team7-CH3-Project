@@ -1,39 +1,32 @@
 #include "CP_Projectile.h"
-#include "Components/SphereComponent.h"
-#include "NiagaraComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
+
+
 
 ACP_Projectile::ACP_Projectile()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    // 충돌 컴포넌트 설정 (루트 컴포넌트로 사용)
     CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
     CollisionComponent->InitSphereRadius(10.0f);
     CollisionComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));  // 충돌 설정
     RootComponent = CollisionComponent;
 
-    // 나이아가라 이펙트 설정
     NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
     NiagaraEffect->SetupAttachment(RootComponent);
 
-    // 나이아가라 시스템 할당
     static ConstructorHelpers::FObjectFinder<UNiagaraSystem> NiagaraSystem(TEXT("/Game/Gun_BluePrint/NS_bullet.NS_bullet"));
     if (NiagaraSystem.Succeeded())
     {
         NiagaraEffect->SetAsset(NiagaraSystem.Object);
     }
 
-    // 프로젝타일 움직임 설정
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
     ProjectileMovement->InitialSpeed = 2000.f;
     ProjectileMovement->MaxSpeed = 2000.f;
     ProjectileMovement->bRotationFollowsVelocity = true;
     ProjectileMovement->bShouldBounce = false;
-    ProjectileMovement->ProjectileGravityScale = 0.0f;  // 중력 영향 제거
+    ProjectileMovement->ProjectileGravityScale = 0.0f;  
 
-    // 충돌 이벤트 바인딩
     CollisionComponent->OnComponentHit.AddDynamic(this, &ACP_Projectile::OnHit);
 }
 

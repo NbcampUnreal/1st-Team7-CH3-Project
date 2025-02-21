@@ -1,5 +1,4 @@
 #include "CP_BodyInfo.h"
-#include "GunPart.h"
 
 ACP_BodyInfo::ACP_BodyInfo()
 {

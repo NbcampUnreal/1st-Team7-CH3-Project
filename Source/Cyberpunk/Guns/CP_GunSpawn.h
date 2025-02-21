@@ -49,7 +49,6 @@ public:
     // 총기 파츠 스폰 함수
     void SpawnGunParts();
 
-    // Overlap 이벤트 처리 함수
     UFUNCTION()
     void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
         UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,

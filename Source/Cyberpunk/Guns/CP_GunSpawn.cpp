@@ -1,10 +1,6 @@
 ﻿#include "CP_GunSpawn.h"
-#include "CP_Guns.h"
-#include "CP_BarrelInfo.h"
-#include "CP_BodyInfo.h"
-#include "CP_TriggerInfo.h"
 #include "Engine/World.h"
-#include "Components/SphereComponent.h"  
+
 
 
 ACP_GunSpawn::ACP_GunSpawn()
@@ -85,10 +81,8 @@ void ACP_GunSpawn::Tick(float DeltaTime)
 
         FVector SpawnLocation = SpawnedPart->GetActorLocation();
 
-        // 사인파를 이용한 부드러운 이동
         float Offset = Amplitude * FMath::Sin(GetWorld()->GetTimeSeconds() * Speed);
         FVector NewLocation = FVector(SpawnLocation.X, SpawnLocation.Y, SpawnLocation.Z + Offset);
-        // 파츠 이동 
         SpawnedPart->SetActorLocation(NewLocation);
     }
 }

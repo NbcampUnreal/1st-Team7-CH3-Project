@@ -1,27 +1,22 @@
 #include "CP_BarrelInfo.h"
-#include "GunPart.h"  // IGunPart 인터페이스 포함
+
 
 ACP_BarrelInfo::ACP_BarrelInfo()
 {
-    // 기본 RootComponent로 SceneComponent 설정
     RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-    RootComponent = RootSceneComponent;  // RootComponent 설정
-
-    // BarrelMesh 초기화
+    RootComponent = RootSceneComponent; 
     BarrelMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BarrelMesh"));
-    BarrelMesh->SetupAttachment(RootSceneComponent);  // BarrelMesh는 RootComponent의 자식
+    BarrelMesh->SetupAttachment(RootSceneComponent);  
 }
 
 void ACP_BarrelInfo::Initialize(const FString& MeshName)
 {
-    // Barrel 파츠 정보 저장 
     if (MeshName == "SK_BarrelBeam")
     {
         PartName = "SK_BarrelBeam";
         Damage = 100.0f;
         bIsHitscan = false;
 
-        // StaticLoadObject로 메시 로드
         USkeletalMesh* LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeam.SK_BarrelBeam")));
         if (LoadedMesh)
         {
@@ -38,7 +33,6 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
         Damage = 120.0f;
         bIsHitscan = true;
 
-        // StaticLoadObject로 메시 로드
         USkeletalMesh* LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeamScatter.SK_BarrelBeamScatter")));
         if (LoadedMesh)
         {
@@ -55,7 +49,6 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
         Damage = 150.0f;
         bIsHitscan = false;
 
-        // StaticLoadObject로 메시 로드
         USkeletalMesh* LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
         if (LoadedMesh)
         {
