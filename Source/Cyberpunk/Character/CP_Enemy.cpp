@@ -87,7 +87,15 @@ void ACP_Enemy::Die()
 		return;
 	}
 
-	GameInstance->GetPlayerHUD()->UpdateEnemiesRemaining(GameState->AI_Count);
+	UCP_PlayerHUD* PlayerHUD = GameInstance->GetPlayerHUD();
+
+	if (PlayerHUD == nullptr)
+	{
+		CP_LOG(Warning, TEXT("PlayerHUD == nullptr"));
+		return;
+	}
+
+	PlayerHUD->UpdateEnemiesRemaining(GameState->AI_Count);
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)

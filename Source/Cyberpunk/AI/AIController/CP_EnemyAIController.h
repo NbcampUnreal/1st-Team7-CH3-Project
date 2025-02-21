@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AI/CP_AIControllerBase.h"
+#include "AI/AIController/CP_AIControllerBase.h"
 
 #include "CP_EnemyAIController.generated.h"
 
