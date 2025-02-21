@@ -7,6 +7,7 @@
 #include "CP_TriggerInfo.h"
 #include "CP_Projectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"  // Niagara 시스템 추가
 #include "CP_Guns.generated.h"
 
 UCLASS()
@@ -23,26 +24,26 @@ protected:
 public:
     // 루트 씬 컴포넌트
     UPROPERTY(VisibleAnywhere)
-    USceneComponent* RootScene;  
+    USceneComponent* RootScene;
 
     // 파츠 메쉬 컴포넌트
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BarrelMesh; 
+    USkeletalMeshComponent* BarrelMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* BodyMesh;  
+    USkeletalMeshComponent* BodyMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    USkeletalMeshComponent* TriggerMesh;  
+    USkeletalMeshComponent* TriggerMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_BarrelInfo* BarrelInfo;  
+    ACP_BarrelInfo* BarrelInfo;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_BodyInfo* BodyInfo;  
+    ACP_BodyInfo* BodyInfo;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
-    ACP_TriggerInfo* TriggerInfo;  
+    ACP_TriggerInfo* TriggerInfo;
 
     // 발사 타이머 설정
     float FireTimer;
@@ -66,6 +67,14 @@ public:
     // 기본 파츠 로드 함수
     void LoadGunParts();
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Projectile")
-    TSubclassOf<ACP_Projectile> ProjectileClass;  
+    void DeactivateNiagaraEffect();
+
+    // 발사할 프로젝타일 클래스
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
+    TSubclassOf<ACP_Projectile> ProjectileClass; 
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
+    UNiagaraComponent* NiagaraEffect;
+
+    FTimerHandle TimerHandle;
 };
