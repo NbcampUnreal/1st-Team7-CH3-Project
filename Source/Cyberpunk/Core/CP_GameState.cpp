@@ -83,13 +83,13 @@ void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 //AI 스폰 함수
 void ACP_GameState::SpawnAI()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AI Spawn"));
+	UE_LOG(LogTemp, Warning, TEXT("Begin AI Spawn"));
 
 	AI_Count = ((Wave * 3) + 1) / 2; // 2, 3, 5, 6
 
 	if (!EnemyClass)  // 블루프린트에서 설정이 안 되었을 경우 방어 코드
 	{
-		UE_LOG(LogTemp, Error, TEXT("EnemyClass가 설정되지 않았습니다!"));
+		UE_LOG(LogTemp, Error, TEXT("EnemyClass didn't Enable"));
 		return;
 	}
 
@@ -110,7 +110,7 @@ void ACP_GameState::SpawnAI()
 
 	if (!SpawnedAI)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AI 스폰 실패!"));
+		UE_LOG(LogTemp, Error, TEXT("AI Spawn Failed"));
 	}
 	else
 	{
