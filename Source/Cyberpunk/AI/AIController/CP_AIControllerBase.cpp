@@ -1,4 +1,4 @@
-#include "AI/CP_AIControllerBase.h"
+#include "AI/AIController/CP_AIControllerBase.h"
 
 ACP_AIControllerBase::ACP_AIControllerBase()
 {
