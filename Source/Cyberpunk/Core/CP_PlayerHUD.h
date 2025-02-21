@@ -13,9 +13,21 @@ class CYBERPUNK_API UCP_PlayerHUD : public UUserWidget
 public:
     UCP_PlayerHUD(const FObjectInitializer& ObjectInitializer);
 
-    // HUD 업데이트 함수
+    // 개별 업데이트 함수들
     UFUNCTION(BlueprintCallable, Category = "HUD")
-    void UpdateHUD(int32 Wave, const FString& WeaponName, int32 Ammo, int32 Health, int32 EnemiesRemaining);
+    void UpdateWave(int32 Wave);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateWeaponName(const FString& WeaponName);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateAmmo(int32 Ammo);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateHealth(int32 Health);
+
+    UFUNCTION(BlueprintCallable, Category = "HUD")
+    void UpdateEnemiesRemaining(int32 EnemiesRemaining);
 
 protected:
     virtual void NativeConstruct() override;
