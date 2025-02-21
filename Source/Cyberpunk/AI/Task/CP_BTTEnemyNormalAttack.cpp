@@ -1,8 +1,8 @@
-#include "AI/CP_BTTEnemyNormalAttack.h"
+#include "AI/Task/CP_BTTEnemyNormalAttack.h"
 
 #include "Character/CP_Enemy.h"
 #include "Cyberpunk.h"
-#include "CP_AIControllerBase.h"
+#include "AI/AIController/CP_AIControllerBase.h"
 
 UCP_BTTEnemyNormalAttack::UCP_BTTEnemyNormalAttack()
 {
