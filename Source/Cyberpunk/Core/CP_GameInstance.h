@@ -17,7 +17,8 @@ class CYBERPUNK_API UCP_GameInstance : public UGameInstance
 public:
 
 	UCP_GameInstance();
-
+	int32 Wave;
+	int32 AI_Count;
 protected:
 
 	virtual void Init() override;

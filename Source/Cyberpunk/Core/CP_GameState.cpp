@@ -4,7 +4,9 @@
 #include "Core/CP_PlayerHUD.h"
 #include "Character/CP_NormalEnemy.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Core/CP_GameInstance.h"
+#include "Cyberpunk.h"
+#include "Core/CP_AISpawnPoint.h"
 
 ACP_GameState::ACP_GameState()
 {
@@ -16,7 +18,14 @@ ACP_GameState::ACP_GameState()
 void ACP_GameState::BeginPlay()
 {
 	Super::BeginPlay();
+	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (GameInstance == nullptr)
+	{
+		CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+		return;
+	}
 
+	GameInstance->AddPlayerHUDToViewport();
 	StartWave();
 
 }
@@ -64,6 +73,10 @@ void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 	if (AI_Count >= 0 && Wave <= 2)// ai가 모두 죽고 현재 웨이브가 2이하면 다음 웨이브 진행
 	{
 		Wave++;
+		UGameInstance* Gameinstance = GetGameInstance();
+		UCP_GameInstance* CPGameinstance = Cast<UCP_GameInstance>(Gameinstance);
+		CPGameinstance->Wave++;
+
 		StartWave();
 	}
 	else if (AI_Count >= 0 && Wave > 2) // 3웨이브를 끝냈다면 보스전 진행
@@ -86,6 +99,9 @@ void ACP_GameState::SpawnAI()
 	UE_LOG(LogTemp, Warning, TEXT("Begin AI Spawn"));
 
 	AI_Count = ((Wave * 3) + 1) / 2; // 2, 3, 5, 6
+	UGameInstance* Gameinstance = GetGameInstance();
+	UCP_GameInstance* CPGameinstance = Cast<UCP_GameInstance>(Gameinstance);
+	CPGameinstance->AI_Count = AI_Count;
 
 	if (!EnemyClass)  // 블루프린트에서 설정이 안 되었을 경우 방어 코드
 	{
@@ -94,35 +110,37 @@ void ACP_GameState::SpawnAI()
 	}
 
 	//AI 스폰 좌표. 추후 Spawn Zone 클래스 추가 예정
-	FVector SpawnLocation = GetRandomSpawnLocation();
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACP_AISpawnPoint::StaticClass(), FoundActors);
 
-	//스폰시 충돌처리 로직. 스폰위치가 충돌할 시 조금 옮겨서 스폰.
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	AActor* SpawnedAI = GetWorld()->SpawnActor<AActor>(
-		EnemyClass,
-		SpawnLocation,
-		FRotator::ZeroRotator,
-		SpawnParams
-	);
-
-	if (!SpawnedAI)
+	// 첫 번째 스폰 포인트를 선택 (필요에 따라 다른 로직으로 선택 가능)
+	if (FoundActors.Num() > 0)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AI Spawn Failed"));
+		ACP_AISpawnPoint* SpawnPortal = Cast<ACP_AISpawnPoint>(FoundActors[0]);
+		if (SpawnPortal)
+		{
+			FVector SpawnLocation = SpawnPortal->PortalLocation();
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+			SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			AActor* SpawnedAI = GetWorld()->SpawnActor<AActor>(
+				EnemyClass,
+				SpawnLocation,
+				FRotator::ZeroRotator,
+				SpawnParams
+			);
+
+			if (!SpawnedAI)
+			{
+				CP_LOG(Error, TEXT("AI Spawn Failed"));
+			}
+			else
+			{
+				CP_LOG(Warning, TEXT("AI Spawn Sucsess: %s"), *SpawnLocation.ToString());
+			}
+		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AI Spawn Sucsess: %s"), *SpawnLocation.ToString());
-	}
+	
 
 }
-
-
-
-FVector ACP_GameState::GetRandomSpawnLocation()
-{
-	return FVector(Wave * 50, Wave * 50, 150.0f);
-}
-
