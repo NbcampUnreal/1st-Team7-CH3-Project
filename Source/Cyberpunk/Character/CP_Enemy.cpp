@@ -70,14 +70,22 @@ void ACP_Enemy::Die()
 			
 		}, 3.0f, false);
 
+	ACP_GameState* GameState = Cast<ACP_GameState>(UGameplayStatics::GetGameState(this));
+	if (GameState == nullptr)
+	{
+		CP_LOG(Warning, TEXT("GameState == nullptr"));
+		return;
+	}
+
+	GameState->AI_Counting--;
+
+	
 	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GameInstance == nullptr)
 	{
 		CP_LOG(Warning, TEXT("GameInstance == nullptr"));
 		return;
 	}
-
-	GameInstance->Decrease_AI();
 
 	UCP_PlayerHUD* PlayerHUD = GameInstance->GetPlayerHUD();
 
@@ -87,7 +95,7 @@ void ACP_Enemy::Die()
 		return;
 	}
 
-	PlayerHUD->UpdateEnemiesRemaining(GameInstance->Get_AICount());
+	PlayerHUD->UpdateEnemiesRemaining(GameState->AI_Counting);
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)

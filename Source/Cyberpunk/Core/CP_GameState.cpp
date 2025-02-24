@@ -1,13 +1,10 @@
 
 #include "Core/CP_GameState.h"
-#include "Core/CP_AISpawnPoint.h"
-#include "Core/CP_PlayerHUD.h"
-#include "Core/CP_GameInstance.h"
-
 #include "Character/CP_PlayerController.h"
+#include "Core/CP_PlayerHUD.h"
 #include "Character/CP_NormalEnemy.h"
-
 #include "Kismet/GameplayStatics.h"
+#include "Core/CP_AISpawnPoint.h"
 #include "Cyberpunk.h"
 
 
@@ -25,19 +22,14 @@ void ACP_GameState::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-
 	StartWave();
 
 }
 
 void ACP_GameState::StartWave()
 {
-	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
-
 	UE_LOG(LogTemp, Warning, TEXT("StartWave : %d"), Wave);
-	GameInstance->AddPlayerHUDToViewport();
-	GameInstance->Set_Wave(Wave);
+
 	AI_Spawn_Owner(); //ai spawn 함수
 
 }
@@ -62,9 +54,8 @@ void ACP_GameState::OnGameOver()//게임 종료 함수
 
 void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 {
+	UE_LOG(LogTemp, Warning, TEXT("Kill All"));
 
-	UCP_GameInstance* Instance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
-	
 	if (Number_AI >= 0 && Wave <= 2)// ai가 모두 죽고 현재 웨이브가 2이하면 다음 웨이브 진행
 	{
 		Wave++;
@@ -82,7 +73,6 @@ void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 			OnGameOver();
 		}
 	}
-	Instance->Set_Wave(Wave);
 }
 
 void ACP_GameState::Spawner()
@@ -108,6 +98,7 @@ void ACP_GameState::Spawner()
 	{
 		GetWorldTimerManager().ClearTimer(AIWatingTimerHandel);
 		AI_Counting = 0;
+		KillAll();
 	}
 }
 
@@ -116,10 +107,7 @@ void ACP_GameState::AI_Spawn_Owner()
 {
 
 	Number_AI = ((Wave * 3) + 1) / 2; // 2, 3, 5, 6
-	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
-	GameInstance->Set_AICount(Number_AI);
 
-	
 	if (!EnemyClass)  // 블루프린트에서 설정이 안 되었을 경우 방어 코드
 	{
 		CP_LOG(Warning, TEXT("EnemyClass Didn't Enable"));
