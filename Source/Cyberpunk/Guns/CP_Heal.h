@@ -12,8 +12,11 @@ class CYBERPUNK_API ACP_Heal : public AActor
 public:
 	ACP_Heal();
 
+	// 아이템 식별용 이름 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
+	FName ItemName;
+
 protected:
-	// Heal 아이템용 스태틱 메시 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UStaticMeshComponent* HealMesh;
 };

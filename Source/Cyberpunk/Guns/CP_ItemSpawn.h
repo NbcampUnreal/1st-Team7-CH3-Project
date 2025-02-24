@@ -4,7 +4,6 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "CP_Item.h"
 #include "CP_Ammo.h"
 #include "CP_Gear.h"
 #include "CP_Heal.h"

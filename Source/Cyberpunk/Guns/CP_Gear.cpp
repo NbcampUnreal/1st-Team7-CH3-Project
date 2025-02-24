@@ -9,6 +9,8 @@ ACP_Gear::ACP_Gear()
 	GearMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GearMesh"));
 	RootComponent = GearMesh;
 
+	ItemName = FName("Gear");
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> GearMeshAsset(TEXT("/Game/Gun_BluePrint/Gear/Gear_StaticMesh.Gear_StaticMesh"));
 	if (GearMeshAsset.Succeeded())
 	{
