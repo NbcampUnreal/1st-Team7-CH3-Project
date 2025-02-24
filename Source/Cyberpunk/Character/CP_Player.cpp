@@ -7,9 +7,11 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "CP_PlayerController.h"
+//#include "GameFramework/CharacterMovementComponent.h"
 
 ACP_Player::ACP_Player()
 {
+	// camera
 	SpringArmLength = 300.f;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -21,7 +23,8 @@ ACP_Player::ACP_Player()
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
 
-
+	// input
+	CharacterInputState.WantsToStrafe = true;
 }
 
 void ACP_Player::BeginPlay()
@@ -32,6 +35,8 @@ void ACP_Player::BeginPlay()
 void ACP_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//float maxaccel = this->GetCharacterMovement()->GetMaxAcceleration();
 }
 
 void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -156,4 +161,14 @@ void ACP_Player::StartSprint(const FInputActionValue& _value)
 
 void ACP_Player::StopSprint(const FInputActionValue& _value)
 {
+}
+
+FCharacterInputState ACP_Player::GetPlayerInputState()
+{
+	return CharacterInputState;
+}
+
+void ACP_Player::SetPlayerInputState(FCharacterInputState _inputState)
+{
+	CharacterInputState = _inputState;
 }

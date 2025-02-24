@@ -2,13 +2,11 @@
 
 
 #include "Character/CP_PlayerAnimInstance.h"
-
-void UCP_PlayerAnimInstance::OnStateEntry_TransitionToIdleLoop()
-{
-	UE_LOG(LogTemp, Warning, TEXT("TESTSETSET"));
-}
+#include "CP_Player.h"
 
 void UCP_PlayerAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
+
+	OwnerCharacter = Cast<ACP_Player>(TryGetPawnOwner());
 }
