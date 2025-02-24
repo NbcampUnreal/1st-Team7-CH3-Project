@@ -4,12 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_CharacterBase.h"
-#include "Inventory/CP_Inventory.h"
 #include "CP_Player.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
 struct FInputActionValue;
+
+USTRUCT(BlueprintType)
+struct FCharacterInputState
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToSprint;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToWalk;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToStrafe;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToAim;
+};
 
 UCLASS()
 class CYBERPUNK_API ACP_Player : public ACP_CharacterBase
@@ -18,7 +35,7 @@ class CYBERPUNK_API ACP_Player : public ACP_CharacterBase
 public:
 
 	ACP_Player();
-	
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -51,6 +68,12 @@ public:
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& _value);
 
+	UFUNCTION()
+	FCharacterInputState GetPlayerInputState();
+
+	UFUNCTION()
+	void SetPlayerInputState(FCharacterInputState _inputState);
+
 public:
 	// Camera
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -62,9 +85,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
 
-	UPROPERTY()
-	UCP_Inventory* PlayerInventory;
-
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void PickupItem(TSubclassOf<AActor> Item);
+	// Input
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	FCharacterInputState CharacterInputState;
 };

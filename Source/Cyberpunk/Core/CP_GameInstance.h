@@ -38,4 +38,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UCP_PlayerHUD> PlayerHUDInstance;
+
+
+	int32 AI_Counting;
+
 };

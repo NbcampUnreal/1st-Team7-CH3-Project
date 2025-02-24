@@ -20,5 +20,4 @@ public:
 protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
-	
 };

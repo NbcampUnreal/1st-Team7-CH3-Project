@@ -11,16 +11,27 @@ void ACP_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetGenericTeamId((uint8)TeamType);
 }
 
 void ACP_CharacterBase::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 }
 
 void ACP_CharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
 
+void ACP_CharacterBase::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	TeamId = TeamID;
+}
+
+FGenericTeamId ACP_CharacterBase::GetGenericTeamId() const
+{
+	return TeamId;
 }
 
 float ACP_CharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
