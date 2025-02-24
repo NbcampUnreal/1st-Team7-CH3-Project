@@ -70,7 +70,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CPCharacter")
 	bool bIsDead = false;
 
-	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
 	ETeamType TeamType;
 
 	FGenericTeamId TeamId;
