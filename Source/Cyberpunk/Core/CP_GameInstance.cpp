@@ -1,7 +1,9 @@
 #include "Core/CP_GameInstance.h"
-
-#include "Cyberpunk.h"
 #include "Core/CP_PlayerHUD.h"
+#include "Core/CP_GameState.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "Cyberpunk.h"
 
 UCP_GameInstance::UCP_GameInstance()
 {
@@ -31,7 +33,13 @@ void UCP_GameInstance::AddPlayerHUDToViewport()
 		return;
 	}
 
-	PlayerHUDInstance = CreateWidget<UCP_PlayerHUD>(GetWorld(), PlayerHUDClass);
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		CP_LOG(Error, TEXT("World is Null"));
+		return;
+	}
+	PlayerHUDInstance = CreateWidget<UCP_PlayerHUD>(World, PlayerHUDClass);
 
 	if (PlayerHUDInstance == nullptr)
 	{
@@ -57,4 +65,49 @@ void UCP_GameInstance::RemovePlayerHUDToViewport()
 	}
 
 	PlayerHUDInstance->RemoveFromParent();
+}
+
+void UCP_GameInstance::Decrease_AI()
+{
+	AI_Counting -= 1;
+	if (AI_Counting <= 0)
+	{
+		ACP_GameState* GameState = Cast<ACP_GameState>(UGameplayStatics::GetGameState(GetWorld()));
+		if (GameState)
+		{
+			GameState->KillAll();
+		}
+	}
+	PlayerHUDInstance->UpdateEnemiesRemaining(AI_Counting);
+}
+
+void UCP_GameInstance::Increase_AI()
+{
+	AI_Counting++;
+	if (PlayerHUDInstance)
+	{
+		PlayerHUDInstance->UpdateEnemiesRemaining(AI_Counting);
+	}
+}
+
+void UCP_GameInstance::Set_AICount(int32 num)
+{
+	AI_Counting = num;
+	PlayerHUDInstance->UpdateEnemiesRemaining(AI_Counting);
+}
+
+int32 UCP_GameInstance::Get_AICount()
+{
+	return AI_Counting;
+}
+
+void UCP_GameInstance::Set_Wave(int32 p_Wave)
+{
+	Wave = p_Wave;
+	PlayerHUDInstance->UpdateWave(Wave);
+}
+
+int32 UCP_GameInstance::Get_Wave()
+{
+	return Wave;
 }
