@@ -77,7 +77,7 @@ void ACP_Enemy::Die()
 		return;
 	}
 
-	GameState->AI_Count--;
+	GameState->AI_Counting--;
 
 	
 	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
@@ -95,7 +95,7 @@ void ACP_Enemy::Die()
 		return;
 	}
 
-	PlayerHUD->UpdateEnemiesRemaining(GameState->AI_Count);
+	PlayerHUD->UpdateEnemiesRemaining(GameState->AI_Counting);
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)
