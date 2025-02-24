@@ -4,14 +4,14 @@
 
 ACP_Ammo::ACP_Ammo()
 {
-    PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
-    AmmoMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AmmoMesh"));
-    RootComponent = AmmoMesh;
+	AmmoMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AmmoMesh"));
+	RootComponent = AmmoMesh;
 
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> AmmoMeshAsset(TEXT("/Game/Gun_BluePrint/ammo/10mmAmmoBox_done_01.10mmAmmoBox_done_01"));
-    if (AmmoMeshAsset.Succeeded())
-    {
-        AmmoMesh->SetStaticMesh(AmmoMeshAsset.Object);
-    }
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> AmmoMeshAsset(TEXT("/Game/Gun_BluePrint/Ammo/Ammo_StaticMesh.Ammo_StaticMesh"));
+	if (AmmoMeshAsset.Succeeded())
+	{
+		AmmoMesh->SetStaticMesh(AmmoMeshAsset.Object);
+	}
 }

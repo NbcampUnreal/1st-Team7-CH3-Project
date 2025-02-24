@@ -2,18 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_Item.h"
 #include "CP_Gear.generated.h"
 
 UCLASS()
-class CYBERPUNK_API ACP_Gear : public AActor, public ICP_Item
+class CYBERPUNK_API ACP_Gear : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    ACP_Gear();
+	ACP_Gear();
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    UStaticMeshComponent* GearMesh;
+	// Gear 아이템용 스태틱 메시 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* GearMesh;
 };
