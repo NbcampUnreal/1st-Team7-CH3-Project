@@ -36,12 +36,6 @@ void ACP_Turret::BeginPlay()
 	}
 
 	OriginalMeshRelativeYaw = UpperBodyMeshComp->GetRelativeRotation().Yaw;
-
-	//FTimerHandle TimerHandle;
-	//GetWorldTimerManager().SetTimer(TimerHandle, [this]()
-	//	{
-	//		RotateTurret(RotateSpeed);
-	//	}, 0.02, true);
 }
 
 void ACP_Turret::AttackNormal()
