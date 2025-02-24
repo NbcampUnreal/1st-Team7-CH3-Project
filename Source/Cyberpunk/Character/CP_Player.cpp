@@ -25,11 +25,14 @@ ACP_Player::ACP_Player()
 
 	// input
 	CharacterInputState.WantsToStrafe = true;
+
+
 }
 
 void ACP_Player::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerInventory = NewObject<UCP_Inventory>();
 }
 
 void ACP_Player::Tick(float DeltaTime)
@@ -171,4 +174,12 @@ FCharacterInputState ACP_Player::GetPlayerInputState()
 void ACP_Player::SetPlayerInputState(FCharacterInputState _inputState)
 {
 	CharacterInputState = _inputState;
+}
+
+void ACP_Player::PickupItem(TSubclassOf<AActor> Item)
+{
+	if (PlayerInventory)
+	{
+		PlayerInventory->AddItem(Item);
+	}
 }

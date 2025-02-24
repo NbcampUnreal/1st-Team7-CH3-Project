@@ -40,10 +40,11 @@ public:
 	TSubclassOf<AActor> GearClass;
 	TSubclassOf<AActor> HealClass;
 
+	
 	UFUNCTION()
 	void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 		const FHitResult& SweepResult);
-
+		
 	void SpawnItem();
 };

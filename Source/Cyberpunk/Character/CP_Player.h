@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_CharacterBase.h"
+#include "Inventory/CP_Inventory.h"
 #include "CP_Player.generated.h"
 
 class UCameraComponent;
@@ -88,4 +89,10 @@ public:
 	// Input
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	FCharacterInputState CharacterInputState;
+
+	UPROPERTY()
+	UCP_Inventory* PlayerInventory;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void PickupItem(TSubclassOf<AActor> Item);
 };

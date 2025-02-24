@@ -115,24 +115,50 @@ void ACP_ItemSpawn::SpawnItem()
 	}
 }
 
+
+
 void ACP_ItemSpawn::OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
 	const FHitResult& SweepResult)
 {
 	if (OtherActor)
 	{
+		UE_LOG(LogTemp, Log, TEXT("OnItemOverlap triggered by Actor: %s"), *OtherActor->GetName());
+
 		ACP_Player* Player = Cast<ACP_Player>(OtherActor);
-		if (Player && Player->PlayerInventory && SpawnedItem)
+		if (Player)
 		{
-			// 플레이어 인벤토리에 아이템 추가
-			Player->PickupItem(SpawnedItem->GetClass());
+			if (Player->PlayerInventory)
+			{
+				if (SpawnedItem)
+				{
+					UE_LOG(LogTemp, Log, TEXT("Player inventory found. Processing pickup for item class: %s"), *SpawnedItem->GetClass()->GetName());
+					Player->PickupItem(SpawnedItem->GetClass());
 
-			// 아이템 삭제
-			SpawnedItem->Destroy();
-			SpawnedItem = nullptr;
+					UE_LOG(LogTemp, Log, TEXT("Destroying spawned item: %s"), *SpawnedItem->GetName());
+					SpawnedItem->Destroy();
+					SpawnedItem = nullptr;
 
-			// 아이템 스폰 액터도 제거
-			Destroy();
+					UE_LOG(LogTemp, Log, TEXT("Destroying item spawn actor."));
+					Destroy();
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("SpawnedItem is nullptr."));
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("PlayerInventory is nullptr."));
+			}
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("OtherActor is not an ACP_Player."));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor is nullptr."));
 	}
 }
