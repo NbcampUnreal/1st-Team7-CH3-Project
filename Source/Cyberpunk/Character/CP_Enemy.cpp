@@ -12,6 +12,7 @@
 ACP_Enemy::ACP_Enemy()
 {
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	TeamType = ETeamType::EnemyTeam;
 }
 
 void ACP_Enemy::BeginPlay()
@@ -22,7 +23,7 @@ void ACP_Enemy::BeginPlay()
 float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	CP_LOG(Error, TEXT("Damaged Enemy : %s"), *GetName());
+	CP_LOG(Log, TEXT("Damaged Enemy : %s"), *GetName());
 
 	int32 HpAfterDamage = CurrentHp - NewDamage;
 
@@ -79,7 +80,6 @@ void ACP_Enemy::Die()
 
 	GameState->AI_Count--;
 
-	
 	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
 	if (GameInstance == nullptr)
 	{
@@ -150,7 +150,7 @@ void ACP_Enemy::BreakBones(FHitResult HitInfo)
 	//Mesh->SetSimulatePhysics(true);
 	//Mesh->RecreatePhysicsState();
 	//Mesh->HideBoneByName(BoneName, EPhysBodyOp::PBO_None);
-	CP_LOG(Warning, TEXT("Hit, BoneName : %s"), *HitInfo.BoneName.ToString());
+	CP_LOG(Log, TEXT("Hit, BoneName : %s"), *HitInfo.BoneName.ToString());
 	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3.0f);
 }
 
