@@ -8,6 +8,7 @@
 #include "CP_Ammo.h"
 #include "CP_Gear.h"
 #include "CP_Heal.h"
+#include "Character/CP_Player.h"
 #include "CP_ItemSpawn.generated.h"
 
 UCLASS()

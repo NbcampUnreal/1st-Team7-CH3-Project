@@ -21,7 +21,7 @@ ACP_Player::ACP_Player()
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
 
-
+	PlayerInventory = NewObject<UCP_Inventory>();
 }
 
 void ACP_Player::BeginPlay()
@@ -156,4 +156,13 @@ void ACP_Player::StartSprint(const FInputActionValue& _value)
 
 void ACP_Player::StopSprint(const FInputActionValue& _value)
 {
+}
+
+
+void ACP_Player::PickupItem(TSubclassOf<AActor> Item)
+{
+	if (PlayerInventory)
+	{
+		PlayerInventory->AddItem(Item);
+	}
 }

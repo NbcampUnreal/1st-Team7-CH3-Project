@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_CharacterBase.h"
+#include "Inventory/CP_Inventory.h"
 #include "CP_Player.generated.h"
 
 class UCameraComponent;
@@ -17,7 +18,7 @@ class CYBERPUNK_API ACP_Player : public ACP_CharacterBase
 public:
 
 	ACP_Player();
-
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -60,4 +61,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
+
+	UPROPERTY()
+	UCP_Inventory* PlayerInventory;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void PickupItem(TSubclassOf<AActor> Item);
 };
