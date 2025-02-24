@@ -65,7 +65,7 @@ public:
     void FireProjectile();
 
     // 기본 파츠 설정 함수
-    void SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger);
+    //void SetGunParts(ACP_BarrelInfo* Barrel, ACP_BodyInfo* Body, ACP_TriggerInfo* Trigger);
 
     // 타이머를 갱신하는 함수 (매 프레임 호출)
     virtual void Tick(float DeltaTime) override;
@@ -76,11 +76,14 @@ public:
     void DeactivateNiagaraEffect();
 
     // 발사할 프로젝타일 클래스
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
-    TSubclassOf<ACP_Projectile> ProjectileClass; 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
+    TSubclassOf<ACP_Projectile> ProjectileClass;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Niagara")
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Niagara")
     UNiagaraComponent* NiagaraEffect;
+
+
 
     FTimerHandle TimerHandle;
 };

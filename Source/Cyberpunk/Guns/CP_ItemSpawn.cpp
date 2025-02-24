@@ -50,7 +50,7 @@ void ACP_ItemSpawn::SpawnItem()
 				}
 				else if (ItemToSpawn == GearClass)
 				{
-					MeshComp->SetWorldScale3D(FVector(3.5f, 3.5f, 3.5f));  // Gear 크기 설정
+					MeshComp->SetWorldScale3D(FVector(4.0f, 4.0f, 4.0f));  // Gear 크기 설정
 				}
 			}
 		}

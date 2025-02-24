@@ -28,10 +28,22 @@ ACP_Guns::ACP_Guns()
 
 
     FireTimer = 0.0f;
- 
+    static ConstructorHelpers::FClassFinder<ACP_Projectile> ProjectileBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BPCP_Projectile.BPCP_Projectile_C'"));
+    if (ProjectileBPClass.Succeeded())
+    {
+        ProjectileClass = ProjectileBPClass.Class;
+    }
+
+    static ConstructorHelpers::FObjectFinder<USoundCue> FireSoundCueAsset(TEXT("SoundCue'/Game/Gun_BluePrint/MuzzleFlash/Demo/FPWeapon/Cue/FirstPersonTemplateWeaponFire02_Cue.FirstPersonTemplateWeaponFire02_Cue'"));
+    if (FireSoundCueAsset.Succeeded() && AudioComponent)
+    {
+        AudioComponent->SetSound(FireSoundCueAsset.Object);
+    }
+
     // 기본 파츠 로드 (배럴, 바디, 트리거)
     LoadGunParts();
 }
+
 
 void ACP_Guns::LoadGunParts()
 {
@@ -42,6 +54,14 @@ void ACP_Guns::LoadGunParts()
         if (BarrelInfo)
         {
             BarrelInfo->Initialize("SK_BarrelBulletScatter");
+        }
+
+        UNiagaraSystem* NiagaraAsset = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, TEXT("NiagaraSystem'/Game/Gun_BluePrint/MuzzleFlash/MuzzleFlash/Niagara/NS_MuzzleFlash.NS_MuzzleFlash'")));
+        if (NiagaraAsset)
+        {
+            NiagaraEffect->SetAsset(NiagaraAsset);
+            NiagaraEffect->SetupAttachment(BarrelMesh, FName("Muzzle"));
+            //NiagaraEffect->Deactivate();
         }
     }
 
@@ -56,9 +76,12 @@ void ACP_Guns::LoadGunParts()
     {
         TriggerMesh->SetSkeletalMesh(TriggerSkeletalMesh);
     }
-
-    
 }
+
+
+
+
+
 
 void ACP_Guns::Tick(float DeltaTime)
 {
@@ -90,8 +113,12 @@ void ACP_Guns::Fire()
 void ACP_Guns::FireProjectile()
 {
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
-    FVector ForwardVector = BarrelMesh->GetSocketRotation(FName("Muzzle")).Vector();
-    FVector LaunchDirection = ForwardVector;
+
+    // 머즐의 Right벡터를 가져옵니다. 머즐을 90도 회전해놨기 때문에.
+    FVector RightVector = BarrelMesh->GetSocketTransform(FName("Muzzle")).GetRotation().GetRightVector();
+
+    FVector LaunchDirection = RightVector;  
+
     FVector Velocity = LaunchDirection * 8000.f;
 
     // 나이아가라 이펙트 활성화
@@ -111,12 +138,13 @@ void ACP_Guns::FireProjectile()
 
     if (AudioComponent)
     {
-        AudioComponent->Play();  
+        AudioComponent->Play();
     }
 
     if (ProjectileClass)
     {
-        ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, FRotator::ZeroRotator);
+        FRotator ProjectileRotation = LaunchDirection.Rotation();
+        ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
         if (Projectile)
         {
             Projectile->SetOwner(this);
@@ -129,6 +157,8 @@ void ACP_Guns::FireProjectile()
         }
     }
 }
+
+
 
 void ACP_Guns::DeactivateNiagaraEffect()
 {
