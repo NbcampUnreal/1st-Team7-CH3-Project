@@ -10,6 +10,24 @@ class UCameraComponent;
 class USpringArmComponent;
 struct FInputActionValue;
 
+USTRUCT(BlueprintType)
+struct FCharacterInputState
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToSprint;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToWalk;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToStrafe;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool WantsToAim;
+};
+
 UCLASS()
 class CYBERPUNK_API ACP_Player : public ACP_CharacterBase
 {
@@ -50,6 +68,12 @@ public:
 	UFUNCTION()
 	void StopSprint(const FInputActionValue& _value);
 
+	UFUNCTION()
+	FCharacterInputState GetPlayerInputState();
+
+	UFUNCTION()
+	void SetPlayerInputState(FCharacterInputState _inputState);
+
 public:
 	// Camera
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -60,4 +84,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
+
+	// Input
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	FCharacterInputState CharacterInputState;
 };
