@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GunPart.h"
+#include "CP_GunPart.h"
 #include "CP_TriggerInfo.generated.h"
 
 UCLASS(Blueprintable)

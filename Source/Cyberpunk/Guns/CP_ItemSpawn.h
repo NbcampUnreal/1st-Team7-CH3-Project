@@ -4,6 +4,10 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CP_Item.h"
+#include "CP_Ammo.h"
+#include "CP_Gear.h"
+#include "CP_Heal.h"
 #include "CP_ItemSpawn.generated.h"
 
 UCLASS()
@@ -19,6 +23,8 @@ protected:
 
 private:
 	AActor* SpawnedItem;
+	FVector InitialSpawnLocation;
+	float TimeElapsed;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -29,12 +35,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USphereComponent* CollisionComponent;
 
-	// 블루프린트에서 설정할 아이템 클래스들
-	UPROPERTY(EditAnywhere, Category = "Item")
 	TSubclassOf<AActor> AmmoClass;
-
-	UPROPERTY(EditAnywhere, Category = "Item")
 	TSubclassOf<AActor> GearClass;
+	TSubclassOf<AActor> HealClass;
 
 	UFUNCTION()
 	void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

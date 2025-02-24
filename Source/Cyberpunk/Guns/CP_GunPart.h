@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "GunPart.generated.h"
+#include "CP_GunPart.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
