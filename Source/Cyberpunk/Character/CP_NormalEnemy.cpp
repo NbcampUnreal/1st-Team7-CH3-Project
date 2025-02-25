@@ -6,11 +6,31 @@
 
 ACP_NormalEnemy::ACP_NormalEnemy()
 {
+	static ConstructorHelpers::FClassFinder<ACP_Guns> GunBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Guns.BP_Guns_C'"));
+	if (GunBPClass.Succeeded())
+	{
+		GunClass = GunBPClass.Class;
+	}
 }
 
 void ACP_NormalEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GunClass)
+	{
+		// 무기 스폰
+		Gun = GetWorld()->SpawnActor<ACP_Guns>(GunClass);
+		if (Gun)
+		{
+			// 무기를 손에 장착
+			Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("Weapon_R"));
+
+			// 무기의 소유자 설정
+			Gun->SetOwner(this);
+		}
+	}
+
 }
 
 float ACP_NormalEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

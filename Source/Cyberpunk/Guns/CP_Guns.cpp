@@ -27,8 +27,8 @@ ACP_Guns::ACP_Guns()
     AudioComponent->SetupAttachment(RootScene);
 
 
-    FireTimer = 0.0f;
-    static ConstructorHelpers::FClassFinder<ACP_Projectile> ProjectileBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BPCP_Projectile.BPCP_Projectile_C'"));
+    FireTimer = 0.0f; 
+    static ConstructorHelpers::FClassFinder<ACP_Projectile> ProjectileBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Projectile.BP_Projectile_C'"));
     if (ProjectileBPClass.Succeeded())
     {
         ProjectileClass = ProjectileBPClass.Class;
