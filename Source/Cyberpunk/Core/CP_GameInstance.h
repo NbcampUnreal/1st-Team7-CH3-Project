@@ -31,6 +31,13 @@ public:
 	UFUNCTION(Exec)
 	void RemovePlayerHUDToViewport();
 
+	void Decrease_AI();
+	void Increase_AI();
+	void Set_AICount(int32 num);
+	int32 Get_AICount();
+
+	void Set_Wave(int32 Wave);
+	int32 Get_Wave();
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "UI")
@@ -39,7 +46,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UCP_PlayerHUD> PlayerHUDInstance;
 
-
+private:
 	int32 AI_Counting;
-
+	int32 Wave;
 };
