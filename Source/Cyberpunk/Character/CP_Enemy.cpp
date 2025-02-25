@@ -39,7 +39,7 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 			BreakBones(PointDamageEvent.HitInfo);
 		}
 	}
-	
+
 	return NewDamage;
 }
 
@@ -68,7 +68,7 @@ void ACP_Enemy::Die()
 			{
 				Destroy();
 			}
-			
+
 		}, 3.0f, false);
 
 
@@ -79,15 +79,6 @@ void ACP_Enemy::Die()
 		return;
 	}
 	GameInstance->Decrease_AI();
-
-	UCP_PlayerHUD* PlayerHUD = GameInstance->GetPlayerHUD();
-	if (PlayerHUD == nullptr)
-	{
-		CP_LOG(Warning, TEXT("PlayerHUD == nullptr"));
-		return;
-	}
-
-	PlayerHUD->UpdateEnemiesRemaining(GameInstance->Get_AICount());
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)
