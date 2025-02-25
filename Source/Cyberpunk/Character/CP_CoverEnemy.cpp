@@ -32,7 +32,6 @@ void ACP_CoverEnemy::AttackNormal()
 		return;
 	}
 
-	float AttackRange = 100;
 	FHitResult HitResult;
 	FVector StartPoint = GetActorLocation();
 	FVector EndPoint = StartPoint + GetActorForwardVector() * 100;

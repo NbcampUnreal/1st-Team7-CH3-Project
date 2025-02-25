@@ -1,6 +1,6 @@
 #include "AI/Decorator/CP_BTDIsAimingPlayer.h"
 
-#include "Character/CP_Turret.h"
+#include "Character/CP_Enemy.h"
 #include "Cyberpunk.h"
 
 #include "AIController.h"
@@ -15,20 +15,20 @@ bool UCP_BTDIsAimingPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	ACP_Turret* Turret = Cast<ACP_Turret>(AIController->GetPawn());
-	if (Turret == nullptr)
+	ACP_Enemy* Enemy = Cast<ACP_Enemy>(AIController->GetPawn());
+	if (Enemy == nullptr)
 	{
-		CP_LOG(Warning, TEXT("Turret == nullptr"), *AIController->GetPawn()->GetName());
+		CP_LOG(Warning, TEXT("Enemy == nullptr"), *AIController->GetPawn()->GetName());
 		return false;
 	}
 	
 	FHitResult HitResult;
-	FVector StartPoint = Turret->GetActorLocation();
-	FVector EndPoint = StartPoint + Turret->GetActorForwardVector() * RecognitionRange;
+	FVector StartPoint = Enemy->GetActorLocation();
+	FVector EndPoint = StartPoint + Enemy->GetActorForwardVector() * Enemy->GetAttackRange();
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1);
 	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(Turret);
+	QueryParams.AddIgnoredActor(Enemy);
 
 	bool bIsHit = GetWorld()->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
 
