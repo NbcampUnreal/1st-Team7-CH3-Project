@@ -137,4 +137,9 @@ void ACP_Enemy::BreakBones(FHitResult HitInfo)
 	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3.0f);
 }
 
+float ACP_Enemy::GetAttackRange()
+{
+	return AttackRange;
+}
+
 
