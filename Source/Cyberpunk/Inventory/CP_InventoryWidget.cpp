@@ -1,68 +1,72 @@
 #include "CP_InventoryWidget.h"
-#include "Components/UniformGridPanel.h"
-#include "Components/Button.h"
-#include "Components/Image.h"
-#include "Components/TextBlock.h"
-
-void UCP_InventoryWidget::NativeConstruct()
-{
-    Super::NativeConstruct();
-
-}
 
 void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 {
-    if (!InventoryGrid)
+    if (!overlay00 || !overlay01 || !overlay02 || !overlay03 ||
+        !overlay10 || !overlay11 || !overlay12 || !overlay13)
     {
-        UE_LOG(LogTemp, Error, TEXT("[UpdateInventory] InventoryGrid nullptr!"));
+        UE_LOG(LogTemp, Error, TEXT("[UpdateInventory] One or more UI elements are nullptr!"));
         return;
     }
 
-    // 기존 UI 슬롯 삭제
-    InventoryGrid->ClearChildren();
+    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Updating inventory UI..."));
 
-    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] updated started: %d"), Items.Num());
+    // 배열로 UI 요소들을 관리하여 코드 간결화
+    TArray<UOverlay*> Overlays = { overlay00, overlay01, overlay02, overlay03,
+                                   overlay10, overlay11, overlay12, overlay13 };
 
-    int32 SlotIndex = 0;
-    for (const FCP_ItemInfo& Item : Items)
+    TArray<UImage*> Images = { Image_00, Image_01, Image_02, Image_03,
+                               Image_10, Image_11, Image_12, Image_13 };
+
+    TArray<UTextBlock*> TextBlocks = { textblock00, textblock01, textblock02, textblock03,
+                                       textblock10, textblock11, textblock12, textblock13 };
+
+    // **초기에는 모든 UI를 숨김**
+    if (Items.Num() == 0)
     {
-        UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] slot added: %s"), *Item.ItemName);
-
-        // UI에서 새로운 버튼을 동적으로 생성
-        UButton* ItemButton = NewObject<UButton>(this);
-        UImage* ItemIcon = NewObject<UImage>(this);
-        UTextBlock* ItemName = NewObject<UTextBlock>(this);
-
-
-        FSlateBrush Brush;
-        Brush.SetResourceObject(Item.ItemIcon);
-        Brush.ImageSize = FVector2D(64.0f, 64.0f); // 아이콘 크기 키우기
-
-        ItemIcon->SetBrush(Brush);
-
-        //  버튼 크기 조정 (슬롯 크기 조절 가능)
-        ItemButton->SetRenderTransform(FWidgetTransform(FVector2D(0, 0), FVector2D(1.5f, 1.5f), FVector2D(0, 0), 0.0f));
-
-        // 아이콘 설정
-        if (Item.ItemIcon)
+        for (int32 i = 0; i < 8; i++)
         {
-            ItemIcon->SetBrushFromTexture(Item.ItemIcon);
+            Overlays[i]->SetVisibility(ESlateVisibility::Hidden);
+            Images[i]->SetVisibility(ESlateVisibility::Hidden);
+            TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         }
-
-        // 아이템 이름 설정
-        ItemName->SetText(FText::FromString(Item.ItemName));
-
-        // 버튼에 아이콘 추가
-        ItemButton->AddChild(ItemIcon);
-
-        // 슬롯 패널에 버튼 추가
-        InventoryGrid->AddChildToUniformGrid(ItemButton, SlotIndex / 4, SlotIndex % 4);
-
-        SlotIndex++;
-        if (SlotIndex >= 8) break; // 8칸까지만 허용
+        UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Inventory is empty. UI remains hidden."));
+        return;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Inventory updated!"));
+    // **모든 슬롯을 초기화 (빈 슬롯은 숨김)**
+    for (int32 i = 0; i < 8; i++)
+    {
+        Overlays[i]->SetVisibility(ESlateVisibility::Hidden);
+        Images[i]->SetVisibility(ESlateVisibility::Hidden);
+        TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
+        TextBlocks[i]->SetText(FText::FromString(""));
+    }
+
+    // **인벤토리 아이템을 UI에 표시**
+    for (int32 i = 0; i < Items.Num() && i < 8; i++)
+    {
+        const FCP_ItemInfo& Item = Items[i];
+
+        if (Item.ItemIcon)
+        {
+            // 아이콘 적용
+            FSlateBrush Brush;
+            Brush.SetResourceObject(Item.ItemIcon);
+            Brush.ImageSize = FVector2D(128.0f, 128.0f); // 아이콘 크기 설정
+            Images[i]->SetBrush(Brush);
+            Images[i]->SetVisibility(ESlateVisibility::Visible);
+
+            // Overlay 보이게 설정
+            Overlays[i]->SetVisibility(ESlateVisibility::Visible);
+        }
+
+        if (Item.StackCount > 1)
+        {
+            TextBlocks[i]->SetText(FText::Format(FText::FromString("x{0}"), Item.StackCount));
+            TextBlocks[i]->SetVisibility(ESlateVisibility::Visible);
+        }
+    }
+
+    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Inventory UI updated! Items displayed: %d"), Items.Num());
 }
-
-

@@ -21,19 +21,15 @@ struct FCP_ItemInfo
     GENERATED_BODY()
 
 public:
-    /** 아이템의 타입 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    ECP_ItemType ItemType;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString ItemName; // 아이템 이름
 
-    /** 아이템 이름 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    FString ItemName;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    ECP_ItemType ItemType; // 아이템 타입
 
-    /** 아이템 아이콘 */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    UTexture2D* ItemIcon;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* ItemIcon; // 아이템 아이콘
 
-    /** 기본 생성자 */
-    FCP_ItemInfo()
-        : ItemType(ECP_ItemType::Gear), ItemName(TEXT("")), ItemIcon(nullptr) {}
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 StackCount = 1; //  아이템 개수 추가 (기본값 1)
 };
