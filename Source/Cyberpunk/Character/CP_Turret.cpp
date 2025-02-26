@@ -112,11 +112,6 @@ void ACP_Turret::SetShouldRotate(bool bNewShouldRotate)
 	bShouldRotate = bNewShouldRotate;
 }
 
-float ACP_Turret::GetAttackRange()
-{
-	return AttackRange;
-}
-
 void ACP_Turret::RotatePitch(float DeltaRotation)
 {
 }

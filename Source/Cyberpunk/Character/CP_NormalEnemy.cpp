@@ -6,6 +6,7 @@
 
 ACP_NormalEnemy::ACP_NormalEnemy()
 {
+	AttackRange = 500.0f;
 }
 
 void ACP_NormalEnemy::BeginPlay()
@@ -32,7 +33,6 @@ void ACP_NormalEnemy::AttackNormal()
 		return;
 	}
 
-	float AttackRange = 100;
 	FHitResult HitResult;
 	FVector StartPoint = GetActorLocation();
 	FVector EndPoint = StartPoint + GetActorForwardVector() * 100;
