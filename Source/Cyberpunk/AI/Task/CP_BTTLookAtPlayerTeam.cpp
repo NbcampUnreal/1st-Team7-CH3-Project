@@ -2,6 +2,7 @@
 
 #include "Cyberpunk.h"
 #include "Character/CP_Enemy.h"
+#include "Character/CP_BossEnemy.h"
 
 #include "Kismet/KismetMathLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -26,7 +27,7 @@ EBTNodeResult::Type UCP_BTTLookAtPlayerTeam::ExecuteTask(UBehaviorTreeComponent&
 	ACP_CharacterBase* PlayerTeamCharacter = Cast<ACP_CharacterBase>(Controller->GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPlayer")));
 	if (PlayerTeamCharacter == nullptr)
 	{
-		CP_LOG(Warning, TEXT("PlayerTeamCharacter == nullptr - Fail to get Blackboard Value"));
+		CP_LOG(Log, TEXT("PlayerTeamCharacter == nullptr - Fail to get Blackboard Value"));
 		return EBTNodeResult::Failed;
 	}
 
@@ -39,6 +40,12 @@ EBTNodeResult::Type UCP_BTTLookAtPlayerTeam::ExecuteTask(UBehaviorTreeComponent&
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(StartPosition, EndPosition);
 
 	Enemy->SetActorRotation(LookAtRotation);
+
+	ACP_BossEnemy* Boss = Cast<ACP_BossEnemy>(Enemy);
+	if (Boss)
+	{
+		Boss->SetAming(true);
+	}
 
 	return EBTNodeResult::Succeeded;
 }

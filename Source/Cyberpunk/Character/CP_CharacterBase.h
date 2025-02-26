@@ -46,13 +46,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsDead();
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetMaxHP();
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentHp();
+
+	UFUNCTION(BlueprintCallable)
+	ETeamType GetTeamType();
+
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
 	int32 MaxHp = 1;
 
 	// 버프 효과 고려해서 CurrentHp, BaseHp 나눔.
-	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
 	int32 CurrentHp = 1;
 
 	// 순수 체력을 의미
