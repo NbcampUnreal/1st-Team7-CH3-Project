@@ -211,16 +211,11 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 		NewItem.ItemIcon = Icon;
 
 		PlayerInventory->AddItem(NewItem);
-		UE_LOG(LogTemp, Log, TEXT("[PickupItem] Obtained item: %s"), *Name);
 
 		// UI 업데이트
 		if (InventoryWidget)
 		{
 			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[PickupItem] InventoryWidget is nullptr! UI update failed."));
 		}
 	}
 }

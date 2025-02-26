@@ -5,11 +5,9 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
     if (!overlay00 || !overlay01 || !overlay02 || !overlay03 ||
         !overlay10 || !overlay11 || !overlay12 || !overlay13)
     {
-        UE_LOG(LogTemp, Error, TEXT("[UpdateInventory] One or more UI elements are nullptr!"));
         return;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Updating inventory UI..."));
 
     // 배열로 UI 요소들을 관리하여 코드 간결화
     TArray<UOverlay*> Overlays = { overlay00, overlay01, overlay02, overlay03,
@@ -30,7 +28,6 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
             Images[i]->SetVisibility(ESlateVisibility::Hidden);
             TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         }
-        UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Inventory is empty. UI remains hidden."));
         return;
     }
 
@@ -68,5 +65,4 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         }
     }
 
-    UE_LOG(LogTemp, Log, TEXT("[UpdateInventory] Inventory UI updated! Items displayed: %d"), Items.Num());
 }

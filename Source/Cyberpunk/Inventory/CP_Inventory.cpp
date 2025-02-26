@@ -12,13 +12,11 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& NewItem)
     {
         //  같은 아이템이면 개수만 증가
         ExistingItem->StackCount++;
-        UE_LOG(LogTemp, Log, TEXT("[Inventory] item : %s | count : %d"), *ExistingItem->ItemName, ExistingItem->StackCount);
     }
     else
     {
         //  새로운 아이템이면 추가
         InventoryItems.Add(NewItem);
-        UE_LOG(LogTemp, Log, TEXT("[Inventory] new item: %s"), *NewItem.ItemName);
     }
 }
 
@@ -32,7 +30,6 @@ void UCP_Inventory::RemoveItem(const FString& ItemName)
     if (Index != INDEX_NONE)
     {
         InventoryItems.RemoveAt(Index);
-        UE_LOG(LogTemp, Log, TEXT("Item erased : %s"), *ItemName);
     }
 }
 

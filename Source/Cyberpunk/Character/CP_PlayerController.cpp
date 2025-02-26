@@ -42,11 +42,6 @@ void ACP_PlayerController::BeginPlay()
 		{
 			InventoryWidget->AddToViewport();
 			InventoryWidget->SetVisibility(ESlateVisibility::Collapsed);
-			UE_LOG(LogTemp, Log, TEXT("[ACP_PlayerController] InventoryWidget success!"));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[ACP_PlayerController] InventoryWidget fail!"));
 		}
 	}
 }

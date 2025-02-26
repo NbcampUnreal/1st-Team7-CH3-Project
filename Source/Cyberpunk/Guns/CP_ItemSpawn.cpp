@@ -136,14 +136,13 @@ void ACP_ItemSpawn::OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AAct
     UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
     const FHitResult& SweepResult)
 {
-    UE_LOG(LogTemp, Warning, TEXT("[ItemSpawn] OnItemOverlap excuted"));
+
 
     if (OtherActor)
     {
         ACP_Player* Player = Cast<ACP_Player>(OtherActor);
         if (Player && Player->PlayerInventory)
         {
-            UE_LOG(LogTemp, Log, TEXT("[ItemSpawn] item obtained: %s | type: %d"),
                 *SpawnedItemInfo.ItemName, static_cast<int32>(SpawnedItemInfo.ItemType));
 
             Player->PickupItem(SpawnedItemInfo.ItemType, SpawnedItemInfo.ItemName, SpawnedItemInfo.ItemIcon);
