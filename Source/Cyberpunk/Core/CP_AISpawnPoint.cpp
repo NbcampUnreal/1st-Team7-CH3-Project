@@ -8,8 +8,7 @@ ACP_AISpawnPoint::ACP_AISpawnPoint()
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	SetRootComponent(Scene);
 
-	StaticMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMeshComp->SetupAttachment(Scene);
+
 }
 
 

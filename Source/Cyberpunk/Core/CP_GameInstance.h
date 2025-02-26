@@ -31,8 +31,8 @@ public:
 	UFUNCTION(Exec)
 	void RemovePlayerHUDToViewport();
 
-	void Decrease_AI();
-	void Increase_AI();
+	void Decrease_AI(); //1씩감소
+	void Increase_AI(); //1씩 증가
 	void Set_AICount(int32 num);
 	int32 Get_AICount();
 

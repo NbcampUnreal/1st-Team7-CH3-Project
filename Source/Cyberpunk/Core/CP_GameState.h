@@ -28,7 +28,7 @@ public:
 	int32 AI_Counting; //스폰시킬 AI수
 	FTimerHandle AIWatingTimerHandel; //ai스폰 이후 대기시간 타이머
 	FTimerHandle PlayTimerHandle; // 총 플레이 타임 타이머
-	FVector SpawnLocation;
+	TArray<FVector> SpawnLocation;
 	FActorSpawnParameters SpawnParams;
 
 	void StartWave(); //Wave 시작 함수
@@ -36,5 +36,5 @@ public:
 	void OnGameOver(); //캐릭터 체력이 0이 됬을 경우 호출
 	void KillAll(); //모든 적을 잡았을 때 호출
 	void AI_Spawn_Owner(); //웨이브가 새로 시작할 때 적을 생성하는 함수
-	void Spawner();
+	void Spawner(int32 i);
 };
