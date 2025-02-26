@@ -30,9 +30,24 @@ bool UCP_BTDIsAimingPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& O
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(Enemy);
 
-	bool bIsHit = GetWorld()->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
+	bool bIsHit = GetWorld()->LineTraceSingleByProfile(HitResult, StartPoint, EndPoint, TEXT("Pawn"), QueryParams);//GetWorld()->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
 
-	if (bIsHit)
+	if (bIsHit == false)
+	{
+		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		return false;
+	}
+
+	ACP_CharacterBase* HitCharacter = Cast<ACP_CharacterBase>(HitResult.GetActor());
+	if (HitCharacter == nullptr)
+	{
+		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		return false;
+	}
+
+	bool bIsPlayerTeam = (HitCharacter->GetTeamType() == ETeamType::PlayerTeam) ? true : false;
+
+	if (bIsPlayerTeam)
 	{
 		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3);
 	}
@@ -41,5 +56,5 @@ bool UCP_BTDIsAimingPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& O
 		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 	}
 
-	return bIsHit;
+	return bIsPlayerTeam;
 }

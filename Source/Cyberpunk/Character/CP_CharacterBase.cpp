@@ -54,3 +54,18 @@ bool ACP_CharacterBase::IsDead()
 	return bIsDead;
 }
 
+int32 ACP_CharacterBase::GetMaxHP()
+{
+	return MaxHp;
+}
+
+int32 ACP_CharacterBase::GetCurrentHp()
+{
+	return CurrentHp;
+}
+
+ETeamType ACP_CharacterBase::GetTeamType()
+{
+	return TeamType;
+}
+
