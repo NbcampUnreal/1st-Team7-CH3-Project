@@ -1,69 +1,45 @@
 #include "CP_InventoryWidget.h"
-#include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
-
-void UCP_InventoryWidget::UpdateInventoryUI(const TArray<TSubclassOf<AActor>>& Items)
-{
-    if (!InventoryGrid)
-    {
-        UE_LOG(LogTemp, Error, TEXT("[InventoryWidget] InventoryGrid is NULL!"));
-        return;
-    }
-
-    // **기존 슬롯 제거**
-    InventoryGrid->ClearChildren();
-
-    UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] Updating Inventory UI with %d items"), Items.Num());
-
-    // **새 슬롯 추가**
-    for (int32 i = 0; i < Items.Num(); i++)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] Adding slot for item %d"), i);
-
-        UCP_InventorySlot* NewSlot = CreateWidget<UCP_InventorySlot>(this, InventorySlotClass);
-        if (NewSlot)
-        {
-            NewSlot->SetItem(Items[i]->GetName());
-            InventoryGrid->AddChildToUniformGrid(NewSlot, i / 4, i % 4);
-            UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] Slot added at [%d, %d]"), i / 4, i % 4);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("[InventoryWidget] Failed to create InventorySlot!"));
-        }
-    }
-}
-
+#include "Components/Image.h"
+#include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 void UCP_InventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
-    UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] NativeConstruct Called"));
-
-    if (!PlayerInventory)
-    {
-        UE_LOG(LogTemp, Error, TEXT("[InventoryWidget] PlayerInventory is NULL!"));
-        return;
-    }
-
-    UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] Inventory has %d items"), PlayerInventory->Items.Num());
-
-    UpdateInventoryUI(PlayerInventory->Items);
 }
 
-void UCP_InventoryWidget::SetPlayerInventory(UCP_Inventory* NewInventory)
+void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 {
-    if (!NewInventory)
+    if (!InventoryGrid) return;
+
+    // 기존 UI 삭제
+    InventoryGrid->ClearChildren();
+
+    int32 SlotIndex = 0;
+    for (const FCP_ItemInfo& Item : Items)
     {
-        UE_LOG(LogTemp, Error, TEXT("[InventoryWidget] SetPlayerInventory FAILED - NewInventory is NULL!"));
-        return;
+        // UI에서 새로운 버튼을 동적으로 생성
+        UButton* ItemButton = NewObject<UButton>(this);
+        UImage* ItemIcon = NewObject<UImage>(this);
+        UTextBlock* ItemName = NewObject<UTextBlock>(this);
+
+        // 아이콘 설정
+        if (Item.ItemIcon)
+        {
+            ItemIcon->SetBrushFromTexture(Item.ItemIcon);
+        }
+
+        // 아이템 이름 설정
+        ItemName->SetText(FText::FromString(Item.ItemName));
+
+        // 버튼에 아이콘 추가
+        ItemButton->AddChild(ItemIcon);
+
+        // 슬롯 패널에 버튼 추가
+        InventoryGrid->AddChildToUniformGrid(ItemButton, SlotIndex / 4, SlotIndex % 4);
+
+        SlotIndex++;
+        if (SlotIndex >= 8) break; // 8칸까지만 허용
     }
-
-    PlayerInventory = NewInventory;
-
-    UE_LOG(LogTemp, Warning, TEXT("[InventoryWidget] PlayerInventory Set with %d items"), PlayerInventory->Items.Num());
-
-    // **슬롯 업데이트**
-    UpdateInventoryUI(PlayerInventory->Items);
 }

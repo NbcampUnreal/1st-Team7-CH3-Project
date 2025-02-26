@@ -43,11 +43,6 @@ ACP_TacticalLight::ACP_TacticalLight()
 		if (LoadedMesh)
 		{
 			PreloadedMeshes.Add(LoadedMesh);
-			UE_LOG(LogTemp, Warning, TEXT("Preloaded Mesh: %s"), *Path);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Failed to Preload Mesh: %s"), *Path);
 		}
 	}
 }

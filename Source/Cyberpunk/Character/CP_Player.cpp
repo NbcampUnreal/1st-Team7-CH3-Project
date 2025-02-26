@@ -176,10 +176,21 @@ void ACP_Player::SetPlayerInputState(FCharacterInputState _inputState)
 	CharacterInputState = _inputState;
 }
 
-void ACP_Player::PickupItem(TSubclassOf<AActor> Item)
+void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
 {
 	if (PlayerInventory)
 	{
-		PlayerInventory->AddItem(Item);
+		FCP_ItemInfo NewItem;
+		NewItem.ItemType = ItemType;
+		NewItem.ItemName = Name;
+		NewItem.ItemIcon = Icon;
+
+		PlayerInventory->AddItem(NewItem);
+
+		// UI 업데이트
+		if (InventoryWidget)
+		{
+			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
+		}
 	}
 }

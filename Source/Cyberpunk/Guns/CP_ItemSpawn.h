@@ -8,42 +8,58 @@
 #include "CP_Gear.h"
 #include "CP_Heal.h"
 #include "Character/CP_Player.h"
+#include "Inventory/CP_ItemInfo.h"
 #include "CP_ItemSpawn.generated.h"
 
 UCLASS()
 class CYBERPUNK_API ACP_ItemSpawn : public AActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ACP_ItemSpawn();
+    ACP_ItemSpawn();
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
 private:
-	AActor* SpawnedItem;
-	FVector InitialSpawnLocation;
-	float TimeElapsed;
+    /** 아이템 스폰 함수 */
+    void SpawnItem();
 
-public:
-	virtual void Tick(float DeltaTime) override;
+    /** 아이템 획득 시 호출 */
+    UFUNCTION()
+    void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+        UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
+        const FHitResult& SweepResult);
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USceneComponent* RootScene;
+    /** 랜덤으로 생성된 아이템 정보 */
+    FCP_ItemInfo SpawnedItemInfo;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USphereComponent* CollisionComponent;
+    /** 스폰된 아이템 액터 */
+    AActor* SpawnedItem;
 
-	TSubclassOf<AActor> AmmoClass;
-	TSubclassOf<AActor> GearClass;
-	TSubclassOf<AActor> HealClass;
+    /** 루트 컴포넌트 */
+    UPROPERTY()
+    USceneComponent* RootScene;
 
-	
-	UFUNCTION()
-	void OnItemOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep,
-		const FHitResult& SweepResult);
-		
-	void SpawnItem();
+    /** 충돌 컴포넌트 */
+    UPROPERTY()
+    USphereComponent* CollisionComponent;
+
+    /** Ammo, Gear, Heal 클래스 저장 */
+    UPROPERTY()
+    TSubclassOf<AActor> AmmoClass;
+
+    UPROPERTY()
+    TSubclassOf<AActor> GearClass;
+
+    UPROPERTY()
+    TSubclassOf<AActor> HealClass;
+
+    /** 초기 스폰 위치 */
+    FVector InitialSpawnLocation;
+
+    /** 시간 경과 */
+    float TimeElapsed;
 };

@@ -54,7 +54,7 @@ void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
         ProjectileMovement->Velocity = LaunchVelocity;
         ProjectileMovement->Activate();
 
-        UE_LOG(LogTemp, Warning, TEXT("프로젝트 발사! 방향: %s"), *LaunchDirection.ToString());
+        UE_LOG(LogTemp, Warning, TEXT("fire: %s"), *LaunchDirection.ToString());
     }
 }
 
