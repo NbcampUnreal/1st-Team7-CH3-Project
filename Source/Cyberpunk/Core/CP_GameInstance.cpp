@@ -7,6 +7,7 @@
 
 UCP_GameInstance::UCP_GameInstance()
 {
+	Gear = 0;
 }
 
 void UCP_GameInstance::Init()

@@ -19,8 +19,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	USceneComponent* Scene;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
-	UStaticMeshComponent* StaticMeshComp;
+
 	
 	FVector PortalLocation();
 };
