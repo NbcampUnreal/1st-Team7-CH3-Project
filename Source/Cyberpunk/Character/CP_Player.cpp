@@ -32,8 +32,33 @@ ACP_Player::ACP_Player()
 void ACP_Player::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerInventory = NewObject<UCP_Inventory>();
+
+	// PlayerInventory가 nullptr이면 생성
+	if (!PlayerInventory)
+	{
+		PlayerInventory = NewObject<UCP_Inventory>(this);
+		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
+	}
+
+	// InventoryWidget이 PlayerController에서 정상적으로 받아오는지 확인
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		ACP_PlayerController* PlayerController = Cast<ACP_PlayerController>(PC);
+		if (PlayerController && PlayerController->InventoryWidget)
+		{
+			InventoryWidget = PlayerController->InventoryWidget;
+			UE_LOG(LogTemp, Log, TEXT("[ACP_Player] InventoryWidget success!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[ACP_Player] InventoryWidget fail!"));
+		}
+	}
 }
+
+
+
 
 void ACP_Player::Tick(float DeltaTime)
 {
@@ -186,11 +211,23 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 		NewItem.ItemIcon = Icon;
 
 		PlayerInventory->AddItem(NewItem);
+		UE_LOG(LogTemp, Log, TEXT("[PickupItem] obtained: %s"), *Name);
 
-		// UI 업데이트
+		// InventoryWidget이 nullptr이어도 무조건 아이템 추가가 가능하도록 변경
 		if (InventoryWidget)
 		{
+			UE_LOG(LogTemp, Log, TEXT("[PickupItem] ui updated"));
 			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[PickupItem] InventoryWidget null!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[PickupItem] PlayerInventory nullptr"));
 	}
 }
+
+

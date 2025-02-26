@@ -97,6 +97,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	UCP_InventoryWidget* InventoryWidget;
 
-
 	void PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon);
 };

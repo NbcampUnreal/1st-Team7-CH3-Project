@@ -15,19 +15,19 @@ ACP_ItemSpawn::ACP_ItemSpawn()
     CollisionComponent->SetSphereRadius(50.0f);
 
     //  코드에서 AmmoClass, GearClass, HealClass 로드
-    static ConstructorHelpers::FClassFinder<AActor> AmmoBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BPCP_Ammo.BPCP_Ammo_C'"));
+    static ConstructorHelpers::FClassFinder<AActor> AmmoBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Ammo.BP_Ammo_C'"));
     if (AmmoBPClass.Succeeded())
     {
         AmmoClass = AmmoBPClass.Class;
     }
 
-    static ConstructorHelpers::FClassFinder<AActor> GearBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BPCP_Gear.BPCP_Gear_C'"));
+    static ConstructorHelpers::FClassFinder<AActor> GearBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Gear.BP_Gear_C'"));
     if (GearBPClass.Succeeded())
     {
         GearClass = GearBPClass.Class;
     }
 
-    static ConstructorHelpers::FClassFinder<AActor> HealBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BPCP_Heal.BPCP_Heal_C'"));
+    static ConstructorHelpers::FClassFinder<AActor> HealBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Heal.BP_Heal_C'"));
     if (HealBPClass.Succeeded())
     {
         HealClass = HealBPClass.Class;
