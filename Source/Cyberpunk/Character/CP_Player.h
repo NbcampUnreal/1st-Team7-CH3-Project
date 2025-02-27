@@ -26,32 +26,6 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Movement Function
-public:
-	UFUNCTION()
-	void Move(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void Look(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StartCrouch(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StopCrouch(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StartJump(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StopJump(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StartSprint(const FInputActionValue& _value);
-
-	UFUNCTION()
-	void StopSprint(const FInputActionValue& _value);
-
 public:
 	// Camera
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
@@ -63,9 +37,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
 
-	// Input
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
-	FCharacterInputState CharacterInputState;
 
 	UPROPERTY()
 	UCP_Inventory* PlayerInventory;
