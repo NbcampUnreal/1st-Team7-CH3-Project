@@ -8,16 +8,31 @@
 #include "Engine/DamageEvents.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+int32 ACP_Enemy::AvoidanceUID = 0;
 
 ACP_Enemy::ACP_Enemy()
 {
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	TeamType = ETeamType::EnemyTeam;
+
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	MovementComp->bUseRVOAvoidance = true;
+	MovementComp->AvoidanceWeight = 1.0f;
+	MovementComp->AvoidanceConsiderationRadius = 100.0f;
 }
 
 void ACP_Enemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+
+	MovementComp->SetRVOAvoidanceUID(AvoidanceUID);
+	AvoidanceUID++;
+	MovementComp->SetAvoidanceGroup((AvoidanceUID % 31));
+	//CP_LOG(Warning, TEXT(" AvoidanceId : %d, Group : %d"), MovementComp->AvoidanceUID, MovementComp->GetAvoidanceGroupMask());
 }
 
 float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

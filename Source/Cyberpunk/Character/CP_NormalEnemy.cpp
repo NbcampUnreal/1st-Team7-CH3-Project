@@ -35,7 +35,7 @@ void ACP_NormalEnemy::AttackNormal()
 
 	FHitResult HitResult;
 	FVector StartPoint = GetActorLocation();
-	FVector EndPoint = StartPoint + GetActorForwardVector() * 100;
+	FVector EndPoint = StartPoint + GetActorForwardVector() * AttackRange;
 
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel1);
