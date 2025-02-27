@@ -13,16 +13,22 @@
 class UUniformGridPanel;
 class UButton;
 
+
+
 UCLASS()
 class CYBERPUNK_API UCP_InventoryWidget : public UUserWidget
 {
     GENERATED_BODY()
 
 protected:
-   // virtual void NativeConstruct() override;
+    // 위젯 생성 시 자동으로 호출되는 함수
+    virtual void NativeConstruct() override;
 
 public:
-    // WBP에서 만든 8개의 슬롯 UI 요소 바인딩
+    // 인벤토리 UI 업데이트 함수
+    void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
+
+    // UI 요소 바인딩
     UPROPERTY(meta = (BindWidget))
     UOverlay* overlay00;
     UPROPERTY(meta = (BindWidget))
@@ -39,23 +45,6 @@ public:
     UOverlay* overlay12;
     UPROPERTY(meta = (BindWidget))
     UOverlay* overlay13;
-
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_00;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_01;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_02;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_03;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_10;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_11;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_12;
-    UPROPERTY(meta = (BindWidget))
-    UButton* Button_13;
 
     UPROPERTY(meta = (BindWidget))
     UImage* Image_00;
@@ -90,7 +79,5 @@ public:
     UTextBlock* textblock12;
     UPROPERTY(meta = (BindWidget))
     UTextBlock* textblock13;
-
-    // 인벤토리 업데이트 함수
-    void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
 };
+
