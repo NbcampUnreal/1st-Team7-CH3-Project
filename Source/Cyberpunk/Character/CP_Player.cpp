@@ -22,25 +22,22 @@ ACP_Player::ACP_Player()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
-
 	// input
 	CharacterInputState.WantsToStrafe = true;
-
-
 }
 
 void ACP_Player::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// PlayerInventory°¡ nullptrÀÌ¸é »ý¼º
+	// PlayerInventoryï¿½ï¿½ nullptrï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (!PlayerInventory)
 	{
 		PlayerInventory = NewObject<UCP_Inventory>(this);
 		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
 	}
 
-	// InventoryWidgetÀÌ PlayerController¿¡¼­ Á¤»óÀûÀ¸·Î ¹Þ¾Æ¿À´ÂÁö È®ÀÎ
+	// InventoryWidgetï¿½ï¿½ PlayerControllerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC)
 	{
@@ -189,6 +186,7 @@ void ACP_Player::StartSprint(const FInputActionValue& _value)
 
 void ACP_Player::StopSprint(const FInputActionValue& _value)
 {
+	
 }
 
 FCharacterInputState ACP_Player::GetPlayerInputState()
@@ -212,11 +210,10 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 
 		PlayerInventory->AddItem(NewItem);
 
-		// UI ¾÷µ¥ÀÌÆ®
+		// UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 		if (InventoryWidget)
 		{
 			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
 		}
 	}
 }
-
