@@ -22,9 +22,6 @@ ACP_Player::ACP_Player()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
-
-	// input
-	CharacterInputState.WantsToStrafe = true;
 }
 
 void ACP_Player::BeginPlay()
@@ -161,14 +158,4 @@ void ACP_Player::StartSprint(const FInputActionValue& _value)
 
 void ACP_Player::StopSprint(const FInputActionValue& _value)
 {
-}
-
-FCharacterInputState ACP_Player::GetPlayerInputState()
-{
-	return CharacterInputState;
-}
-
-void ACP_Player::SetPlayerInputState(FCharacterInputState _inputState)
-{
-	CharacterInputState = _inputState;
 }
