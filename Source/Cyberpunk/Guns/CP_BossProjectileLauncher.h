@@ -29,6 +29,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "BossProjectileLauncher")
 	TSubclassOf<class ACP_Projectile> DirectionalProjectileClass;
 
-	/*UPROPERTY(EditAnywhere, Category = "BossProjectileLauncher")
-	TSubclassOf<class ACP_Projectile> CurveProjectileClass;*/
+	UPROPERTY(EditAnywhere, Category = "BossProjectileLauncher")
+	TSubclassOf<class ACP_CurveProjectile> CurveProjectileClass;
+
+	
 };

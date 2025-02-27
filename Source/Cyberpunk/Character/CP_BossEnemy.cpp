@@ -22,7 +22,7 @@ void ACP_BossEnemy::Tick(float DeltaTime)
 
 	float CurrentHpRatio = (float)CurrentHp / MaxHp;
 
-	if (CurrentHp <= 0.66f && BossPhase == EBossPhase::Phase1)
+	if (CurrentHp <= 0.5f && BossPhase == EBossPhase::Phase1)
 	{
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController == nullptr)
@@ -40,25 +40,6 @@ void ACP_BossEnemy::Tick(float DeltaTime)
 		BossPhase = EBossPhase::Phase2;
 
 		AIController->RunBehaviorTree(Phase2BT);
-	}
-	else if (CurrentHp <= 0.33f && BossPhase == EBossPhase::Phase2)
-	{
-		AAIController* AIController = Cast<AAIController>(GetController());
-		if (AIController == nullptr)
-		{
-			CP_LOG(Warning, TEXT("AIController == nullptr"));
-			return;
-		}
-
-		if (Phase2BT == nullptr)
-		{
-			CP_LOG(Warning, TEXT("Phase2BT == nullptr"));
-			return;
-		}
-
-		BossPhase = EBossPhase::Phase3;
-
-		AIController->RunBehaviorTree(Phase3BT);
 	}
 }
 
@@ -135,15 +116,7 @@ void ACP_BossEnemy::PlayCannonFireAnim()
 		return;
 	}
 
-
-	if (BossPhase == EBossPhase::Phase3)
-	{
-		AnimInstance->Montage_Play(CannonFireWithAnnyingAnim);
-	}
-	else
-	{
-		AnimInstance->Montage_Play(CannonFireAnim);
-	}
+	AnimInstance->Montage_Play(CannonFireAnim);
 }
 
 bool ACP_BossEnemy::IsFiring() const
