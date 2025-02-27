@@ -12,6 +12,7 @@
 #include "Components/AudioComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
+#include "CP_GunTypes.h"
 #include "NiagaraFunctionLibrary.h"
 #include "CP_Guns.generated.h"
 
@@ -23,7 +24,7 @@ class CYBERPUNK_API ACP_Guns : public AActor
 public:
     ACP_Guns();
 
-protected:
+    void EquipPart(const FString& PartName, EGunPartType PartType);
 
 public:
     UPROPERTY(VisibleAnywhere)

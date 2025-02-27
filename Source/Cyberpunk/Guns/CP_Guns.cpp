@@ -60,6 +60,64 @@ ACP_Guns::ACP_Guns()
     LoadGunParts();
 }
 
+
+void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
+{
+    if (PartType == EGunPartType::Barrel)
+    {
+        if (BarrelInfo)
+        {
+            BarrelInfo->Destroy();  // 기존 배럴 파츠 제거
+        }
+
+        BarrelInfo = GetWorld()->SpawnActor<ACP_BarrelInfo>(ACP_BarrelInfo::StaticClass());
+        if (BarrelInfo)
+        {
+            BarrelInfo->Initialize(PartName);
+            BarrelMesh->SetSkeletalMesh(BarrelInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Barrel changed to: %s"), *PartName);
+        }
+    }
+    else if (PartType == EGunPartType::Body)
+    {
+        if (BodyInfo)
+        {
+            BodyInfo->Destroy();  // 기존 바디 파츠 제거
+        }
+
+        BodyInfo = GetWorld()->SpawnActor<ACP_BodyInfo>(ACP_BodyInfo::StaticClass());
+        if (BodyInfo)
+        {
+            BodyInfo->Initialize(PartName);
+            BodyMesh->SetSkeletalMesh(BodyInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Body changed to: %s"), *PartName);
+        }
+    }
+    else if (PartType == EGunPartType::Trigger)
+    {
+        if (TriggerInfo)
+        {
+            TriggerInfo->Destroy();  // 기존 트리거 파츠 제거
+        }
+
+        TriggerInfo = GetWorld()->SpawnActor<ACP_TriggerInfo>(ACP_TriggerInfo::StaticClass());
+        if (TriggerInfo)
+        {
+            TriggerInfo->Initialize(PartName);
+            TriggerMesh->SetSkeletalMesh(TriggerInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Trigger changed to: %s"), *PartName);
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Invalid part type: %s"), *PartName);
+    }
+}
+
+
 //기본 파츠 로드 
 void ACP_Guns::LoadGunParts()
 {
