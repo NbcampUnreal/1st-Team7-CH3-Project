@@ -31,6 +31,11 @@ protected:
 	
 	virtual void BreakBones(FHitResult HitInfo);
 
+	// getter, setter
+public:
+
+	float GetAttackRange();
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "EnemySettings")
@@ -38,5 +43,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "EnemySettings")
 	TSet<FName> BreakingBoneExceptionList;
+
+	UPROPERTY(EditAnywhere, Category = "EnemySettings")
+	float AttackRange = 500.0f;
 
 };
