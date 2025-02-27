@@ -10,7 +10,6 @@
 
 ACP_Player::ACP_Player()
 {
-	// camera
 	SpringArmLength = 300.f;
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
@@ -27,14 +26,12 @@ void ACP_Player::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// PlayerInventory�� nullptr�̸� ����
 	if (!PlayerInventory)
 	{
 		PlayerInventory = NewObject<UCP_Inventory>(this);
 		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
 	}
 
-	// InventoryWidget�� PlayerController���� ���������� �޾ƿ����� Ȯ��
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC)
 	{
@@ -76,7 +73,6 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 
 		PlayerInventory->AddItem(NewItem);
 
-		// UI ������Ʈ
 		if (InventoryWidget)
 		{
 			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
