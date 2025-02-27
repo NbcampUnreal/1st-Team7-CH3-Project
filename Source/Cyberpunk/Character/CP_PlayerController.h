@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class UInputAction;
+class UCP_InventoryWidget;
 
 UCLASS()
 class CYBERPUNK_API ACP_PlayerController : public APlayerController
@@ -18,6 +19,10 @@ public:
 
 public:
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
+
+	UFUNCTION()
+	void ToggleInventory();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
@@ -43,4 +48,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* StrafeAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* InventoryAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UCP_InventoryWidget> InventoryWidgetClass;
+
+	UPROPERTY()
+	UCP_InventoryWidget* InventoryWidget;
+
 };

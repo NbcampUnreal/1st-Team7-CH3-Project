@@ -2,18 +2,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "CP_Item.h"
 #include "CP_Heal.generated.h"
 
 UCLASS()
-class CYBERPUNK_API ACP_Heal : public AActor, public ICP_Item
+class CYBERPUNK_API ACP_Heal : public AActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    ACP_Heal();
+	ACP_Heal();
+
+	// 아이템 식별용 이름 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
+	FName ItemName;
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-    UStaticMeshComponent* HealMesh;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* HealMesh;
 };

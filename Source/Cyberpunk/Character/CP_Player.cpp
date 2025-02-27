@@ -25,12 +25,40 @@ ACP_Player::ACP_Player()
 
 	// input
 	CharacterInputState.WantsToStrafe = true;
+
+
 }
 
 void ACP_Player::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// PlayerInventory가 nullptr이면 생성
+	if (!PlayerInventory)
+	{
+		PlayerInventory = NewObject<UCP_Inventory>(this);
+		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
+	}
+
+	// InventoryWidget이 PlayerController에서 정상적으로 받아오는지 확인
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC)
+	{
+		ACP_PlayerController* PlayerController = Cast<ACP_PlayerController>(PC);
+		if (PlayerController && PlayerController->InventoryWidget)
+		{
+			InventoryWidget = PlayerController->InventoryWidget;
+			UE_LOG(LogTemp, Log, TEXT("[ACP_Player] InventoryWidget success!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("[ACP_Player] InventoryWidget fail!"));
+		}
+	}
 }
+
+
+
 
 void ACP_Player::Tick(float DeltaTime)
 {
@@ -172,3 +200,23 @@ void ACP_Player::SetPlayerInputState(FCharacterInputState _inputState)
 {
 	CharacterInputState = _inputState;
 }
+
+void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
+{
+	if (PlayerInventory)
+	{
+		FCP_ItemInfo NewItem;
+		NewItem.ItemType = ItemType;
+		NewItem.ItemName = Name;
+		NewItem.ItemIcon = Icon;
+
+		PlayerInventory->AddItem(NewItem);
+
+		// UI 업데이트
+		if (InventoryWidget)
+		{
+			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
+		}
+	}
+}
+

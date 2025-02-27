@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_CharacterBase.h"
+#include "Inventory/CP_Inventory.h"
+#include "Inventory/CP_InventoryWidget.h"
 #include "CP_Player.generated.h"
 
 class UCameraComponent;
@@ -88,4 +90,12 @@ public:
 	// Input
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	FCharacterInputState CharacterInputState;
+
+	UPROPERTY()
+	UCP_Inventory* PlayerInventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	UCP_InventoryWidget* InventoryWidget;
+
+	void PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon);
 };

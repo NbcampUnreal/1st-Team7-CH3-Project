@@ -1,32 +1,46 @@
 #include "CP_Inventory.h"
 
-UCP_Inventory::UCP_Inventory()
+void UCP_Inventory::AddItem(const FCP_ItemInfo& NewItem)
 {
-    Items.Empty();
-}
-
-void UCP_Inventory::AddItem(TSubclassOf<AActor> NewItem)
-{
-    if (NewItem)
+    // 기존 아이템 찾기
+    FCP_ItemInfo* ExistingItem = InventoryItems.FindByPredicate([&](const FCP_ItemInfo& Item)
     {
-        Items.Add(NewItem);
+        return Item.ItemName == NewItem.ItemName;
+    });
+
+    if (ExistingItem)
+    {
+        //  같은 아이템이면 개수만 증가
+        ExistingItem->StackCount++;
+    }
+    else
+    {
+        //  새로운 아이템이면 추가
+        InventoryItems.Add(NewItem);
     }
 }
 
-void UCP_Inventory::RemoveItem(TSubclassOf<AActor> ItemToRemove)
+
+void UCP_Inventory::RemoveItem(const FString& ItemName)
 {
-    if (Items.Contains(ItemToRemove))
+    int32 Index = InventoryItems.IndexOfByPredicate([&](const FCP_ItemInfo& Item) {
+        return Item.ItemName == ItemName;
+    });
+
+    if (Index != INDEX_NONE)
     {
-        Items.Remove(ItemToRemove);
+        InventoryItems.RemoveAt(Index);
     }
 }
 
-bool UCP_Inventory::HasItem(TSubclassOf<AActor> ItemToCheck) const
+bool UCP_Inventory::HasItem(const FString& ItemName) const
 {
-    return Items.Contains(ItemToCheck);
+    return InventoryItems.ContainsByPredicate([&](const FCP_ItemInfo& Item) {
+        return Item.ItemName == ItemName;
+    });
 }
 
-void UCP_Inventory::ClearInventory()
+TArray<FCP_ItemInfo> UCP_Inventory::GetInventoryItems() const
 {
-    Items.Empty();
+    return InventoryItems;
 }

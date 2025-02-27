@@ -4,14 +4,16 @@
 
 ACP_Heal::ACP_Heal()
 {
-    PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
-    HealMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HealMesh"));
-    RootComponent = HealMesh;
+	HealMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HealMesh"));
+	RootComponent = HealMesh;
 
-    static ConstructorHelpers::FObjectFinder<UStaticMesh> HealMeshAsset(TEXT("/Game/Gun_BluePrint/Heal/FirstAidBox.FirstAidBox"));
-    if (HealMeshAsset.Succeeded())
-    {
-        HealMesh->SetStaticMesh(HealMeshAsset.Object);
-    }
+	ItemName = FName("Heal");
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> HealMeshAsset(TEXT("/Game/Gun_BluePrint/Heal/FirstAidBox.FirstAidBox"));
+	if (HealMeshAsset.Succeeded())
+	{
+		HealMesh->SetStaticMesh(HealMeshAsset.Object);
+	}
 }
