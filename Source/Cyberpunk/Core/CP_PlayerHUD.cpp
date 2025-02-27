@@ -1,5 +1,6 @@
 #include "CP_PlayerHUD.h"
 #include "Components/TextBlock.h"
+#include "Math/Color.h" // FLinearColor와 색상 보간을 위해 필요
 
 UCP_PlayerHUD::UCP_PlayerHUD(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
@@ -38,7 +39,17 @@ void UCP_PlayerHUD::UpdateAmmo(int32 Ammo)
 {
     if (AmmoText)
     {
+        // 현재 탄약 수 텍스트 업데이트
         AmmoText->SetText(FText::AsNumber(Ammo));
+
+        // 탄약 비율 계산 (0.0 ~ 1.0)
+        float ammoRatio = static_cast<float>(Ammo);
+
+        // 흰색에서 빨간색으로 색상 보간
+        FLinearColor newColor = FLinearColor::LerpUsingHSV(FLinearColor::White, FLinearColor::Red, 1.0f - ammoRatio);
+
+        // 색상 적용
+        AmmoText->SetColorAndOpacity(newColor);
     }
 }
 
@@ -50,11 +61,21 @@ void UCP_PlayerHUD::UpdateMaxAmmo(int32 MaxAmmo)
     }
 }
 
-void UCP_PlayerHUD::UpdateHealth(int32 Health)
+void UCP_PlayerHUD::UpdateHealth(int32 Health, int32 MaxHealth)
 {
     if (HealthText)
     {
+        // 체력 텍스트 업데이트
         HealthText->SetText(FText::AsNumber(Health));
+
+        // 체력 비율 계산 (0.0 ~ 1.0)
+        float healthRatio = static_cast<float>(Health) / static_cast<float>(MaxHealth);
+
+        // 흰색에서 빨간색으로 색상 보간
+        FLinearColor newColor = FLinearColor::LerpUsingHSV(FLinearColor::White, FLinearColor::Red, 1.0f - healthRatio);
+
+        // 색상 적용
+        HealthText->SetColorAndOpacity(newColor);
     }
 }
 
