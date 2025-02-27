@@ -22,7 +22,7 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BarrelBeam";
         Damage = 100.0f;
-        bIsHitscan = false;
+        bIsHitscan = true;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeam.SK_BarrelBeam")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BarrelBeam.SK_BarrelBeam");
     }

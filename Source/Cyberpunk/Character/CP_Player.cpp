@@ -37,10 +37,8 @@ void ACP_Player::BeginPlay()
 	if (!PlayerInventory)
 	{
 		PlayerInventory = NewObject<UCP_Inventory>(this);
-		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
 	}
 
-	// InventoryWidget이 PlayerController에서 정상적으로 받아오는지 확인
 	APlayerController* PC = Cast<APlayerController>(GetController());
 	if (PC)
 	{
@@ -48,12 +46,8 @@ void ACP_Player::BeginPlay()
 		if (PlayerController && PlayerController->InventoryWidget)
 		{
 			InventoryWidget = PlayerController->InventoryWidget;
-			UE_LOG(LogTemp, Log, TEXT("[ACP_Player] InventoryWidget success!"));
 		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("[ACP_Player] InventoryWidget fail!"));
-		}
+
 	}
 }
 
