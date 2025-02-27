@@ -34,13 +34,14 @@ void UCP_MainMenu::NativeConstruct()
 
 void UCP_MainMenu::OnStartButtonClicked()
 {
-    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap"));
+    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap")); // "YourLevelName"을 실제 레벨 이름으로 변경
 
     // 게임 시작 후 ESC 키 입력 활성화
     if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
     {
         if (UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
         {
+            // SetInputActionMappingByName 함수가 없으므로, 적절한 함수로 대체팔요
             // InputSubsystem->SetInputActionMappingByName("Pause", EInputEvent::IE_Pressed); // "Pause" 액션 매핑
         }
     }

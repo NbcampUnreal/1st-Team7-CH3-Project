@@ -22,6 +22,15 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* ExitButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* ResumeButton;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* ExitFromPauseButton;
+
+    UPROPERTY()
+    UUserWidget* PauseMenuWidget; // Pause 메뉴 위젯
+
 private:
     UFUNCTION()
     void OnStartButtonClicked();
@@ -40,13 +49,4 @@ private:
     // 게임 종료 함수
     UFUNCTION()
     void OnExitFromPauseButtonClicked();
-
-    UPROPERTY(meta = (BindWidget))
-    UButton* ResumeButton;
-
-    UPROPERTY(meta = (BindWidget))
-    UButton* ExitFromPauseButton;
-
-    UPROPERTY()
-    UUserWidget* PauseMenuWidget; // Pause 메뉴 위젯
 };
