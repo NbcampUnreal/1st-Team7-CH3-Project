@@ -166,6 +166,26 @@ void ACP_BossEnemy::SetAming(bool bIsAmingNow)
 	bIsAming = bIsAmingNow;
 }
 
+bool ACP_BossEnemy::IsCannonMode() const
+{
+	return bIsCannonMode;
+}
+
+void ACP_BossEnemy::SetCannonMode(bool bShouldSetCannon)
+{
+	bIsCannonMode = bShouldSetCannon;
+}
+
+bool ACP_BossEnemy::IsReturnedToIdle() const
+{
+	return bIsReturnedToIdle;
+}
+
+void ACP_BossEnemy::SetReturnedToIdle(bool bIsReturned)
+{
+	bIsReturnedToIdle = bIsReturned;
+}
+
 void ACP_BossEnemy::Die()
 {
 	Super::Die();
