@@ -47,4 +47,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "EnemySettings")
 	float AttackRange = 500.0f;
 
+private:
+
+	static int32 AvoidanceUID;
+
 };
