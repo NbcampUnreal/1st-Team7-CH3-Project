@@ -35,9 +35,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Projectile")
     void LaunchProjectile(const FVector& LaunchDirection);
 
-private:
+protected:
     // 충돌 발생 시 호출될 함수
     UFUNCTION()
-    void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+    virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
         FVector NormalImpulse, const FHitResult& Hit);
 };
