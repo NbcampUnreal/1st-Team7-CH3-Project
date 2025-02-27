@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "GunPart.h"  
+#include "CP_GunPart.h"
 #include "CP_BarrelInfo.generated.h"
 
 UCLASS()
@@ -13,13 +13,21 @@ class CYBERPUNK_API ACP_BarrelInfo : public AActor, public IGunPart
 public:
     ACP_BarrelInfo();
 
-    // BarrelMesh 초기화
+    // 배럴 메시
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     USkeletalMeshComponent* BarrelMesh;
 
     // 배럴 이름
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     FString PartName;
+
+    // 배럴 아이콘 텍스처 (경로 기반으로 로드)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+    FString IconTexturePath;
+
+    // 아이콘 텍스처 (로드된 텍스처)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+    UTexture2D* IconTexture;
 
     // 히트스캔 여부
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
@@ -29,10 +37,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     float Damage;
 
-    // 배럴 정보 초기화 함수
+    // 초기화 함수
     virtual void Initialize(const FString& MeshName) override;
 
-    // BarrelMesh 반환 함수
+    // 아이콘 로드 함수
+    void LoadIconTexture();
+
     virtual USkeletalMeshComponent* GetMesh() const override;
 
 protected:

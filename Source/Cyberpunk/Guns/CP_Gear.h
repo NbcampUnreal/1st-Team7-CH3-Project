@@ -11,7 +11,12 @@ class CYBERPUNK_API ACP_Gear : public AActor
 
 public:
 	ACP_Gear();
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	USkeletalMeshComponent* GearMesh;
 
+	// 아이템 식별용 이름 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
+	FName ItemName;
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* GearMesh;
 };

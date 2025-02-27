@@ -25,7 +25,7 @@ ACP_Projectile::ACP_Projectile()
     ProjectileMovement->MaxSpeed = 2000.f;
     ProjectileMovement->bRotationFollowsVelocity = true;
     ProjectileMovement->bShouldBounce = false;
-    ProjectileMovement->ProjectileGravityScale = 0.0f;  
+    ProjectileMovement->ProjectileGravityScale = 0.0f;
 
     CollisionComponent->OnComponentHit.AddDynamic(this, &ACP_Projectile::OnHit);
 }
@@ -41,7 +41,6 @@ void ACP_Projectile::BeginPlay()
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate(true);
-        UE_LOG(LogTemp, Warning, TEXT("NiagaraEffect 활성화!"));
     }
 }
 
@@ -55,9 +54,12 @@ void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
         ProjectileMovement->Velocity = LaunchVelocity;
         ProjectileMovement->Activate();
 
-        UE_LOG(LogTemp, Warning, TEXT("프로젝트 발사! 방향: %s"), *LaunchDirection.ToString());
+        UE_LOG(LogTemp, Warning, TEXT("fire: %s"), *LaunchDirection.ToString());
     }
 }
+
+
+
 
 // 충돌 시 호출될 함수
 void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

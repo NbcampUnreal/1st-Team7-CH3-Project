@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/CP_Enemy.h"
-
+#include "Guns/CP_Guns.h"
 #include "CP_NormalEnemy.generated.h"
 
 /**
@@ -29,5 +29,9 @@ public:
 protected:
 
 	virtual void Die() override;
-	
+	UPROPERTY()
+	ACP_Guns* Gun;  // 무기 인스턴스
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<ACP_Guns> GunClass;  // 무기 클래스 지정
 };
