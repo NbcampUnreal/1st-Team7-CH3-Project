@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
 #include "CP_PlayerController.h"
+#include "EngineUtils.h"
 
 ACP_Player::ACP_Player()
 {
@@ -20,6 +21,8 @@ ACP_Player::ACP_Player()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
+
+	EquippedGun = nullptr;  
 }
 
 void ACP_Player::BeginPlay()
@@ -29,7 +32,6 @@ void ACP_Player::BeginPlay()
 	if (!PlayerInventory)
 	{
 		PlayerInventory = NewObject<UCP_Inventory>(this);
-		UE_LOG(LogTemp, Log, TEXT("[ACP_Player] PlayerInventory created!"));
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetController());
@@ -39,11 +41,19 @@ void ACP_Player::BeginPlay()
 		if (PlayerController && PlayerController->InventoryWidget)
 		{
 			InventoryWidget = PlayerController->InventoryWidget;
-			UE_LOG(LogTemp, Log, TEXT("[ACP_Player] InventoryWidget success!"));
 		}
-		else
+	}
+
+	if (GetWorld())
+	{
+		for (TActorIterator<ACP_Guns> It(GetWorld()); It; ++It)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[ACP_Player] InventoryWidget fail!"));
+			ACP_Guns* FoundGun = *It;
+			if (FoundGun)
+			{
+				SetEquippedGun(FoundGun);
+				break;
+			}
 		}
 	}
 }
@@ -78,4 +88,16 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 			InventoryWidget->UpdateInventory(PlayerInventory->GetInventoryItems());
 		}
 	}
+}
+
+void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
+{
+	if (NewGun)
+	{
+		EquippedGun = NewGun;
+
+		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+		EquippedGun->AttachToComponent(GetMesh(), AttachmentRules, TEXT("WeaponArm"));
+	}
+
 }
