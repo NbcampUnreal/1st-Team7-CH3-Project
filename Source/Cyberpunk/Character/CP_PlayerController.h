@@ -9,6 +9,7 @@
 class UInputMappingContext;
 class UInputAction;
 class UCP_InventoryWidget;
+class UCP_CraftingMenuWidget;
 
 UCLASS()
 class CYBERPUNK_API ACP_PlayerController : public APlayerController
@@ -23,6 +24,9 @@ public:
 
 	UFUNCTION()
 	void ToggleInventory();
+
+	UFUNCTION()
+	void ToggleCraftingMenu();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
@@ -58,4 +62,12 @@ public:
 	UPROPERTY()
 	UCP_InventoryWidget* InventoryWidget;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UCP_CraftingMenuWidget> CraftingMenuClass;
+
+	UPROPERTY()
+	UCP_CraftingMenuWidget* CraftingMenuWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* CraftingMenuAction;
 };

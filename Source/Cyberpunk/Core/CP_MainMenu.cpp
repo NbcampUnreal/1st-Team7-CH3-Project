@@ -34,7 +34,7 @@ void UCP_MainMenu::NativeConstruct()
 
 void UCP_MainMenu::OnStartButtonClicked()
 {
-    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap")); // "YourLevelName"을 실제 레벨 이름으로 변경
+    UGameplayStatics::OpenLevel(GetWorld(), TEXT("MenuMap"));
 
     // 게임 시작 후 ESC 키 입력 활성화
     if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
