@@ -21,17 +21,14 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& NewItem)
 }
 
 
-void UCP_Inventory::RemoveItem(const FString& ItemName)
+void UCP_Inventory::RemoveItem(const FCP_ItemInfo& ItemInfo)
 {
-    int32 Index = InventoryItems.IndexOfByPredicate([&](const FCP_ItemInfo& Item) {
-        return Item.ItemName == ItemName;
-    });
-
-    if (Index != INDEX_NONE)
+    if (InventoryItems.Contains(ItemInfo))
     {
-        InventoryItems.RemoveAt(Index);
+        InventoryItems.Remove(ItemInfo);
     }
 }
+
 
 bool UCP_Inventory::HasItem(const FString& ItemName) const
 {

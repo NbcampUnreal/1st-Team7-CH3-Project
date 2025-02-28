@@ -17,7 +17,7 @@ public:
 
     // 아이템 제거 
     UFUNCTION(BlueprintCallable, Category = "Inventory")
-    void RemoveItem(const FString& ItemName);
+    void RemoveItem(const FCP_ItemInfo& ItemInfo);
 
     UFUNCTION(BlueprintCallable, Category = "Inventory")
     bool HasItem(const FString& ItemName) const;
