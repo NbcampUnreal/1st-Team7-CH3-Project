@@ -19,10 +19,18 @@ public:
 
 protected:
 
-	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+	virtual void BeginPlay() override;
+
+private:
+
+	UFUNCTION()
+	void OnDestroy(AActor* DestroyedActor);
 
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "BossProjectile")
 	TObjectPtr<class UParticleSystem> ExplosionParticle;
+
+	UPROPERTY(EditAnywhere, Category = "BossProjectile")
+	TObjectPtr<USoundBase> ExplosionSound;
 };

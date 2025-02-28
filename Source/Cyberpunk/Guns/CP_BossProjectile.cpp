@@ -9,12 +9,22 @@ ACP_BossProjectile::ACP_BossProjectile()
 {
 }
 
-void ACP_BossProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void ACP_BossProjectile::BeginPlay()
+{
+    Super::BeginPlay();
+
+    OnDestroyed.AddDynamic(this, &ACP_BossProjectile::OnDestroy);
+}
+
+void ACP_BossProjectile::OnDestroy(AActor* DestroyedActor)
 {
     if (ExplosionParticle)
     {
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetActorTransform());
     }
-    
-    Super::OnHit(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
+
+    if (ExplosionSound)
+    {
+        UGameplayStatics::SpawnSoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
+    }
 }
