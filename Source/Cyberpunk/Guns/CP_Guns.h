@@ -2,18 +2,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
 #include "CP_BarrelInfo.h"
 #include "CP_BodyInfo.h"
 #include "CP_TriggerInfo.h"
 #include "CP_Projectile.h"
-#include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
-#include "Character/CP_Enemy.h"
 #include "CP_TacticalLight.h"
-#include "Components/AudioComponent.h"
-#include "NiagaraSystem.h"
-#include "NiagaraComponent.h"
 #include "CP_GunTypes.h"
+#include "Inventory/CP_Inventory.h"
+#include "Character/CP_Enemy.h"
 #include "NiagaraFunctionLibrary.h"
 #include "CP_Guns.generated.h"
 
@@ -84,4 +85,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
     int32 MaxAmmo;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
+    UCP_Inventory* InventoryRef;
 };

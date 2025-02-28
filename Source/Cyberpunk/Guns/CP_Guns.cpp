@@ -301,9 +301,30 @@ float ACP_Guns::CalculateTotalDamage()
 
 void ACP_Guns::Reload()
 {
-    if (TriggerInfo)
+    if (!TriggerInfo || !InventoryRef) return;  
+
+    int32 MagazineCapacity = TriggerInfo->MagazineCapacity;
+
+    // ammo 있는지 체크
+    if (!InventoryRef->HasItem("Ammo"))
     {
-        AmmoCount = MaxAmmo;
-        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reloaded: %d ammo."), AmmoCount);
+        return;
     }
+
+    // MaxAmmo가 충분한지 확인
+    if (MaxAmmo < MagazineCapacity)
+    {
+        return;
+    }
+
+    //  재장전 진행
+    AmmoCount = MagazineCapacity;  // 탄창 채우기
+    MaxAmmo -= MagazineCapacity;  // 남은 탄약 감소
+
+    // 인벤토리에서 Ammo 아이템 삭제
+    FCP_ItemInfo AmmoItem;
+    AmmoItem.ItemName = "Ammo";
+    AmmoItem.ItemType = ECP_ItemType::Ammo;
+    InventoryRef->RemoveItem(AmmoItem);
+
 }
