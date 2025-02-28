@@ -121,18 +121,21 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Green, false, 3);
-
+	
+	TSet<ACP_CharacterBase*> DamagedCharacter;
 	for (auto& OverlapResult : OverlapResults)
 	{
 		ACP_CharacterBase* Character = Cast<ACP_CharacterBase>(OverlapResult.GetActor());
-		if (Character == nullptr)
+		if (Character == nullptr || DamagedCharacter.Contains(Character))
 		{
 			continue;
 		}
 
+		DamagedCharacter.Add(Character);
+
 		FPointDamageEvent PointDamageEvent;
 		Character->TakeDamage(ProjectileDamage, PointDamageEvent, GetOwner()->GetInstigatorController(), GetOwner());
-		CP_LOG(Log, TEXT("%s is Damaged by %s, Damage : %f"), *Character->GetName(), GetOwner(), ProjectileDamage);
+		CP_LOG(Log, TEXT("%s is Damaged by %s, Damage : %f"), *Character->GetName(), *GetOwner()->GetName(), ProjectileDamage);
 	}
 
 	Destroy();
