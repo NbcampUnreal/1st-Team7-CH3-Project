@@ -42,7 +42,7 @@ public:
 
 	void PlayGunFireAnim();
 	void PlayCannonFireAnim();
-
+	
 	// getter, setter
 public:
 
@@ -52,6 +52,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAming() const;
 	void SetAming(bool bIsAmingNow);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsCannonMode() const;
+	void SetCannonMode(bool bShouldSetCannon);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsReturnedToIdle() const;
+	void SetReturnedToIdle(bool bIsReturned);
 
 protected:
 
@@ -104,7 +112,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "BossEnemy")
 	TObjectPtr<class UBehaviorTree> Phase3BT;
 
+	UPROPERTY(EditAnywhere, Category = "BossEnemy")
+	TObjectPtr<USoundBase> DieSound;
+
+	UPROPERTY(EditAnywhere, Category = "BossEnemy")
+	TObjectPtr<UParticleSystem> DieParticle;
+
 protected:
 
 	bool bIsAming = false;
+	bool bIsCannonMode = false;
+	bool bIsReturnedToIdle = true;
 };
