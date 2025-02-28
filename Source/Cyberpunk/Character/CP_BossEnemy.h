@@ -42,6 +42,7 @@ public:
 
 	void PlayGunFireAnim();
 	void PlayCannonFireAnim();
+	void PlayHitAnim();
 	
 	// getter, setter
 public:
@@ -61,6 +62,9 @@ public:
 	bool IsReturnedToIdle() const;
 	void SetReturnedToIdle(bool bIsReturned);
 
+	bool IsHit() const;
+	void SetHit(bool bNewIsHit);
+
 protected:
 
 	virtual void Die() override;
@@ -78,6 +82,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "BossEnemy")
 	TObjectPtr<UAnimMontage> CannonFireWithAnnyingAnim;
+
+	UPROPERTY(EditAnywhere, Category = "BossEnemy")
+	TObjectPtr<UAnimMontage> HitAnim;
 
 	UPROPERTY(VisibleAnywhere, Category = "BossEnemy")
 	bool bIsFiring = false;
@@ -123,4 +130,5 @@ protected:
 	bool bIsAming = false;
 	bool bIsCannonMode = false;
 	bool bIsReturnedToIdle = true;
+	bool bIsHit = false;
 };
