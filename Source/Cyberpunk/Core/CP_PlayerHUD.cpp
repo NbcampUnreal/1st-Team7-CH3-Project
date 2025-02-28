@@ -1,6 +1,7 @@
 #include "CP_PlayerHUD.h"
 #include "Components/TextBlock.h"
 #include "Math/Color.h" // FLinearColor와 색상 보간을 위해 필요
+#include "Guns/CP_Guns.h" // ACP_Guns 클래스 사용을 위해 필요
 
 UCP_PlayerHUD::UCP_PlayerHUD(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer)
@@ -92,5 +93,17 @@ void UCP_PlayerHUD::UpdateKillCount(int32 KillCount)
     if (KillCountText)
     {
         KillCountText->SetText(FText::AsNumber(KillCount)); // 킬카운트 업데이트
+    }
+}
+
+void SomeFunctionToUpdateHUD(UCP_PlayerHUD* PlayerHUD, ACP_Guns* Guns)
+{
+    if (PlayerHUD && Guns)
+    {
+        int32 CurrentAmmo = Guns->AmmoCount;
+        int32 MaxAmmo = Guns->MaxAmmo;
+
+        PlayerHUD->UpdateAmmo(CurrentAmmo);
+        PlayerHUD->UpdateMaxAmmo(MaxAmmo);
     }
 }
