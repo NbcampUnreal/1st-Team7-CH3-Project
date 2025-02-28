@@ -1,13 +1,42 @@
 #include "CP_InventoryWidget.h"
+#include "CP_Inventory.h"
 
 void UCP_InventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    // **게임 시작 시 UI를 초기화 (아이템 없음)**
-    TArray<FCP_ItemInfo> EmptyItems;
-    UpdateInventory(EmptyItems);
+    if (InventoryButton)
+    {
+        InventoryButton->OnClicked.AddDynamic(this, &UCP_InventoryWidget::OnItemRightClicked);
+    }
 }
+
+
+void UCP_InventoryWidget::OnItemRightClicked()
+{
+    if (!InventoryRef) return;
+
+    TArray<FCP_ItemInfo> Items = InventoryRef->GetInventoryItems();
+
+    int32 ClickedIndex = -1;
+
+    for (int32 i = 0; i < Items.Num(); i++)
+    {
+        if (Items[i].ItemIcon == LastClickedItemIcon)  // 우클릭한 버튼의 아이콘과 매칭되는 아이템 찾기
+        {
+            ClickedIndex = i;
+            break;
+        }
+    }
+
+    if (ClickedIndex != -1)  //  클릭된 슬롯이 존재하면
+    {
+        InventoryRef->UseItem(Items[ClickedIndex]);  // 선택한 아이템 사용
+
+        UpdateInventory(InventoryRef->GetInventoryItems());
+    }
+}
+
 
 void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 {
@@ -26,7 +55,8 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 
     TArray<UTextBlock*> TextBlocks = { textblock00, textblock01, textblock02, textblock03,
                                        textblock10, textblock11, textblock12, textblock13 };
-
+    TArray<UButton*> Buttons = { Button_00, Button_01, Button_02, Button_03,
+                                Button_10, Button_11, Button_12, Button_13 };
     // **아이템이 없는 상태에서도 아이템을 먹었을 때와 동일한 UI 유지**
     for (int32 i = 0; i < 8; i++)
     {
@@ -35,7 +65,14 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         Images[i]->SetVisibility(ESlateVisibility::Hidden); // 기본적으로 숨김
         TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         TextBlocks[i]->SetText(FText::FromString(""));
+
+
+        if (Buttons[i])
+        {
+            Buttons[i]->SetVisibility(ESlateVisibility::Hidden);
+        }
     }
+
 
     // **아이템이 있으면 해당 슬롯을 채우기**
     for (int32 i = 0; i < Items.Num() && i < 8; i++)
@@ -56,6 +93,12 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         {
             TextBlocks[i]->SetText(FText::Format(FText::FromString("x{0}"), Item.StackCount));
             TextBlocks[i]->SetVisibility(ESlateVisibility::Visible);
+        }
+
+
+        if (Buttons[i])
+        {
+            Buttons[i]->SetVisibility(ESlateVisibility::Visible);
         }
     }
 }

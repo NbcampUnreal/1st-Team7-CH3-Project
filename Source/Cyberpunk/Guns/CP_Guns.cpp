@@ -326,5 +326,4 @@ void ACP_Guns::Reload()
     AmmoItem.ItemName = "Ammo";
     AmmoItem.ItemType = ECP_ItemType::Ammo;
     InventoryRef->RemoveItem(AmmoItem);
-
 }
