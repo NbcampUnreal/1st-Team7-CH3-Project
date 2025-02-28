@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Kismet/GameplayStatics.h"
 
 ACP_BossEnemy::ACP_BossEnemy()
 {
@@ -162,4 +163,7 @@ void ACP_BossEnemy::SetReturnedToIdle(bool bIsReturned)
 void ACP_BossEnemy::Die()
 {
 	Super::Die();
+
+	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DieSound, GetActorLocation());
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DieParticle, GetActorTransform());
 }
