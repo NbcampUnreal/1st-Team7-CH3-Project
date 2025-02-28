@@ -1,24 +1,33 @@
 #include "CP_Inventory.h"
+#include "Guns/CP_Guns.h"
+#include "Character/CP_Player.h"
 
-void UCP_Inventory::AddItem(const FCP_ItemInfo& NewItem)
+void UCP_Inventory::Initialize(AActor* InOwner)
 {
-    // 기존 아이템 찾기
-    FCP_ItemInfo* ExistingItem = InventoryItems.FindByPredicate([&](const FCP_ItemInfo& Item)
-    {
-        return Item.ItemName == NewItem.ItemName;
-    });
+    Owner = InOwner; 
+}
 
-    if (ExistingItem)
+void UCP_Inventory::AddItem(const FCP_ItemInfo& ItemInfo)
+{
+    InventoryItems.Add(ItemInfo);
+    UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Added item: %s"), *ItemInfo.ItemName);
+
+    if (!Owner) return;
+
+    if (ItemInfo.ItemType == ECP_ItemType::Ammo)
     {
-        //  같은 아이템이면 개수만 증가
-        ExistingItem->StackCount++;
-    }
-    else
-    {
-        //  새로운 아이템이면 추가
-        InventoryItems.Add(NewItem);
+        ACP_Guns* EquippedGun = Cast<ACP_Guns>(Owner);
+
+        if (EquippedGun && EquippedGun->TriggerInfo)
+        {
+            int32 MagazineCapacity = EquippedGun->TriggerInfo->MagazineCapacity;
+
+            EquippedGun->MaxAmmo += MagazineCapacity;
+            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] MaxAmmo increased by %d, New MaxAmmo: %d"), MagazineCapacity, EquippedGun->MaxAmmo);
+        }
     }
 }
+
 
 
 void UCP_Inventory::RemoveItem(const FCP_ItemInfo& ItemInfo)

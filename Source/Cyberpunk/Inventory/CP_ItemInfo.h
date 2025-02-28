@@ -32,4 +32,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int32 StackCount = 1; //  아이템 개수 추가 (기본값 1)
+
+    bool operator==(const FCP_ItemInfo& Other) const
+    {
+        return ItemName == Other.ItemName && ItemType == Other.ItemType;
+    }
 };

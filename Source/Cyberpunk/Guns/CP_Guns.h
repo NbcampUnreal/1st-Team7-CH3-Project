@@ -31,7 +31,6 @@ public:
     float CalculateTotalDamage();
     void Fire();
 
-protected:
     virtual void Tick(float DeltaTime) override;
     void LoadGunParts();
     void DeactivateNiagaraEffect();

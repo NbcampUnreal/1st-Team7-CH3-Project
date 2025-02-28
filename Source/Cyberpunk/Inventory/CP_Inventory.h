@@ -3,8 +3,11 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "CP_ItemInfo.h"
+#include "Guns/CP_TriggerInfo.h"
 #include "CP_Inventory.generated.h"
 
+class ACP_Guns;
+class ACP_Player;
 UCLASS(Blueprintable, BlueprintType)
 class CYBERPUNK_API UCP_Inventory : public UObject
 {
@@ -14,6 +17,8 @@ public:
     //아이템 추가 
     UFUNCTION(BlueprintCallable, Category = "Inventory")
     void AddItem(const FCP_ItemInfo& NewItem);
+
+    void Initialize(AActor* InOwner);
 
     // 아이템 제거 
     UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -30,4 +35,7 @@ private:
     // 아이템 목록
     UPROPERTY()
     TArray<FCP_ItemInfo> InventoryItems;
+
+    UPROPERTY()
+    AActor* Owner;
 };
