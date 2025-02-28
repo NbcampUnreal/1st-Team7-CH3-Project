@@ -52,4 +52,27 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void SetEquippedGun(ACP_Guns* NewGun);
+
+	UFUNCTION(BlueprintCallable, Category = "Spell")
+	void ActivateTimeAccelerator();
+
+protected:
+
+	void SetActivateTimeAccelerator(bool bShouldActivate);
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Spell")
+	float TimeAcceleratorDuration = 5.0f;
+
+	// 0~1 사이의 값으로 세계가 얼만큼의 비율로 느려질지 결정
+	// 0.1이면 세계가 평상시의 10%로 움직임
+	UPROPERTY(EditAnywhere, Category = "Spell")
+	float TimeAcceleratorEffect = 0.1f;
+
+	bool bIsTimeAcceleratorActivated = false;
+
+private:
+
+	FTimerHandle TimeAcceleratorTimerHandle;
 };
