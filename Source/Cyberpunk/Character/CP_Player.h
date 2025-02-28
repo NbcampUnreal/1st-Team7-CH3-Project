@@ -6,6 +6,7 @@
 #include "Character/CP_CharacterBase.h"
 #include "Inventory/CP_Inventory.h"
 #include "Inventory/CP_InventoryWidget.h"
+#include "Guns/CP_Guns.h"
 #include "CP_Player.generated.h"
 
 class UCameraComponent;
@@ -45,4 +46,10 @@ public:
 	UCP_InventoryWidget* InventoryWidget;
 
 	void PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon);
+
+	UPROPERTY()
+	ACP_Guns* EquippedGun;
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SetEquippedGun(ACP_Guns* NewGun);
 };

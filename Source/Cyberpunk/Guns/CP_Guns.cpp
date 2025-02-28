@@ -41,6 +41,8 @@ ACP_Guns::ACP_Guns()
 
     // 발사 타이머
     FireTimer = 0.0f;
+    AmmoCount = 0;
+    MaxAmmo = 0;
 
     //발사할 프로젝타일 
     static ConstructorHelpers::FClassFinder<ACP_Projectile> ProjectileBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Projectile.BP_Projectile_C'"));
@@ -58,7 +60,81 @@ ACP_Guns::ACP_Guns()
 
     //기본 파츠 로드 
     LoadGunParts();
+
+
 }
+
+
+// 틱 함수 
+void ACP_Guns::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+    NiagaraEffect->Deactivate();
+
+    FireTimer += DeltaTime;
+    if (FireTimer >= 1.0f)
+    {
+        Fire();
+        FireTimer = 0.0f;
+    }
+}
+
+void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
+{
+    if (PartType == EGunPartType::Barrel)
+    {
+        if (BarrelInfo)
+        {
+            BarrelInfo->Destroy();  // 기존 배럴 파츠 제거
+        }
+
+        BarrelInfo = GetWorld()->SpawnActor<ACP_BarrelInfo>(ACP_BarrelInfo::StaticClass());
+        if (BarrelInfo)
+        {
+            BarrelInfo->Initialize(PartName);
+            BarrelMesh->SetSkeletalMesh(BarrelInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Barrel changed to: %s"), *PartName);
+        }
+    }
+    else if (PartType == EGunPartType::Body)
+    {
+        if (BodyInfo)
+        {
+            BodyInfo->Destroy();  // 기존 바디 파츠 제거
+        }
+
+        BodyInfo = GetWorld()->SpawnActor<ACP_BodyInfo>(ACP_BodyInfo::StaticClass());
+        if (BodyInfo)
+        {
+            BodyInfo->Initialize(PartName);
+            BodyMesh->SetSkeletalMesh(BodyInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Body changed to: %s"), *PartName);
+        }
+    }
+    else if (PartType == EGunPartType::Trigger)
+    {
+        if (TriggerInfo)
+        {
+            TriggerInfo->Destroy();  // 기존 트리거 파츠 제거
+        }
+
+        TriggerInfo = GetWorld()->SpawnActor<ACP_TriggerInfo>(ACP_TriggerInfo::StaticClass());
+        if (TriggerInfo)
+        {
+            TriggerInfo->Initialize(PartName);
+            TriggerMesh->SetSkeletalMesh(TriggerInfo->GetMesh()->SkeletalMesh);
+
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Trigger changed to: %s"), *PartName);
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Invalid part type: %s"), *PartName);
+    }
+}
+
 
 //기본 파츠 로드 
 void ACP_Guns::LoadGunParts()
@@ -93,60 +169,28 @@ void ACP_Guns::LoadGunParts()
     }
 }
 
-// 틱 함수 
-void ACP_Guns::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-    NiagaraEffect->Deactivate();
 
-    FireTimer += DeltaTime;
-    if (FireTimer >= 1.0f)
-    {
-        Fire();
-        FireTimer = 0.0f;
-    }
-}
 
 // 무기 발사 
 void ACP_Guns::Fire()
 {
+    if (!BarrelInfo) return;
 
-    if (BarrelInfo)
+    if (!TriggerInfo || AmmoCount <= 0)
     {
-        if (BarrelInfo->bIsHitscan)
-        {
-            FireHitscan();
-        }
-        else if(!BarrelInfo->bIsHitscan)
-        {
-            FireProjectile();
-        }
+        UE_LOG(LogTemp, Warning, TEXT("No ammo"));
+        return;
     }
-}
 
-// 프로젝타일 발사 
-void ACP_Guns::FireProjectile()
-{
+    AmmoCount--;
+
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
-
-    // 머즐의 Right 벡터를 가져와서 발사 방향 계산 
-    FVector RightVector = BarrelMesh->GetSocketTransform(FName("Muzzle")).GetRotation().GetRightVector();
-    FVector LaunchDirection = RightVector;
-    FVector Velocity = LaunchDirection * 8000.f;
-
-    // 나이아가라 이펙트 활성화 
+    FVector MuzzleDirection = BarrelMesh->GetSocketTransform(FName("Muzzle")).GetRotation().GetRightVector();
+    
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate();
-
-        // 0.1초 후에 나이아가라 이펙트 비활성화 
-        GetWorld()->GetTimerManager().SetTimer(
-            TimerHandle,
-            this,
-            &ACP_Guns::DeactivateNiagaraEffect,
-            0.1f,
-            false
-        );
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
     }
 
     if (AudioComponent)
@@ -154,73 +198,52 @@ void ACP_Guns::FireProjectile()
         AudioComponent->Play();
     }
 
-    if (ProjectileClass)
+    if (BarrelInfo->bIsHitscan)
     {
-        FRotator ProjectileRotation = LaunchDirection.Rotation();
-        ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
-        if (Projectile)
+        FHitResult HitResult;
+        FCollisionQueryParams QueryParams;
+        QueryParams.AddIgnoredActor(this);
+        QueryParams.AddIgnoredActor(GetOwner());
+        QueryParams.bTraceComplex = true;
+
+        FVector EndPoint = MuzzleLocation + (MuzzleDirection * 2000.0f);
+        bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, MuzzleLocation, EndPoint, ECC_GameTraceChannel1, QueryParams);
+    
+        if (bHit)
         {
-            Projectile->SetOwner(this);
-            if (Projectile->ProjectileMovement)
+            EndPoint = HitResult.ImpactPoint;
+            if (HitEffectBPClass)
             {
-                Projectile->ProjectileMovement->Velocity = Velocity;
-                Projectile->ProjectileMovement->Activate();
+                AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, EndPoint, FRotator::ZeroRotator);
+                if (HitEffect)
+                {
+                    HitEffect->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
+                }
+            }
+        }
+
+        DrawDebugLine(GetWorld(), MuzzleLocation, EndPoint, FColor::Red, false, 1.0f, 0, 2.0f);
+    }
+    
+    else if (!BarrelInfo->bIsHitscan)
+    {
+        if (ProjectileClass)
+        {
+            FRotator ProjectileRotation = MuzzleDirection.Rotation();
+            ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
+            if (Projectile)
+            {
+                Projectile->SetOwner(this);
+                if (Projectile->ProjectileMovement)
+                {
+                    FVector Velocity = MuzzleDirection * 8000.f;
+                    Projectile->ProjectileMovement->Velocity = Velocity;
+                    Projectile->ProjectileMovement->Activate();
+                }
             }
         }
     }
 }
-
-// 히트스캔 방식 발사
-void ACP_Guns::FireHitscan()
-{
-    FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
-    FVector ForwardVector = BarrelMesh->GetSocketTransform(FName("Muzzle")).GetRotation().GetRightVector();
-    FVector EndPoint = MuzzleLocation + (ForwardVector * 1000.0f);
-
-    FHitResult HitResult;
-    FCollisionQueryParams QueryParams;
-    QueryParams.AddIgnoredActor(this);
-    QueryParams.AddIgnoredActor(GetOwner());
-    QueryParams.bTraceComplex = true;
-
-    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, MuzzleLocation, EndPoint, ECC_Pawn, QueryParams);
-    if (bHit)
-    {
-        EndPoint = HitResult.ImpactPoint;
-
-        if (HitEffectBPClass)
-        {
-            AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, EndPoint, FRotator::ZeroRotator);
-            if (HitEffect)
-            {
-                HitEffect->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
-            }
-        }
-
-        if (NiagaraEffect)
-        {
-            NiagaraEffect->Activate();
-
-            GetWorld()->GetTimerManager().SetTimer(
-                TimerHandle,
-                this,
-                &ACP_Guns::DeactivateNiagaraEffect,
-                0.1f,
-                false
-            );
-        }
-
-        if (AudioComponent)
-        {
-            AudioComponent->Play();
-        }
-    }
-
-    DrawDebugLine(GetWorld(), MuzzleLocation, EndPoint, FColor::Red, false, 1.0f, 0, 2.0f);
-}
-
-
-
 
 
 void ACP_Guns::DeactivateNiagaraEffect()
@@ -228,5 +251,59 @@ void ACP_Guns::DeactivateNiagaraEffect()
     if (NiagaraEffect)
     {
         NiagaraEffect->Deactivate();
+    }
+}
+
+void ACP_Guns::ApplyDamage(AActor* HitActor)
+{
+    if (!HitActor) return;
+
+    float TotalDamage = CalculateTotalDamage();
+
+    AActor* OwnerActor = GetOwner();
+    AController* OwnerController = nullptr;
+
+    if (OwnerActor)
+    {
+        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+        if (OwnerPawn)
+        {
+            OwnerController = OwnerPawn->GetController();
+        }
+    }
+
+    ACP_Enemy* Enemy = Cast<ACP_Enemy>(HitActor);
+    if (Enemy)
+    {
+       // UE_LOG(Log, TEXT("[ACP_Guns] Enemy hit: %s, Damage: %f"), *Enemy->GetName(), TotalDamage);
+
+        float AppliedDamage = UGameplayStatics::ApplyDamage(
+            Enemy,
+            TotalDamage,
+            OwnerController,
+            this,
+            UDamageType::StaticClass()
+        );
+
+        //UE_LOG(Log, TEXT("[ACP_Guns] Damage applied: %f, Enemy HP: %d"), AppliedDamage, Enemy->CurrentHp);
+    }
+}
+
+
+float ACP_Guns::CalculateTotalDamage()
+{
+    float TotalDamage = 0.0f;
+    if (TriggerInfo) TotalDamage += TriggerInfo->Damage;
+    if (BodyInfo) TotalDamage += BodyInfo->Damage;
+    if (BarrelInfo) TotalDamage += BarrelInfo->Damage;
+    return TotalDamage;
+}
+
+void ACP_Guns::Reload()
+{
+    if (TriggerInfo)
+    {
+        AmmoCount = MaxAmmo;
+        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reloaded: %d ammo."), AmmoCount);
     }
 }

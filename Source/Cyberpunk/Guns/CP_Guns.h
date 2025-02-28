@@ -8,10 +8,12 @@
 #include "CP_Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Character/CP_Enemy.h"
 #include "CP_TacticalLight.h"
 #include "Components/AudioComponent.h"
 #include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
+#include "CP_GunTypes.h"
 #include "NiagaraFunctionLibrary.h"
 #include "CP_Guns.generated.h"
 
@@ -22,10 +24,18 @@ class CYBERPUNK_API ACP_Guns : public AActor
 
 public:
     ACP_Guns();
+   
+    void EquipPart(const FString& PartName, EGunPartType PartType);
+    void Reload();
+    void ApplyDamage(AActor* HitActor);
+    float CalculateTotalDamage();
+    void Fire();
 
 protected:
+    virtual void Tick(float DeltaTime) override;
+    void LoadGunParts();
+    void DeactivateNiagaraEffect();
 
-public:
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;
 
@@ -58,13 +68,6 @@ public:
     UPROPERTY(EditAnywhere, Category = "Gun Properties")
     float FireRate;
 
-    void Fire();
-    void FireProjectile();
-    void FireHitscan();
-    //void UpdateCurrentParts();
-    void LoadGunParts();
-    void DeactivateNiagaraEffect();
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
     TSubclassOf<ACP_Projectile> ProjectileClass;
 
@@ -76,5 +79,10 @@ public:
 
     FTimerHandle TimerHandle;
 
-    virtual void Tick(float DeltaTime) override;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+    int32 AmmoCount;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ammo")
+    int32 MaxAmmo;
+
 };
