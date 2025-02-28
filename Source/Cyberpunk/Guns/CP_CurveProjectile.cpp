@@ -38,6 +38,7 @@ void ACP_CurveProjectile::BeginPlay()
 	}
 }
 
+
 void ACP_CurveProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -69,7 +70,7 @@ void ACP_CurveProjectile::InitProjectile(const FVector& NewTargetPoint, float Ne
 
 	float Height = DistanceToTarget / 2;
 	ControlPoint = CenterPosition + FVector::UpVector * Height;
-
+	ControlPoint.Z = FMath::Clamp(ControlPoint.Z, 0, MaxHeight);
 	CurrentProgress = 0.0f;
 }
 
@@ -86,8 +87,6 @@ FVector ACP_CurveProjectile::QuadraticBezierInterp(const FVector& InStartPoint, 
 
 void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
-
 	if (OtherActor == IgnoredActor)
 	{
 		return;
@@ -101,6 +100,11 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	if (CurrentDecal)
 	{
 		CurrentDecal->Destroy();
+	}
+
+	if (ExplosionSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 	}
 	
 	TArray<FOverlapResult> OverlapResults;
@@ -139,6 +143,5 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 
 	Destroy();
-	
 }
 

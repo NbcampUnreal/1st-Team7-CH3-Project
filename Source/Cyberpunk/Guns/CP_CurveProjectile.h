@@ -44,6 +44,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "CurveProjectile")
 	TSubclassOf<AActor> DecalActorClass;
 
+	UPROPERTY(EditAnywhere, Category = "CurveProjectile")
+	TObjectPtr<USoundBase> ExplosionSound;
+
+	UPROPERTY(EditAnywhere, Category = "CurveProjectile")
+	float MaxHeight = 3800.0f;
+
 private:
 
 	// 베지어 2차 곡선

@@ -164,6 +164,18 @@ void ACP_BossEnemy::Die()
 {
 	Super::Die();
 
+	if (DieSound == nullptr)
+	{
+		CP_LOG(Warning, TEXT("DieSound == nullptr"));
+		return;
+	}
+
+	if (DieParticle == nullptr)
+	{
+		CP_LOG(Warning, TEXT("DieParticle == nullptr"));
+		return;
+	}
+
 	UGameplayStatics::SpawnSoundAtLocation(GetWorld(), DieSound, GetActorLocation());
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), DieParticle, GetActorTransform());
 }
