@@ -112,6 +112,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "BossEnemy")
 	TObjectPtr<class UBehaviorTree> Phase3BT;
 
+	UPROPERTY(EditAnywhere, Category = "BossEnemy")
+	TObjectPtr<USoundBase> DieSound;
+
+	UPROPERTY(EditAnywhere, Category = "BossEnemy")
+	TObjectPtr<UParticleSystem> DieParticle;
+
 protected:
 
 	bool bIsAming = false;
