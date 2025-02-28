@@ -23,7 +23,7 @@ void ACP_BossEnemy::Tick(float DeltaTime)
 
 	float CurrentHpRatio = (float)CurrentHp / MaxHp;
 
-	if (CurrentHp <= 0.5f && BossPhase == EBossPhase::Phase1)
+	if (CurrentHpRatio <= 0.5f && BossPhase == EBossPhase::Phase1)
 	{
 		AAIController* AIController = Cast<AAIController>(GetController());
 		if (AIController == nullptr)
