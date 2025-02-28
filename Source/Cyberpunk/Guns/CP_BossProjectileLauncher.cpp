@@ -2,6 +2,7 @@
 
 #include "CP_Projectile.h"
 #include "Cyberpunk.h"
+#include "CP_CurveProjectile.h"
 
 UCP_BossProjectileLauncher::UCP_BossProjectileLauncher()
 {
@@ -44,20 +45,29 @@ void UCP_BossProjectileLauncher::FireDirectionalProjectile(const FVector& StartP
 
     Projectile->ProjectileMovement->Velocity = Velocity;
     Projectile->ProjectileMovement->Activate();
-    //Projectile->LaunchProjectile(LaunchDirection);
 }
 
 void UCP_BossProjectileLauncher::FireCurveProjectile(const FVector& StartPoint, const FVector& TargetPoint, float Speed)
 {
-	FVector DirectrionToTarget = TargetPoint - StartPoint;
-	FVector CenterPosition = DirectrionToTarget / 2;
+    if (CurveProjectileClass == nullptr)
+    {
+        CP_LOG(Warning, TEXT("CurveProjectileClass == nullptr"));
+        return;
+    }
 
-	FVector CenterToHeightDirection = DirectrionToTarget + FVector::UpVector;
-	CenterToHeightDirection.Normalize();
+    FTransform ProjectileTransform = FTransform(StartPoint);
 
-	float DistanceToTarget = DirectrionToTarget.Length();
-	FVector HeightPoint = CenterPosition + CenterToHeightDirection * DistanceToTarget / 2;
+    ACP_CurveProjectile* Projectile = GetWorld()->SpawnActorDeferred<ACP_CurveProjectile>(CurveProjectileClass, ProjectileTransform, GetOwner());
+    if (Projectile == nullptr)
+    {
+        CP_LOG(Warning, TEXT("Projectile == nullptr"));
+        return;
+    }
 
-
+    Projectile->InitProjectile(TargetPoint, Speed, GetOwner());
+    Projectile->FinishSpawning(ProjectileTransform);
 }
+
+
+
 
