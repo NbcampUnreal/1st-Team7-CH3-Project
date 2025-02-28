@@ -64,6 +64,7 @@ void ACP_GameState::StartWave()
 
 void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 저장후 랜덤좌표에 portal 생성
 {
+	/*
 	TArray<AActor*> FoundActors;
 	TArray<ACP_PotalSpawnPoint*> Portal;
 	TArray<FVector>PortalSpawnLocation;
@@ -122,6 +123,8 @@ void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 �
 		Check_SamePoint.Push(RandNum);
 
 	}
+	*/
+	
 }
 
 

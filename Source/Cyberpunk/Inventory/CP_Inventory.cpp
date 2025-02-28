@@ -28,7 +28,35 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& ItemInfo)
     }
 }
 
+void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
+{
+    
+    if (!Owner) return;
 
+    ACP_Player* Player = Cast<ACP_Player>(Owner);
+    ACP_Guns* Gun = Cast<ACP_Guns>(Owner);
+
+    if (ItemInfo.ItemType == ECP_ItemType::Heal)
+    {
+        /* 플레이어 체력 증가 기믹 차후 구현 
+        if (Player)
+        {
+            int32 HealAmount = 50;  // 체력 회복량 (예제)
+            Player->IncreaseHealth(HealAmount);  // 플레이어 체력 증가
+            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Used Heal Item. +%d HP"), HealAmount);
+        }*/
+        
+    }
+    else if (ItemInfo.ItemType == ECP_ItemType::Ammo)
+    {
+        if (Gun)
+        {
+            Gun->Reload();  //  총기 재장전 실행
+        }
+    }
+    RemoveItem(ItemInfo);
+    
+}
 
 void UCP_Inventory::RemoveItem(const FCP_ItemInfo& ItemInfo)
 {

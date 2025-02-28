@@ -12,7 +12,7 @@
 
 class UUniformGridPanel;
 class UButton;
-
+class UCP_Inventory;
 
 
 UCLASS()
@@ -27,7 +27,8 @@ protected:
 public:
     // 인벤토리 UI 업데이트 함수
     void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
-
+    UFUNCTION()
+    void OnItemRightClicked();
     // UI 요소 바인딩
     UPROPERTY(meta = (BindWidget))
     UOverlay* overlay00;
@@ -79,5 +80,32 @@ public:
     UTextBlock* textblock12;
     UPROPERTY(meta = (BindWidget))
     UTextBlock* textblock13;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_00;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_01;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_02;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_03;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_10;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_11;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_12;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_13;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* InventoryButton;
+
+    UPROPERTY()
+    UTexture2D* LastClickedItemIcon;  // 최근 클릭한 버튼의 아이템 아이콘
+
+
+    UPROPERTY()
+    UCP_Inventory* InventoryRef;
 };
 

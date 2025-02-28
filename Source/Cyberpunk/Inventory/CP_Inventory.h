@@ -8,27 +8,19 @@
 
 class ACP_Guns;
 class ACP_Player;
+
 UCLASS(Blueprintable, BlueprintType)
 class CYBERPUNK_API UCP_Inventory : public UObject
 {
     GENERATED_BODY()
 
 public:
-    //아이템 추가 
-    UFUNCTION(BlueprintCallable, Category = "Inventory")
+
     void AddItem(const FCP_ItemInfo& NewItem);
-
+    void UseItem(const FCP_ItemInfo& ItemInfo);
     void Initialize(AActor* InOwner);
-
-    // 아이템 제거 
-    UFUNCTION(BlueprintCallable, Category = "Inventory")
     void RemoveItem(const FCP_ItemInfo& ItemInfo);
-
-    UFUNCTION(BlueprintCallable, Category = "Inventory")
     bool HasItem(const FString& ItemName) const;
-
-    // 현재 인벤토리 아이템 리스트 반환 
-    UFUNCTION(BlueprintCallable, Category = "Inventory")
     TArray<FCP_ItemInfo> GetInventoryItems() const;
 
 private:
