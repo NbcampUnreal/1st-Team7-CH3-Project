@@ -4,40 +4,28 @@
 void UCP_InventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
-    if (InventoryButton)
-    {
-        InventoryButton->OnClicked.AddDynamic(this, &UCP_InventoryWidget::OnItemRightClicked);
-    }
+    BindRightClickEvents();
 }
 
-
-void UCP_InventoryWidget::OnItemRightClicked()
+void UCP_InventoryWidget::BindRightClickEvents()
 {
-    if (!InventoryRef) return;
+    TArray<UButton*> Buttons = { Button_00, Button_01, Button_02, Button_03,
+                                 Button_10, Button_11, Button_12, Button_13 };
 
-    TArray<FCP_ItemInfo> Items = InventoryRef->GetInventoryItems();
-
-    int32 ClickedIndex = -1;
-
-    for (int32 i = 0; i < Items.Num(); i++)
+    for (UButton* Button : Buttons)
     {
-        if (Items[i].ItemIcon == LastClickedItemIcon)  // 우클릭한 버튼의 아이콘과 매칭되는 아이템 찾기
+        if (Button)
         {
-            ClickedIndex = i;
-            break;
+            Button->OnClicked.RemoveDynamic(this, &UCP_InventoryWidget::OnRightClick);
+            Button->OnClicked.AddDynamic(this, &UCP_InventoryWidget::OnRightClick);
         }
     }
-
-    if (ClickedIndex != -1)  //  클릭된 슬롯이 존재하면
-    {
-        InventoryRef->UseItem(Items[ClickedIndex]);  // 선택한 아이템 사용
-
-        UpdateInventory(InventoryRef->GetInventoryItems());
-    }
 }
 
-
+void UCP_InventoryWidget::OnRightClick()
+{
+    // 우클릭 기능은 추후 구현
+}
 void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 {
     if (!overlay00 || !overlay01 || !overlay02 || !overlay03 ||
@@ -55,8 +43,7 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 
     TArray<UTextBlock*> TextBlocks = { textblock00, textblock01, textblock02, textblock03,
                                        textblock10, textblock11, textblock12, textblock13 };
-    TArray<UButton*> Buttons = { Button_00, Button_01, Button_02, Button_03,
-                                Button_10, Button_11, Button_12, Button_13 };
+
     // **아이템이 없는 상태에서도 아이템을 먹었을 때와 동일한 UI 유지**
     for (int32 i = 0; i < 8; i++)
     {
@@ -66,11 +53,6 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         TextBlocks[i]->SetText(FText::FromString(""));
 
-
-        if (Buttons[i])
-        {
-            Buttons[i]->SetVisibility(ESlateVisibility::Hidden);
-        }
     }
 
 
@@ -95,10 +77,5 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
             TextBlocks[i]->SetVisibility(ESlateVisibility::Visible);
         }
 
-
-        if (Buttons[i])
-        {
-            Buttons[i]->SetVisibility(ESlateVisibility::Visible);
-        }
     }
 }
