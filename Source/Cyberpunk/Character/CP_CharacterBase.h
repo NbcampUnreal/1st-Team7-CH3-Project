@@ -36,6 +36,11 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+public:
+
+	void Dissolve(const float InDissolveTime);
+	void Dissolve();
+
 protected:
 
 	virtual void Die();
@@ -82,5 +87,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
 	ETeamType TeamType;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
+	float DissolveTime = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CPCharacter")
+	float DissolveSpeed = 2.0f;
+
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	float MaxDissolveBorder = 500.0f;
+
+	UPROPERTY(EditAnywhere, Category = "CPCharacter")
+	bool bShouldUseDissolve = true;
+
+protected:
+
 	FGenericTeamId TeamId;
+
+private:
+
+	UPROPERTY()
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> CurrentDissolveMaterialInstanceArray;
+
+	FTimerHandle DissolveTimerHandle;
+
+	float DissolveProgress = 0.0f;
 };
