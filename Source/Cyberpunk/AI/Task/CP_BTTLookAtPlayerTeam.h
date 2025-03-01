@@ -20,4 +20,9 @@ public:
 protected:
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Settings")
+	float RotateSpeed = 100.0f;
 };
