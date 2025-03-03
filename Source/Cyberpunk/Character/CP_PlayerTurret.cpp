@@ -182,14 +182,12 @@ void ACP_PlayerTurret::AimTarget(const ACP_Enemy* Target)
 	FVector StartLocation = GetActorLocation();
 	FVector TargetLocation = Target->GetActorLocation();
 
-	//FVector Direction = TargetLocation - StartLocation;
-	//Direction.Z = 0.0f; // ZÃà °íÁ¤
-
 	FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, TargetLocation); // Direction.Rotation();
 	FRotator CurrentRotation = GetActorRotation();
-
-	float DeltaRotation = NewRotation.Yaw - CurrentRotation.Yaw;
-	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed;
+	
+	float DeltaRotation = FMath::UnwindDegrees(NewRotation.Yaw - CurrentRotation.Yaw);
+	float Sign = (DeltaRotation > 0) ? 1 : -1;
+	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed * Sign;
 
 	if (FMath::Abs(DeltaRotation) < DeltaRotationPerTime)
 	{

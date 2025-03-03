@@ -12,6 +12,24 @@ void ACP_CharacterBase::BeginPlay()
 	Super::BeginPlay();
 	
 	SetGenericTeamId((uint8)TeamType);
+	
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	TArray<UMaterialInterface*> OriginalMaterials = MeshComp->GetMaterials();
+
+	for (int i = 0; i < OriginalMaterials.Num(); ++i)
+	{
+		UMaterialInterface* OriginalMaterial = OriginalMaterials[i];
+		if (OriginalMaterial == nullptr)
+		{
+			CP_LOG(Warning, TEXT("OriginalMaterial == nullptr, Index : %d"), i);
+			continue;
+		}
+		CP_LOG(Warning, TEXT("Material : %s"), *OriginalMaterial->GetName());
+		UMaterialInstanceDynamic* Dynamic = UMaterialInstanceDynamic::Create(OriginalMaterial, MeshComp);
+		CurrentDissolveMaterialInstanceArray.Emplace(MoveTemp(Dynamic));
+		MeshComp->SetMaterial(i, CurrentDissolveMaterialInstanceArray.Last());
+	}
+
 }
 
 void ACP_CharacterBase::Tick(float DeltaTime)
@@ -40,15 +58,75 @@ float ACP_CharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEven
 	return NewDamage;
 }
 
+void ACP_CharacterBase::Dissolve(const float InDissolveTime)
+{
+	GetWorld()->GetTimerManager().SetTimer(DissolveTimerHandle, [&]()
+		{
+			if (::IsValid(GetWorld()) == false)
+			{
+				DissolveTimerHandle.Invalidate();
+				return;
+			}
+
+			if (::IsValid(this) == false)
+			{
+				GetWorldTimerManager().ClearTimer(DissolveTimerHandle);
+				DissolveTimerHandle.Invalidate();
+				return;
+			}
+
+			float CurrentDissolveBorder = DissolveProgress * DissolveSpeed;
+			if (CurrentDissolveBorder > MaxDissolveBorder)
+			{
+				GetWorldTimerManager().ClearTimer(DissolveTimerHandle);
+				DissolveTimerHandle.Invalidate();
+				return;
+			}
+
+			int32 MaterialCount = CurrentDissolveMaterialInstanceArray.Num();
+			USkeletalMeshComponent* MeshComp = GetMesh();
+
+			for (int i = 0; i < MaterialCount; ++i)
+			{
+				UMaterialInstanceDynamic* Dynamic = CurrentDissolveMaterialInstanceArray[i];
+
+				if (Dynamic == nullptr)
+				{
+					CP_LOG(Warning, TEXT("Dynamic == nullptr, Index : %d"), i);
+					continue;
+				}
+
+				Dynamic->SetScalarParameterValue(TEXT("Border"), CurrentDissolveBorder);
+				Dynamic->GetScalarParameterValue(TEXT("Border"), CurrentDissolveBorder);
+				CP_LOG(Warning, TEXT("Border : %f, Material : %s"), CurrentDissolveBorder, *Dynamic->GetName());
+				//MeshComp->SetMaterial(i, Dynamic);
+			}
+
+			DissolveProgress += 1;
+
+		}, 0.02f, true, 0);
+
+}
+
+void ACP_CharacterBase::Dissolve()
+{
+	Dissolve(DissolveTime);
+}
+
 void ACP_CharacterBase::Die()
 {
 	if (bIsDead)
 	{
 		return;
 	}
-
+	
 	CP_LOG(Log, TEXT("%s is Dead."), *GetName());
 	bIsDead = true;
+
+	if (bShouldUseDissolve)
+	{
+		Dissolve();
+	}
 }
 
 bool ACP_CharacterBase::IsDead()
@@ -70,4 +148,3 @@ ETeamType ACP_CharacterBase::GetTeamType()
 {
 	return TeamType;
 }
-

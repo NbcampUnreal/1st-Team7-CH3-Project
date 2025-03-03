@@ -64,6 +64,8 @@ void ACP_Player::BeginPlay()
 void ACP_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
 }
 
 void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -100,4 +102,44 @@ void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 		EquippedGun->AttachToComponent(GetMesh(), AttachmentRules, TEXT("WeaponArm"));
 	}
 
+}
+
+void ACP_Player::ActivateTimeAccelerator()
+{
+	SetActivateTimeAccelerator(true);
+}
+
+void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
+{
+	UWorld* World = GetWorld();
+
+	if (World == nullptr)
+	{
+		return;
+	}
+
+	bIsTimeAcceleratorActivated = bShouldActivate;
+
+	if (bIsTimeAcceleratorActivated == false)
+	{
+		TimeAcceleratorTimerHandle.Invalidate();
+		World->GetWorldSettings()->SetTimeDilation(1);
+		CustomTimeDilation = 1;
+		return;
+	}
+
+	World->GetWorldSettings()->SetTimeDilation(TimeAcceleratorEffect);
+	CustomTimeDilation = 1 / TimeAcceleratorEffect;
+
+	World->GetTimerManager().SetTimer(TimeAcceleratorTimerHandle, [this]()
+		{
+			if (::IsValid(GetWorld()) == false)
+			{
+				return;
+			}
+
+			GetWorld()->GetWorldSettings()->SetTimeDilation(1);
+			CustomTimeDilation = 1;
+
+		}, TimeAcceleratorDuration * TimeAcceleratorEffect, false);
 }

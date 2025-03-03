@@ -53,7 +53,7 @@ protected:
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Turret")
-	float RotateSpeed = 10;
+	float RotateSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	TSet<FName> UpperBodyBones;
