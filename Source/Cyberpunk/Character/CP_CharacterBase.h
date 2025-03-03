@@ -103,10 +103,10 @@ protected:
 
 	FGenericTeamId TeamId;
 
-private:
-
 	UPROPERTY()
 	TArray<TObjectPtr<UMaterialInstanceDynamic>> CurrentDissolveMaterialInstanceArray;
+
+private:
 
 	FTimerHandle DissolveTimerHandle;
 
