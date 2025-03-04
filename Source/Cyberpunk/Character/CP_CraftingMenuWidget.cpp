@@ -86,7 +86,7 @@ void UCP_CraftingMenuWidget::OnBarrelButton1Clicked()
 void UCP_CraftingMenuWidget::OnBarrelButton2Clicked()
 {
     ACP_BarrelInfo* Barrel = NewObject<ACP_BarrelInfo>();
-    Barrel->Initialize("SK_BarrelBeamSkatter");
+    Barrel->Initialize("SK_BarrelBeamScatter");
 
     FString Name = Barrel->GetPartName();
     FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s"),
@@ -100,7 +100,7 @@ void UCP_CraftingMenuWidget::OnBarrelButton2Clicked()
 void UCP_CraftingMenuWidget::OnBarrelButton3Clicked()
 {
     ACP_BarrelInfo* Barrel = NewObject<ACP_BarrelInfo>();
-    Barrel->Initialize("BarrelBulletScatter");
+    Barrel->Initialize("SK_BarrelBulletScatter");
 
     FString Name = Barrel->GetPartName();
     FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s"),
