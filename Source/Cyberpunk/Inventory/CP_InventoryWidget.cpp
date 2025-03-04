@@ -4,39 +4,28 @@
 void UCP_InventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-
-    if (InventoryButton)
-    {
-        InventoryButton->OnClicked.AddDynamic(this, &UCP_InventoryWidget::OnItemRightClicked);
-    }
+    BindRightClickEvents();
 }
 
-
-void UCP_InventoryWidget::OnItemRightClicked()
+void UCP_InventoryWidget::BindRightClickEvents()
 {
-    if (!InventoryRef) return;
+    TArray<UButton*> Buttons = { Button_00, Button_01, Button_02, Button_03,
+                                 Button_10, Button_11, Button_12, Button_13 };
 
-    TArray<FCP_ItemInfo> Items = InventoryRef->GetInventoryItems();
-
-    int32 ClickedIndex = -1;
-
-    for (int32 i = 0; i < Items.Num(); i++)
+    for (UButton* Button : Buttons)
     {
-        if (Items[i].ItemIcon == LastClickedItemIcon)  // 우클릭한 버튼의 아이콘과 매칭되는 아이템 찾기
+        if (Button)
         {
-            ClickedIndex = i;
-            break;
+            Button->OnClicked.RemoveDynamic(this, &UCP_InventoryWidget::OnRightClick);
+            Button->OnClicked.AddDynamic(this, &UCP_InventoryWidget::OnRightClick);
         }
     }
-
-    if (ClickedIndex != -1)  //  클릭된 슬롯이 존재하면
-    {
-        InventoryRef->UseItem(Items[ClickedIndex]);  // 선택한 아이템 사용
-
-        UpdateInventory(InventoryRef->GetInventoryItems());
-    }
 }
 
+void UCP_InventoryWidget::OnRightClick()
+{
+    // 우클릭 기능은 추후 구현
+}
 
 void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 {
@@ -55,8 +44,17 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
 
     TArray<UTextBlock*> TextBlocks = { textblock00, textblock01, textblock02, textblock03,
                                        textblock10, textblock11, textblock12, textblock13 };
-    TArray<UButton*> Buttons = { Button_00, Button_01, Button_02, Button_03,
-                                Button_10, Button_11, Button_12, Button_13 };
+
+    /*
+    bool bHasItems = Items.Num() > 0;
+    for (int32 i = 0; i < 8; i++)
+    {
+        Overlays[i]->SetVisibility(bHasItems ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+        Images[i]->SetBrush(FSlateBrush());
+        Images[i]->SetVisibility(ESlateVisibility::Hidden);
+        TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
+        TextBlocks[i]->SetText(FText::FromString(""));
+    }*/
     // **아이템이 없는 상태에서도 아이템을 먹었을 때와 동일한 UI 유지**
     for (int32 i = 0; i < 8; i++)
     {
@@ -65,40 +63,45 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         Images[i]->SetVisibility(ESlateVisibility::Hidden); // 기본적으로 숨김
         TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         TextBlocks[i]->SetText(FText::FromString(""));
-
-
-        if (Buttons[i])
+    }
+    // **같은 종류의 아이템을 스택하여 표시**
+    TMap<FName, FCP_ItemInfo> ItemMap;
+    for (const FCP_ItemInfo& Item : Items)
+    {
+        FName ItemName = FName(*Item.ItemName);
+        if (ItemMap.Contains(ItemName))
         {
-            Buttons[i]->SetVisibility(ESlateVisibility::Hidden);
+            ItemMap[ItemName].StackCount += Item.StackCount;
+        }
+        else
+        {
+            ItemMap.Add(ItemName, Item);
         }
     }
 
-
-    // **아이템이 있으면 해당 슬롯을 채우기**
-    for (int32 i = 0; i < Items.Num() && i < 8; i++)
+    int32 SlotIndex = 0;
+    for (const auto& Pair : ItemMap)
     {
-        const FCP_ItemInfo& Item = Items[i];
+        if (SlotIndex >= 8) break;
+
+        const FCP_ItemInfo& Item = Pair.Value;
+        Overlays[SlotIndex]->SetVisibility(ESlateVisibility::Visible);
 
         if (Item.ItemIcon)
         {
-            // 아이콘 적용
             FSlateBrush Brush;
             Brush.SetResourceObject(Item.ItemIcon);
-            Brush.ImageSize = FVector2D(128.0f, 128.0f); // 아이콘 크기 설정
-            Images[i]->SetBrush(Brush);
-            Images[i]->SetVisibility(ESlateVisibility::Visible);
+            Brush.ImageSize = FVector2D(128.0f, 128.0f);
+            Images[SlotIndex]->SetBrush(Brush);
+            Images[SlotIndex]->SetVisibility(ESlateVisibility::Visible);
         }
 
         if (Item.StackCount > 1)
         {
-            TextBlocks[i]->SetText(FText::Format(FText::FromString("x{0}"), Item.StackCount));
-            TextBlocks[i]->SetVisibility(ESlateVisibility::Visible);
+            TextBlocks[SlotIndex]->SetText(FText::Format(FText::FromString("x{0}"), Item.StackCount));
+            TextBlocks[SlotIndex]->SetVisibility(ESlateVisibility::Visible);
         }
 
-
-        if (Buttons[i])
-        {
-            Buttons[i]->SetVisibility(ESlateVisibility::Visible);
-        }
+        SlotIndex++;
     }
 }
