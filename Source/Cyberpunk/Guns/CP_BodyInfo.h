@@ -43,6 +43,18 @@ public:
     /** BodyMesh 반환 함수 */
     virtual USkeletalMeshComponent* GetMesh() const override;
 
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    FString GetPartName() const { return PartName; }
+
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    float GetDamage() const { return Damage; }
+
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    float GetMovementSpeed() const { return MovementSpeed; }
+
+    int32 GearCost;
+    int32 GetGearCost() const { return GearCost; }
+
 protected:
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootSceneComponent;
