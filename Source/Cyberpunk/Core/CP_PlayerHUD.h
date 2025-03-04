@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Guns/CP_Guns.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "CP_PlayerHUD.generated.h"
