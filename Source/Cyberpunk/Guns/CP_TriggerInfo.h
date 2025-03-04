@@ -43,9 +43,22 @@ public:
     /** 트리거 메쉬를 반환하는 함수 */
     virtual USkeletalMeshComponent* GetMesh() const override;
 
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    FString GetPartName() const { return PartName; }
+
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    float GetDamage() const { return Damage; }
+
+    UFUNCTION(BlueprintCallable, Category = "Gun Info")
+    int32 GetMagazineCapacity() const { return MagazineCapacity; }
+
+    int32 GearCost;
+    int32 GetGearCost() const { return GearCost; }
 protected:
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootSceneComponent;
+
+
 
 private:
     /** 아이콘 로드 함수 */
