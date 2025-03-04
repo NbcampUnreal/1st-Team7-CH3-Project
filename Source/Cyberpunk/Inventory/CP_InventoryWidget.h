@@ -24,16 +24,11 @@ protected:
     // 위젯 생성 시 자동으로 호출되는 함수
     virtual void NativeConstruct() override;
 
-    /** 인벤토리 버튼의 우클릭 이벤트를 바인딩하는 함수 */
-    void BindRightClickEvents();
-
-    /** 아이템을 우클릭했을 때 실행되는 함수 */
-    UFUNCTION()
-    void OnRightClick();
 public:
     // 인벤토리 UI 업데이트 함수
     void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
-
+    UFUNCTION()
+    void OnItemRightClicked();
     // UI 요소 바인딩
     UPROPERTY(meta = (BindWidget))
     UOverlay* overlay00;
@@ -102,6 +97,13 @@ public:
     UButton* Button_12;
     UPROPERTY(meta = (BindWidget))
     UButton* Button_13;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* InventoryButton;
+
+    UPROPERTY()
+    UTexture2D* LastClickedItemIcon;  // 최근 클릭한 버튼의 아이템 아이콘
+
 
     UPROPERTY()
     UCP_Inventory* InventoryRef;

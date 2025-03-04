@@ -64,16 +64,12 @@ void ACP_GameState::StartWave()
 
 void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 저장후 랜덤좌표에 portal 생성
 {
+	/*
 	TArray<AActor*> FoundActors;
 	TArray<ACP_PotalSpawnPoint*> Portal;
 	TArray<FVector>PortalSpawnLocation;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACP_PotalSpawnPoint::StaticClass(), FoundActors);
-	if (FoundActors.Num() == 0)
-	{
-		return;  // 아무 것도 없으면 그냥 리턴
-	}
-
 	Portal.SetNum(FoundActors.Num());
 	if (Portal_Nums > Portal.Num())
 	{
@@ -82,10 +78,8 @@ void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 �
 
 	for (int32 i = 0; i < FoundActors.Num(); i++)
 	{
-		ACP_PotalSpawnPoint* SpawnPoint = Cast<ACP_PotalSpawnPoint>(FoundActors[i]);
-		if (!SpawnPoint) continue; // 캐스팅 실패하면 건너뛰기
-		Portal[i] = SpawnPoint;
-		PortalSpawnLocation.Push(SpawnPoint->PortalLocation());
+		Portal[i] = Cast<ACP_PotalSpawnPoint>(FoundActors[i]);
+		PortalSpawnLocation.Push(Portal[i]->PortalLocation());
 	}
 
 	AActor* SpawnPortal;
@@ -129,6 +123,8 @@ void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 �
 		Check_SamePoint.Push(RandNum);
 
 	}
+	*/
+	
 }
 
 
