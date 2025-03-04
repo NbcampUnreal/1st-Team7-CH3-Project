@@ -94,6 +94,8 @@ void ACP_Enemy::Die()
 		return;
 	}
 	GameInstance->Decrease_AI();
+
+	OnEnemyDeadDelegate.Broadcast(GetActorLocation());
 }
 
 void ACP_Enemy::BreakBones(FHitResult HitInfo)

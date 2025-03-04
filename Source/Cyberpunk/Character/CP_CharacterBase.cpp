@@ -55,6 +55,12 @@ FGenericTeamId ACP_CharacterBase::GetGenericTeamId() const
 float ACP_CharacterBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	// 로그 출력
+	UE_LOG(LogTemp, Warning, TEXT("[ACP_CharacterBase] TakeDamage called - Damage: %f, Causer: %s"),
+		Damage,
+		DamageCauser ? *DamageCauser->GetName() : TEXT("Unknown"));
+
 	return NewDamage;
 }
 

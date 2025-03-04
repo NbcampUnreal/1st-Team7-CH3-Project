@@ -22,6 +22,7 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BarrelBeam";
         Damage = 100.0f;
+        GearCost = 3;
         bIsHitscan = true;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeam.SK_BarrelBeam")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BarrelBeam.SK_BarrelBeam");
@@ -30,6 +31,7 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BarrelBeamScatter";
         Damage = 120.0f;
+        GearCost = 5;
         bIsHitscan = true;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeamScatter.SK_BarrelBeamScatter")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BarrelBeamScatter.SK_BarrelBeamScatter");
@@ -38,6 +40,7 @@ void ACP_BarrelInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BarrelBulletScatter";
         Damage = 150.0f;
+        GearCost = 6;
         bIsHitscan = false;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BarrelBulletScatter.SK_BarrelBulletScatter");

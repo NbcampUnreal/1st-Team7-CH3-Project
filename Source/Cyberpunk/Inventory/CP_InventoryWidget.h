@@ -20,19 +20,14 @@ class CYBERPUNK_API UCP_InventoryWidget : public UUserWidget
 {
     GENERATED_BODY()
 
-protected:
-    // 위젯 생성 시 자동으로 호출되는 함수
-    virtual void NativeConstruct() override;
-
-    /** 인벤토리 버튼의 우클릭 이벤트를 바인딩하는 함수 */
-    void BindRightClickEvents();
-
-    /** 아이템을 우클릭했을 때 실행되는 함수 */
-    UFUNCTION()
-    void OnRightClick();
 public:
-    // 인벤토리 UI 업데이트 함수
+    virtual void NativeConstruct() override;
+    UFUNCTION()
+    void BindRightClickEvents();
     void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
+    void SetInventoryReference(UCP_Inventory* Inventory);
+    virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 
     // UI 요소 바인딩
     UPROPERTY(meta = (BindWidget))
@@ -105,5 +100,9 @@ public:
 
     UPROPERTY()
     UCP_Inventory* InventoryRef;
+    TArray<FCP_ItemInfo> CurrentItems;
+
+    TArray<UButton*> InventoryButtons;
+    TMap<UButton*, int32> ButtonSlotMap;
 };
 

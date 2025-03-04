@@ -72,7 +72,7 @@ void ACP_Guns::Tick(float DeltaTime)
     NiagaraEffect->Deactivate();
 
     FireTimer += DeltaTime;
-    if (FireTimer >= 1.0f)
+    if (FireTimer >= 10.0f)
     {
         Fire();
         FireTimer = 0.0f;
@@ -212,15 +212,23 @@ void ACP_Guns::Fire()
         if (bHit)
         {
             EndPoint = HitResult.ImpactPoint;
+
+            if (HitResult.GetActor())
+            {
+                //UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Hit actor: %s"), *HitResult.GetActor()->GetName());
+                ApplyDamage(HitResult.GetActor());
+            }
+
             if (HitEffectBPClass)
             {
                 AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, EndPoint, FRotator::ZeroRotator);
                 if (HitEffect)
                 {
-                    HitEffect->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
+                    HitEffect->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
                 }
             }
         }
+
 
         DrawDebugLine(GetWorld(), MuzzleLocation, EndPoint, FColor::Red, false, 1.0f, 0, 2.0f);
     }
@@ -272,22 +280,28 @@ void ACP_Guns::ApplyDamage(AActor* HitActor)
         }
     }
 
-    ACP_Enemy* Enemy = Cast<ACP_Enemy>(HitActor);
-    if (Enemy)
+    // 피격 대상이 ACP_CharacterBase를 상속받는지 확인
+    ACP_CharacterBase* Character = Cast<ACP_CharacterBase>(HitActor);
+    if (Character)
     {
-       // UE_LOG(Log, TEXT("[ACP_Guns] Enemy hit: %s, Damage: %f"), *Enemy->GetName(), TotalDamage);
+        //UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Character hit: %s, Damage: %f"), *Character->GetName(), TotalDamage);
 
         float AppliedDamage = UGameplayStatics::ApplyDamage(
-            Enemy,
+            Character,  // 적이든 플레이어든 모두 처리 가능
             TotalDamage,
             OwnerController,
             this,
             UDamageType::StaticClass()
         );
 
-        //UE_LOG(Log, TEXT("[ACP_Guns] Damage applied: %f, Enemy HP: %d"), AppliedDamage, Enemy->CurrentHp);
+        //UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Damage Applied: %f"), AppliedDamage);
     }
+    //else
+    //{
+    //    UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Hit actor is not an ACP_CharacterBase: %s"), *HitActor->GetName());
+    //}
 }
+
 
 
 float ACP_Guns::CalculateTotalDamage()
@@ -325,5 +339,5 @@ void ACP_Guns::Reload()
     FCP_ItemInfo AmmoItem;
     AmmoItem.ItemName = "Ammo";
     AmmoItem.ItemType = ECP_ItemType::Ammo;
-    InventoryRef->RemoveItem(AmmoItem);
+    InventoryRef->ReduceItemCount(AmmoItem);
 }
