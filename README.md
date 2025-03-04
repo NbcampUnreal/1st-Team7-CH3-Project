@@ -1,5 +1,5 @@
 # Ymir Heist
-
+![MainMenuImg](https://github.com/user-attachments/assets/4c74ca39-8d39-4fa9-bc69-e0b0d534495e)
 
 # 목차
 
@@ -54,6 +54,7 @@
 - 터렛
   
     - 플레이어가 고철을 모아 제작.
+
     - 아이템으로 구현되어 인벤토리에 보관.
     - 터렛은 시야에 적을 확인할 시 가장 가까운 적부터 자동으로 사격시작.
 - 아이템
