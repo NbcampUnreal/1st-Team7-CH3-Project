@@ -119,12 +119,12 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 
 	if (bIsHit == false)
 	{
-		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Red, false, 1);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Red, false, 1);
 		Destroy();
 		return;
 	}
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Green, false, 3);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Green, false, 3);
 	
 	TSet<ACP_CharacterBase*> DamagedCharacter;
 	for (auto& OverlapResult : OverlapResults)
