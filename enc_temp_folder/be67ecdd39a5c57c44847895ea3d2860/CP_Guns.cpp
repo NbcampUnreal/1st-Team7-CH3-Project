@@ -219,7 +219,7 @@ void ACP_Guns::Fire()
         }
 
 
-       
+        DrawDebugLine(GetWorld(), MuzzleLocation, EndPoint, FColor::Red, false, 1.0f, 0, 2.0f);
     }
     
     else if (!BarrelInfo->bIsHitscan)
