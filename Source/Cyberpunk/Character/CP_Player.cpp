@@ -32,6 +32,11 @@ void ACP_Player::BeginPlay()
 	if (!PlayerInventory)
 	{
 		PlayerInventory = NewObject<UCP_Inventory>(this);
+		if (PlayerInventory)
+		{
+			PlayerInventory->Initialize(this);  
+		}
+
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetController());
@@ -41,6 +46,11 @@ void ACP_Player::BeginPlay()
 		if (PlayerController && PlayerController->InventoryWidget)
 		{
 			InventoryWidget = PlayerController->InventoryWidget;
+		}
+
+		if (InventoryWidget)
+		{
+			InventoryWidget->SetInventoryReference(PlayerInventory);
 		}
 	}
 
@@ -57,8 +67,6 @@ void ACP_Player::BeginPlay()
 		}
 	}
 }
-
-
 
 
 void ACP_Player::Tick(float DeltaTime)

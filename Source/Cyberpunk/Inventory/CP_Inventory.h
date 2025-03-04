@@ -19,7 +19,7 @@ public:
     void AddItem(const FCP_ItemInfo& NewItem);
     void UseItem(const FCP_ItemInfo& ItemInfo);
     void Initialize(AActor* InOwner);
-    void RemoveItem(const FCP_ItemInfo& ItemInfo);
+    void ReduceItemCount(const FCP_ItemInfo&  ItemInfo);
     bool HasItem(const FString& ItemName) const;
     TArray<FCP_ItemInfo> GetInventoryItems() const;
 
