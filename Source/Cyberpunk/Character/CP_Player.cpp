@@ -43,14 +43,26 @@ void ACP_Player::BeginPlay()
 	if (PC)
 	{
 		ACP_PlayerController* PlayerController = Cast<ACP_PlayerController>(PC);
-		if (PlayerController && PlayerController->InventoryWidget)
+		if (PlayerController)
 		{
-			InventoryWidget = PlayerController->InventoryWidget;
-		}
+			if (PlayerController->InventoryWidget)
+			{
+				InventoryWidget = PlayerController->InventoryWidget;
+				InventoryWidget->SetInventoryReference(PlayerInventory);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("[ACP_Player] InventoryWidget is nullptr!"));
+			}
 
-		if (InventoryWidget)
-		{
-			InventoryWidget->SetInventoryReference(PlayerInventory);
+			if (PlayerController->CraftingMenuWidget)
+			{
+				PlayerController->CraftingMenuWidget->SetInventoryReference(PlayerInventory);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("[ACP_Player] CraftingMenuWidget is nullptr!"));
+			}
 		}
 	}
 

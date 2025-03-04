@@ -139,7 +139,7 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
 //기본 파츠 로드 
 void ACP_Guns::LoadGunParts()
 {
-    USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBeam.SK_BarrelBeam")));
+    USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
     if (BarrelSkeletalMesh)
     {
         BarrelMesh->SetSkeletalMesh(BarrelSkeletalMesh);

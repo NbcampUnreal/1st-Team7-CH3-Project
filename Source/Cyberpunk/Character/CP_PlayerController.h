@@ -70,4 +70,5 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* CraftingMenuAction;
+
 };

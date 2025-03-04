@@ -6,6 +6,7 @@
 #include "Character/CP_CharacterBase.h"
 #include "Inventory/CP_Inventory.h"
 #include "Inventory/CP_InventoryWidget.h"
+#include "CP_CraftingMenuWidget.h"
 #include "Guns/CP_Guns.h"
 #include "CP_Player.generated.h"
 

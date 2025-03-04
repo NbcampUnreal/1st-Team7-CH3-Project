@@ -102,6 +102,59 @@ void UCP_Inventory::ReduceItemCount(const FCP_ItemInfo& ItemInfo)
 }
 
 
+int32 UCP_Inventory::GetItemCount(const FString& ItemName) const
+{
+    int32 TotalCount = 0;
+
+    for (const FCP_ItemInfo& Item : InventoryItems)
+    {
+        if (Item.ItemName == ItemName)
+        {
+            TotalCount += Item.StackCount;  // 스택된 아이템 개수 합산
+        }
+    }
+
+    return TotalCount;
+}
+
+
+
+void UCP_Inventory::ReduceItemCountByName(const FString& ItemName, int32 ReduceAmount)
+{
+    for (int32 i = 0; i < InventoryItems.Num(); i++)
+    {
+        if (InventoryItems[i].ItemName == ItemName)
+        {
+            if (InventoryItems[i].StackCount > ReduceAmount)
+            {
+                InventoryItems[i].StackCount -= ReduceAmount;
+                UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Reduced %d from %s, Remaining: %d"),
+                    ReduceAmount, *ItemName, InventoryItems[i].StackCount);
+            }
+            else
+            {
+                ReduceAmount -= InventoryItems[i].StackCount;
+                UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Removed all %s, Moving to next slot"), *ItemName);
+                InventoryItems.RemoveAt(i);
+                i--; // RemoveAt() 하면 Index가 줄어드니까 보정
+
+                if (ReduceAmount <= 0)
+                    break;
+            }
+        }
+    }
+
+    //  UI 업데이트
+    if (Owner)
+    {
+        ACP_Player* Player = Cast<ACP_Player>(Owner);
+        if (Player && Player->InventoryWidget)
+        {
+            Player->InventoryWidget->UpdateInventory(GetInventoryItems());
+        }
+    }
+}
+
 
 
 bool UCP_Inventory::HasItem(const FString& ItemName) const

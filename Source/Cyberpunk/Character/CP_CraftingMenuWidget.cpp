@@ -1,11 +1,26 @@
 #include "CP_CraftingMenuWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "CP_Player.h"
 
 
 UCP_CraftingMenuWidget::UCP_CraftingMenuWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 }
+
+void UCP_CraftingMenuWidget::SetInventoryReference(UCP_Inventory* Inventory)
+{
+    InventoryRef = Inventory;
+    if (InventoryRef)
+    {
+        UE_LOG(LogTemp, Log, TEXT("[UCP_CraftingMenuWidget] InventoryRef successfully set"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("[UCP_CraftingMenuWidget] InventoryRef is nullptr!"));
+    }
+}
+
 
 void UCP_CraftingMenuWidget::NativeConstruct()
 {
@@ -33,6 +48,7 @@ void UCP_CraftingMenuWidget::NativeConstruct()
 }
 
 
+
 FReply UCP_CraftingMenuWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
     if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
@@ -57,16 +73,70 @@ void UCP_CraftingMenuWidget::OnRightClickPart(UButton* ClickedButton)
 {
     if (!ClickedButton || !ButtonPartMap.Contains(ClickedButton))
     {
-        UE_LOG(LogTemp, Warning, TEXT("[UCP_CraftingMenuWidget] Right-click on unknown button"));
+        HandleCraftingFail();
         return;
     }
 
     FString PartName = ButtonPartMap[ClickedButton];
-    UE_LOG(LogTemp, Warning, TEXT("[UCP_CraftingMenuWidget] Right-clicked on part: %s"), *PartName);
+    int32 GearCost = 0;
+    EGunPartType PartType;
 
-    // 여기서 제작 기능 추가 가능
+    if (PartName.Contains("Barrel"))
+    {
+        ACP_BarrelInfo* TempBarrel = NewObject<ACP_BarrelInfo>();
+        TempBarrel->Initialize(PartName);
+        GearCost = TempBarrel->GetGearCost();
+        PartType = EGunPartType::Barrel;
+    }
+    else if (PartName.Contains("Trigger"))
+    {
+        ACP_TriggerInfo* TempTrigger = NewObject<ACP_TriggerInfo>();
+        TempTrigger->Initialize(PartName);
+        GearCost = TempTrigger->GetGearCost();
+        PartType = EGunPartType::Trigger;
+    }
+    else if (PartName.Contains("Body"))
+    {
+        ACP_BodyInfo* TempBody = NewObject<ACP_BodyInfo>();
+        TempBody->Initialize(PartName);
+        GearCost = TempBody->GetGearCost();
+        PartType = EGunPartType::Body;
+    }
+    else
+    {
+        HandleCraftingFail();
+        return;
+    }
+
+    if (!InventoryRef)
+    {
+        HandleCraftingFail();
+        return;
+    }
+
+    int32 CurrentGearCount = InventoryRef->GetItemCount("Gear");
+
     
+    if (CurrentGearCount < GearCost)
+    {
+        HandleCraftingFail();
+        return;
+    }
+
+  
+    InventoryRef->ReduceItemCountByName("Gear", GearCost);
+   
+    ACP_Player* Player = Cast<ACP_Player>(InventoryRef->GetOwner());
+    if (Player && Player->EquippedGun)
+    {
+        Player->EquippedGun->EquipPart(PartName, PartType);
+        PlayEquipSound(true);
+        
+    }
+
 }
+
+
 
 void UCP_CraftingMenuWidget::OnBarrelButton1Clicked()
 {
@@ -82,14 +152,25 @@ void UCP_CraftingMenuWidget::OnBarrelButton1Clicked()
     UpdateItemInfo(Name, Description);
 }
 
+void UCP_CraftingMenuWidget::PlayEquipSound(bool bSuccess)
+{
+    if (bSuccess && EquipSuccessSound)
+    {
+        UGameplayStatics::PlaySound2D(this, EquipSuccessSound);
+    }
+    else if (!bSuccess && EquipFailSound)
+    {
+        UGameplayStatics::PlaySound2D(this, EquipFailSound);
+    }
+}
 
 void UCP_CraftingMenuWidget::OnBarrelButton2Clicked()
 {
     ACP_BarrelInfo* Barrel = NewObject<ACP_BarrelInfo>();
-    Barrel->Initialize("SK_BarrelBeamSkatter");
+    Barrel->Initialize("SK_BarrelBeamScatter");
 
     FString Name = Barrel->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s\nGear Cost: %d"),
         Barrel->GetDamage(),
         Barrel->IsHitscan() ? TEXT("Yes") : TEXT("No"),
         Barrel->GetGearCost());
@@ -100,10 +181,10 @@ void UCP_CraftingMenuWidget::OnBarrelButton2Clicked()
 void UCP_CraftingMenuWidget::OnBarrelButton3Clicked()
 {
     ACP_BarrelInfo* Barrel = NewObject<ACP_BarrelInfo>();
-    Barrel->Initialize("BarrelBulletScatter");
+    Barrel->Initialize("SK_BarrelBulletScatter");
 
     FString Name = Barrel->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nHitscan: %s\nGear Cost: %d"),
         Barrel->GetDamage(),
         Barrel->IsHitscan() ? TEXT("Yes") : TEXT("No"),
         Barrel->GetGearCost());
@@ -132,7 +213,7 @@ void UCP_CraftingMenuWidget::OnTriggerButton2Clicked()
     Trigger->Initialize("SK_TriggerBurst");
 
     FString Name = Trigger->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d\nGear Cost: %d"),
         Trigger->GetDamage(),
         Trigger->GetMagazineCapacity(),
         Trigger->GetGearCost());
@@ -146,7 +227,7 @@ void UCP_CraftingMenuWidget::OnTriggerButton3Clicked()
     Trigger->Initialize("SK_StockStandard");
 
     FString Name = Trigger->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d\nGear Cost: %d"),
         Trigger->GetDamage(),
         Trigger->GetMagazineCapacity(),
         Trigger->GetGearCost());
@@ -161,7 +242,7 @@ void UCP_CraftingMenuWidget::OnBodyButton1Clicked()
     Body->Initialize("SK_BodyTesla");
 
     FString Name = Body->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f\nGear Cost: %d"),
         Body->GetDamage(),
         Body->GetMovementSpeed(),
         Body->GetGearCost());
@@ -175,7 +256,7 @@ void UCP_CraftingMenuWidget::OnBodyButton2Clicked()
     Body->Initialize("SK_BodyNormal");
 
     FString Name = Body->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f\nGear Cost: %d"),
         Body->GetDamage(),
         Body->GetMovementSpeed(),
         Body->GetGearCost());
@@ -189,7 +270,7 @@ void UCP_CraftingMenuWidget::OnBodyButton3Clicked()
     Body->Initialize("SK_BodyFire");
 
     FString Name = Body->GetPartName();
-    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f"),
+    FString Description = FString::Printf(TEXT("Damage: %.1f\nSpeed: %.1f\nGear Cost: %d"),
         Body->GetDamage(),
         Body->GetMovementSpeed(),
         Body->GetGearCost());
@@ -209,4 +290,26 @@ void UCP_CraftingMenuWidget::UpdateItemInfo(const FString& Name, const FString& 
     {
         ItemDescription->SetText(FText::FromString(Description));
     }
+}
+
+void UCP_CraftingMenuWidget::HandleCraftingFail()
+{
+   
+    APlayerController* PC = GetOwningPlayer();
+    if (PC)
+    {
+        TSubclassOf<UCameraShakeBase> CraftingFailShake = LoadClass<UCameraShakeBase>(
+            nullptr,
+            TEXT("Blueprint'/Game/Gun_BluePrint/BP_CameraShake.BP_CameraShake_C'")
+        );
+
+        if (CraftingFailShake)
+        {
+            PC->ClientStartCameraShake(CraftingFailShake);
+            
+        }
+ 
+    }
+
+    PlayEquipSound(false);
 }

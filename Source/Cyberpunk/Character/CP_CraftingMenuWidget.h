@@ -2,12 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Sound/SoundBase.h" 
 #include "Components/Button.h"
+#include "Inventory/CP_Inventory.h"
 #include "Guns/CP_BarrelInfo.h"
 #include "Guns/CP_TriggerInfo.h"
 #include "Guns/CP_BodyInfo.h"
+#include "Guns/CP_GunTypes.h"
 #include "Components/TextBlock.h"
 #include "CP_CraftingMenuWidget.generated.h"
+
+class ACP_Player;
 
 UCLASS()
 class CYBERPUNK_API UCP_CraftingMenuWidget : public UUserWidget
@@ -16,7 +21,7 @@ class CYBERPUNK_API UCP_CraftingMenuWidget : public UUserWidget
 
 public:
     UCP_CraftingMenuWidget(const FObjectInitializer& ObjectInitializer);
-
+    void SetInventoryReference(UCP_Inventory* Inventory);
 protected:
     virtual void NativeConstruct() override;
     virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;  // 우클릭 감지
@@ -46,6 +51,7 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* ItemDescription;
 
+
 private:
     // 좌클릭 기능 (아이템 정보 표시)
     UFUNCTION()
@@ -70,7 +76,18 @@ private:
     // 우클릭 기능 (제작 등 추가 기능)
     void OnRightClickPart(UButton* ClickedButton);
 
+    UCP_Inventory* InventoryRef = nullptr;
+
+    void PlayEquipSound(bool bSuccess); 
+
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* EquipSuccessSound;  
+
+    UPROPERTY(EditAnywhere, Category = "Sound")
+    USoundBase* EquipFailSound;  
+
     void UpdateItemInfo(const FString& Name, const FString& Description);
+    void HandleCraftingFail();
 
     TMap<UButton*, FString> ButtonPartMap;  //  버튼과 파츠 이름을 매핑
 };
