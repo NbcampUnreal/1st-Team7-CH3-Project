@@ -5,6 +5,8 @@
 
 #include "CP_Enemy.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeadDelegate, const FVector&, DeadPosition);
+
 /**
  * 
  */
@@ -35,6 +37,11 @@ protected:
 public:
 
 	float GetAttackRange();
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEnemyDeadDelegate OnEnemyDeadDelegate;
 
 protected:
 
