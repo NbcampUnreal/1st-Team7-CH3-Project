@@ -7,11 +7,25 @@
 ACP_NormalEnemy::ACP_NormalEnemy()
 {
 	AttackRange = 500.0f;
+	Gun = nullptr;
 }
 
 void ACP_NormalEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GunClass)
+	{
+		Gun = GetWorld()->SpawnActor<ACP_Guns>(GunClass);
+		if (Gun)
+		{
+			Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("Weapon_R"));
+			Gun->SetOwner(this);
+
+			// 기본 탄약 설정
+			Gun->AmmoCount = 1000;
+			Gun->MaxAmmo = 3000;
+		}
+	}
 }
 
 float ACP_NormalEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -60,4 +74,11 @@ void ACP_NormalEnemy::AttackNormal()
 void ACP_NormalEnemy::Die()
 {
 	Super::Die();
+
+
+	if (Gun)
+	{
+		Gun->Destroy();
+		Gun = nullptr;
+	}
 }
