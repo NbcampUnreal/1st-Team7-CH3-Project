@@ -43,27 +43,44 @@ void ACP_Player::BeginPlay()
 	if (PC)
 	{
 		ACP_PlayerController* PlayerController = Cast<ACP_PlayerController>(PC);
-		if (PlayerController && PlayerController->InventoryWidget)
+		if (PlayerController)
 		{
-			InventoryWidget = PlayerController->InventoryWidget;
-		}
+			if (PlayerController->InventoryWidget)
+			{
+				InventoryWidget = PlayerController->InventoryWidget;
+				InventoryWidget->SetInventoryReference(PlayerInventory);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("[ACP_Player] InventoryWidget is nullptr!"));
+			}
 
-		if (InventoryWidget)
-		{
-			InventoryWidget->SetInventoryReference(PlayerInventory);
+			if (PlayerController->CraftingMenuWidget)
+			{
+				PlayerController->CraftingMenuWidget->SetInventoryReference(PlayerInventory);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("[ACP_Player] CraftingMenuWidget is nullptr!"));
+			}
 		}
 	}
 
-	if (GetWorld())
+	if (GetWorld() && DefaultGunClass)
 	{
-		for (TActorIterator<ACP_Guns> It(GetWorld()); It; ++It)
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		ACP_Guns* SpawnedGun = GetWorld()->SpawnActor<ACP_Guns>(DefaultGunClass, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+		if (SpawnedGun)
 		{
-			ACP_Guns* FoundGun = *It;
-			if (FoundGun)
-			{
-				SetEquippedGun(FoundGun);
-				break;
-			}
+			SetEquippedGun(SpawnedGun);
+			UE_LOG(LogTemp, Log, TEXT("[ACP_Player] Spawned default gun: %s"), *DefaultGunClass->GetName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ACP_Player] Failed to spawn default gun!"));
 		}
 	}
 }
@@ -108,9 +125,19 @@ void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 
 		FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 		EquippedGun->AttachToComponent(GetMesh(), AttachmentRules, TEXT("WeaponArm"));
-	}
 
+		//플레이어 인벤토리를 총에 설정
+		if (PlayerInventory)
+		{
+			EquippedGun->SetInventory(PlayerInventory);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("[ACP_Player] ERROR: PlayerInventory is nullptr!"));
+		}
+	}
 }
+
 
 void ACP_Player::ActivateTimeAccelerator()
 {

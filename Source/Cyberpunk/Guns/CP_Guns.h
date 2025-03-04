@@ -18,6 +18,8 @@
 #include "NiagaraFunctionLibrary.h"
 #include "CP_Guns.generated.h"
 
+class ACP_Player;
+
 UCLASS()
 class CYBERPUNK_API ACP_Guns : public AActor
 {
@@ -87,4 +89,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
     UCP_Inventory* InventoryRef;
+
+    void SetInventory(UCP_Inventory* Inventory);
 };

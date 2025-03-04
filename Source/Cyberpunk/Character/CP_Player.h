@@ -6,6 +6,7 @@
 #include "Character/CP_CharacterBase.h"
 #include "Inventory/CP_Inventory.h"
 #include "Inventory/CP_InventoryWidget.h"
+#include "CP_CraftingMenuWidget.h"
 #include "Guns/CP_Guns.h"
 #include "CP_Player.generated.h"
 
@@ -55,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Spell")
 	void ActivateTimeAccelerator();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	TSubclassOf<ACP_Guns> DefaultGunClass;  // 기본 총 클래스
 
 protected:
 
