@@ -195,13 +195,13 @@ void UCP_CraftingMenuWidget::OnBarrelButton3Clicked()
 void UCP_CraftingMenuWidget::OnTriggerButton1Clicked()
 {
     ACP_TriggerInfo* Trigger = NewObject<ACP_TriggerInfo>();
-    Trigger->Initialize("SK_TriggerAuto");
+    Trigger->Initialize("SK_StockStandard");
 
     FString Name = Trigger->GetPartName();
     FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d\nGear Cost: %d"),
         Trigger->GetDamage(),
         Trigger->GetMagazineCapacity(),
-        Trigger->GetGearCost());  
+        Trigger->GetGearCost());
 
     UpdateItemInfo(Name, Description);
 }
@@ -224,7 +224,7 @@ void UCP_CraftingMenuWidget::OnTriggerButton2Clicked()
 void UCP_CraftingMenuWidget::OnTriggerButton3Clicked()
 {
     ACP_TriggerInfo* Trigger = NewObject<ACP_TriggerInfo>();
-    Trigger->Initialize("SK_StockStandard");
+    Trigger->Initialize("SK_TriggerAuto");
 
     FString Name = Trigger->GetPartName();
     FString Description = FString::Printf(TEXT("Damage: %.1f\nMagazine: %d\nGear Cost: %d"),

@@ -12,57 +12,100 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& ItemInfo)
     InventoryItems.Add(ItemInfo);
     UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Added item: %s"), *ItemInfo.ItemName);
 
-    if (!Owner) return;
+    ACP_Player* Player = Cast<ACP_Player>(Owner);
+    if (!Player)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Owner is not ACP_Player!"));
+        return;
+    }
+
+    ACP_Guns* EquippedGun = Player->EquippedGun;
+    if (!EquippedGun)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[UCP_Inventory] WARNING: Player has no EquippedGun!"));
+        return;
+    }
 
     if (ItemInfo.ItemType == ECP_ItemType::Ammo)
     {
-        ACP_Guns* EquippedGun = Cast<ACP_Guns>(Owner);
-
-        if (EquippedGun && EquippedGun->TriggerInfo)
+        if (EquippedGun->TriggerInfo)
         {
             int32 MagazineCapacity = EquippedGun->TriggerInfo->MagazineCapacity;
-
-            EquippedGun->MaxAmmo += MagazineCapacity;
-            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] MaxAmmo increased by %d, New MaxAmmo: %d"), MagazineCapacity, EquippedGun->MaxAmmo);
+            if (MagazineCapacity > 0)
+            {
+                EquippedGun->MaxAmmo += MagazineCapacity;
+                UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] MaxAmmo increased by %d, New MaxAmmo: %d"),
+                    MagazineCapacity, EquippedGun->MaxAmmo);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: MagazineCapacity is 0! Check if TriggerInfo is set correctly."));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: TriggerInfo is nullptr! Ammo cannot be added."));
         }
     }
 }
 
+
+
 void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
 {
-    if (!Owner)  return;
+    if (!Owner)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Owner is nullptr!"));
+        return;
+    }
 
     ACP_Player* Player = Cast<ACP_Player>(Owner);
-    ACP_Guns* Gun = Cast<ACP_Guns>(Owner);
+    ACP_Guns* Gun = nullptr;
+
+    if (Player)
+    {
+        Gun = Player->EquippedGun;
+    }
+
+    if (Gun)
+    {
+        Gun->Reload();
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Gun is nullptr!"));
+    }
+
+
+    UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Attempting to use item: %s"), *ItemInfo.ItemName);
 
     if (ItemInfo.ItemType == ECP_ItemType::Heal)
     {
+        UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Heal item used."));
         /*
-        Heal 아이템 사용 
+        Heal 아이템 사용
         */
+        
     }
 
     else if (ItemInfo.ItemType == ECP_ItemType::Ammo)
     {
-        if (Gun)
-        {
-            Gun->Reload();
-        }
+        return;
     }
 
     else if (ItemInfo.ItemType == ECP_ItemType::Gear)
     {
-        /*
-        Gear 아이템 사용
-        */
+        return;
     }
 
+    UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Reducing item count for: %s"), *ItemInfo.ItemName);
     ReduceItemCount(ItemInfo);
 
     if (Player)
     {
         if (Player->InventoryWidget)
         {
+            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Updating Inventory UI."));
             Player->InventoryWidget->UpdateInventory(GetInventoryItems());
         }
         else
@@ -77,13 +120,13 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
 }
 
 
+
 void UCP_Inventory::ReduceItemCount(const FCP_ItemInfo& ItemInfo)
 {
     for (int32 i = 0; i < InventoryItems.Num(); i++)
     {
         if (InventoryItems[i].ItemName == ItemInfo.ItemName)
         {
-            // 스택이 여러 개일 경우 개수 감소
             if (InventoryItems[i].StackCount > 1)
             {
                 InventoryItems[i].StackCount--;
@@ -92,14 +135,30 @@ void UCP_Inventory::ReduceItemCount(const FCP_ItemInfo& ItemInfo)
             }
             else
             {
-                // 스택이 1개라면 아이템 삭제
-                InventoryItems.RemoveAt(i);
+                InventoryItems.RemoveAt(i);  //  바로 삭제
                 UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Removed item: %s"), *ItemInfo.ItemName);
             }
-            break;
+            break; //  한 번만 실행 후 루프 종료
+        }
+    }
+
+    // UI 업데이트
+    if (Owner)
+    {
+        ACP_Player* Player = Cast<ACP_Player>(Owner);
+        if (Player && Player->InventoryWidget)
+        {
+            Player->InventoryWidget->UpdateInventory(GetInventoryItems());
         }
     }
 }
+
+
+
+
+
+
+
 
 
 int32 UCP_Inventory::GetItemCount(const FString& ItemName) const

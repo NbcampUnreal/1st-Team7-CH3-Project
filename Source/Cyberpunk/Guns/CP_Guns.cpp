@@ -1,5 +1,6 @@
 #include "CP_Guns.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Character/CP_Player.h"
 ACP_Guns::ACP_Guns()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -39,6 +40,13 @@ ACP_Guns::ACP_Guns()
         HitEffectBPClass = HitEffectBP.Class;
     }
 
+    AActor* OwnerActor = GetOwner();
+    ACP_Player* Player = Cast<ACP_Player>(OwnerActor);
+    if (Player)
+    {
+        InventoryRef = Player->PlayerInventory;
+        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] InventoryRef successfully set."));
+    }
     // 발사 타이머
     FireTimer = 0.0f;
     AmmoCount = 0;
@@ -85,48 +93,24 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
     {
         if (BarrelInfo)
         {
-            BarrelInfo->Destroy();  // 기존 배럴 파츠 제거
-        }
-
-        BarrelInfo = GetWorld()->SpawnActor<ACP_BarrelInfo>(ACP_BarrelInfo::StaticClass());
-        if (BarrelInfo)
-        {
-            BarrelInfo->Initialize(PartName);
+            BarrelInfo->Initialize(PartName);  
             BarrelMesh->SetSkeletalMesh(BarrelInfo->GetMesh()->SkeletalMesh);
-
-            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Barrel changed to: %s"), *PartName);
         }
     }
     else if (PartType == EGunPartType::Body)
     {
         if (BodyInfo)
         {
-            BodyInfo->Destroy();  // 기존 바디 파츠 제거
-        }
-
-        BodyInfo = GetWorld()->SpawnActor<ACP_BodyInfo>(ACP_BodyInfo::StaticClass());
-        if (BodyInfo)
-        {
-            BodyInfo->Initialize(PartName);
+            BodyInfo->Initialize(PartName);  
             BodyMesh->SetSkeletalMesh(BodyInfo->GetMesh()->SkeletalMesh);
-
-            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Body changed to: %s"), *PartName);
         }
     }
     else if (PartType == EGunPartType::Trigger)
     {
         if (TriggerInfo)
         {
-            TriggerInfo->Destroy();  // 기존 트리거 파츠 제거
-        }
-
-        TriggerInfo = GetWorld()->SpawnActor<ACP_TriggerInfo>(ACP_TriggerInfo::StaticClass());
-        if (TriggerInfo)
-        {
-            TriggerInfo->Initialize(PartName);
+            TriggerInfo->Initialize(PartName);  
             TriggerMesh->SetSkeletalMesh(TriggerInfo->GetMesh()->SkeletalMesh);
-
-            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Trigger changed to: %s"), *PartName);
         }
     }
     else
@@ -134,6 +118,9 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
         UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Invalid part type: %s"), *PartName);
     }
 }
+
+
+
 
 
 //기본 파츠 로드 
@@ -160,12 +147,14 @@ void ACP_Guns::LoadGunParts()
     if (BodySkeletalMesh)
     {
         BodyMesh->SetSkeletalMesh(BodySkeletalMesh);
+        BodyInfo->Initialize("SK_BodyFire");
     }
 
     USkeletalMesh* TriggerSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerSingle.SK_TriggerSingle")));
     if (TriggerSkeletalMesh)
     {
         TriggerMesh->SetSkeletalMesh(TriggerSkeletalMesh);
+        TriggerInfo->Initialize("SK_TriggerAuto");
     }
 }
 
@@ -253,6 +242,19 @@ void ACP_Guns::Fire()
     }
 }
 
+void ACP_Guns::SetInventory(UCP_Inventory* Inventory)
+{
+    InventoryRef = Inventory;
+    if (InventoryRef)
+    {
+        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Inventory reference set successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Failed to set InventoryRef!"));
+    }
+}
+
 
 void ACP_Guns::DeactivateNiagaraEffect()
 {
@@ -315,29 +317,58 @@ float ACP_Guns::CalculateTotalDamage()
 
 void ACP_Guns::Reload()
 {
-    if (!TriggerInfo || !InventoryRef) return;  
+    if (!TriggerInfo)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] ERROR: TriggerInfo is nullptr! Cannot reload."));
+        return;
+    }
+
+    if (!InventoryRef)
+    {
+        UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] ERROR: InventoryRef is nullptr! Cannot reload."));
+        return;
+    }
 
     int32 MagazineCapacity = TriggerInfo->MagazineCapacity;
+    int32 CurrentAmmoCount = InventoryRef->GetItemCount("Ammo");
 
-    // ammo 있는지 체크
-    if (!InventoryRef->HasItem("Ammo"))
+    if (CurrentAmmoCount <= 0)
     {
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] No ammo available for reload!"));
         return;
     }
 
-    // MaxAmmo가 충분한지 확인
-    if (MaxAmmo < MagazineCapacity)
+    if (MaxAmmo <= 0)
     {
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Not enough reserve ammo to reload!"));
         return;
     }
 
-    //  재장전 진행
-    AmmoCount = MagazineCapacity;  // 탄창 채우기
-    MaxAmmo -= MagazineCapacity;  // 남은 탄약 감소
 
-    // 인벤토리에서 Ammo 아이템 삭제
+    int32 AmmoNeeded = MagazineCapacity - AmmoCount;
+    int32 AmmoToLoad = FMath::Min(AmmoNeeded, MaxAmmo); // MaxAmmo와 필요한 탄약 중 작은 값 선택
+
+    AmmoCount += AmmoToLoad;
+    MaxAmmo -= AmmoToLoad;
+
+    // 사운드 재생
+    USoundBase* ReloadSound = LoadObject<USoundBase>(nullptr, TEXT("SoundWave'/Game/Gun_BluePrint/Sound/ak_reload.ak_reload'"));
+    if (ReloadSound)
+    {
+        UGameplayStatics::PlaySoundAtLocation(this, ReloadSound, GetActorLocation());
+        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reload sound played successfully."));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Failed to load reload sound! Check path."));
+    }
+
+    // 인벤토리에서 `Ammo` 1개만 제거
+    UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Removing 1 Ammo from inventory."));
     FCP_ItemInfo AmmoItem;
     AmmoItem.ItemName = "Ammo";
     AmmoItem.ItemType = ECP_ItemType::Ammo;
-    InventoryRef->ReduceItemCount(AmmoItem);
+    InventoryRef->ReduceItemCountByName("Ammo", 1);
+
+    UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reload complete. AmmoCount: %d, MaxAmmo: %d"), AmmoCount, MaxAmmo);
 }

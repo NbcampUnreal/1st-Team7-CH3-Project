@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spell")
 	void ActivateTimeAccelerator();
 
+	UPROPERTY(EditDefaultsOnly, Category = "Gun")
+	TSubclassOf<ACP_Guns> DefaultGunClass;  // 기본 총 클래스
+
 protected:
 
 	void SetActivateTimeAccelerator(bool bShouldActivate);
