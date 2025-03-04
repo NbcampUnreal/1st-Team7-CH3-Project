@@ -44,7 +44,7 @@ EBTNodeResult::Type UCP_BTTLookAtPlayerTeam::ExecuteTask(UBehaviorTreeComponent&
 	float Sign = (DeltaRotation > 0) ? 1 : -1;
 	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed * Sign;
 
-	if (FMath::Abs(DeltaRotation) < DeltaRotationPerTime)
+	if (FMath::Abs(DeltaRotation) < FMath::Abs(DeltaRotationPerTime))
 	{
 		DeltaRotationPerTime = DeltaRotation;
 	}

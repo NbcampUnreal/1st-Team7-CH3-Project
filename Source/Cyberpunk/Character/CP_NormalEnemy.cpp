@@ -47,28 +47,30 @@ void ACP_NormalEnemy::AttackNormal()
 		return;
 	}
 
-	FHitResult HitResult;
-	FVector StartPoint = GetActorLocation();
-	FVector EndPoint = StartPoint + GetActorForwardVector() * AttackRange;
+	Gun->Fire();
 
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel1);
+	//FHitResult HitResult;
+	//FVector StartPoint = GetActorLocation();
+	//FVector EndPoint = StartPoint + GetActorForwardVector() * AttackRange;
 
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
+	//FCollisionObjectQueryParams ObjectQueryParams;
+	//ObjectQueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel1);
 
-	bool bIsHit = World->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
+	//FCollisionQueryParams QueryParams;
+	//QueryParams.AddIgnoredActor(this);
 
-	if (bIsHit)
-	{
-		DrawDebugLine(World, StartPoint, EndPoint, FColor::Green, false, 3);
+	//bool bIsHit = World->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
 
-		UGameplayStatics::ApplyDamage(HitResult.GetActor(), AttackDamage, GetController(), this, nullptr);
-	}
-	else
-	{
-		DrawDebugLine(World, StartPoint, EndPoint, FColor::Red, false, 1);
-	}
+	//if (bIsHit)
+	//{
+	//	//DrawDebugLine(World, StartPoint, EndPoint, FColor::Green, false, 3);
+
+	//	//UGameplayStatics::ApplyDamage(HitResult.GetActor(), AttackDamage, GetController(), this, nullptr);
+	//}
+	//else
+	//{
+	//	//DrawDebugLine(World, StartPoint, EndPoint, FColor::Red, false, 1);
+	//}
 }
 
 void ACP_NormalEnemy::Die()
