@@ -37,10 +37,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Barrel Info")
     float Damage;
 
-    int32 GearCost;
-
-    int32 GetGearCost() const { return GearCost; }
-
     // 초기화 함수
     virtual void Initialize(const FString& MeshName) override;
 
@@ -48,15 +44,6 @@ public:
     void LoadIconTexture();
 
     virtual USkeletalMeshComponent* GetMesh() const override;
-
-    UFUNCTION(BlueprintCallable, Category = "Gun Info")
-    FString GetPartName() const { return PartName; }
-
-    UFUNCTION(BlueprintCallable, Category = "Gun Info")
-    float GetDamage() const { return Damage; }
-
-    UFUNCTION(BlueprintCallable, Category = "Gun Info")
-    bool IsHitscan() const { return bIsHitscan; }
 
 protected:
     UPROPERTY(VisibleAnywhere)

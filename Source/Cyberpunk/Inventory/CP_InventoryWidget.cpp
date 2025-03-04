@@ -25,7 +25,6 @@ FReply UCP_InventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
     if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
     {
-
         // InventoryRef 유효성 체크
         if (!InventoryRef)
         {

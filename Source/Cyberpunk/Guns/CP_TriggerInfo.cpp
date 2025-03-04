@@ -23,7 +23,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         PartName = "SK_TriggerAuto";
         Damage = 10.0f;
         MagazineCapacity = 70;
-        GearCost = 2;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerAuto.SK_TriggerAuto")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_TriggerAuto.SK_TriggerAuto");
     }
@@ -32,7 +31,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         PartName = "SK_TriggerBurst";
         Damage = 20.0f;
         MagazineCapacity = 60;
-        GearCost = 3;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerBurst.SK_TriggerBurst")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_TriggerBurst.SK_TriggerBurst");
     }
@@ -41,7 +39,6 @@ void ACP_TriggerInfo::Initialize(const FString& MeshName)
         PartName = "SK_StockStandard";
         Damage = 25.0f;
         MagazineCapacity = 50;
-        GearCost = 5;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_StockStandard.SK_StockStandard")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_StockStandard.SK_StockStandard");
     }
