@@ -3,6 +3,7 @@
 #include "Core/CP_PlayerHUD.h"
 #include "Core/CP_GameInstance.h"
 #include "Core/CP_PotalSpawnPoint.h"
+#include "Core/CP_GameMode.h"
 
 #include "Character/CP_PlayerController.h"
 #include "Character/CP_NormalEnemy.h"
@@ -241,6 +242,21 @@ void ACP_GameState::Spawner(TArray<FVector> SpawnLocation)
 		}
 		else
 		{
+			ACP_GameMode* GameMode = Cast<ACP_GameMode>(UGameplayStatics::GetGameMode(this));
+			if (GameMode == nullptr)
+			{
+				CP_LOG(Error, TEXT("GameMode == nullptr"));
+				continue;
+			}
+
+			ACP_Enemy* Enemy = Cast<ACP_Enemy>(SpawnedAI);
+			if (Enemy == nullptr)
+			{
+				CP_LOG(Error, TEXT("Enemy == nullptr"));
+				continue;
+			}
+
+			Enemy->OnEnemyDeadDelegate.AddDynamic(GameMode, &ACP_GameMode::SpawnItemOnEnemyDeath);
 			CP_LOG(Warning, TEXT("AI Spawn Success: %s"), *SpawnLocation[i].ToString());
 		}
 		if (AI_Counting == Number_AI)//AI가 다 스폰되면 생성 중지
