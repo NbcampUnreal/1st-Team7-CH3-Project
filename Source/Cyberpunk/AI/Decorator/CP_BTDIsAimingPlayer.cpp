@@ -34,14 +34,14 @@ bool UCP_BTDIsAimingPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& O
 
 	if (bIsHit == false)
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 		return false;
 	}
 
 	ACP_CharacterBase* HitCharacter = Cast<ACP_CharacterBase>(HitResult.GetActor());
 	if (HitCharacter == nullptr)
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 		return false;
 	}
 
@@ -49,11 +49,11 @@ bool UCP_BTDIsAimingPlayer::CalculateRawConditionValue(UBehaviorTreeComponent& O
 
 	if (bIsPlayerTeam)
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3);
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 	}
 
 	return bIsPlayerTeam;

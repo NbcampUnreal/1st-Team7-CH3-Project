@@ -38,8 +38,18 @@ EBTNodeResult::Type UCP_BTTLookAtPlayerTeam::ExecuteTask(UBehaviorTreeComponent&
 	EndPosition.Z = 0;
 
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(StartPosition, EndPosition);
+	FRotator CurrentRotation = Enemy->GetActorRotation();
 
-	Enemy->SetActorRotation(LookAtRotation);
+	float DeltaRotation = FMath::UnwindDegrees(LookAtRotation.Yaw - CurrentRotation.Yaw);
+	float Sign = (DeltaRotation > 0) ? 1 : -1;
+	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed * Sign;
+
+	if (FMath::Abs(DeltaRotation) < FMath::Abs(DeltaRotationPerTime))
+	{
+		DeltaRotationPerTime = DeltaRotation;
+	}
+
+	Enemy->AddActorWorldRotation(FRotator(0, DeltaRotationPerTime, 0));
 
 	ACP_BossEnemy* Boss = Cast<ACP_BossEnemy>(Enemy);
 	if (Boss)

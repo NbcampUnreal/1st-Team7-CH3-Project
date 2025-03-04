@@ -39,8 +39,10 @@ void ACP_BossEnemy::Tick(float DeltaTime)
 		}
 
 		BossPhase = EBossPhase::Phase2;
+		bIsHit = true;
 
 		AIController->RunBehaviorTree(Phase2BT);
+		PlayHitAnim();
 	}
 }
 
@@ -120,6 +122,18 @@ void ACP_BossEnemy::PlayCannonFireAnim()
 	AnimInstance->Montage_Play(CannonFireAnim);
 }
 
+void ACP_BossEnemy::PlayHitAnim()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance == nullptr)
+	{
+		CP_LOG(Warning, TEXT("AnimInstance == nullptr"));
+		return;
+	}
+
+	AnimInstance->Montage_Play(HitAnim);
+}
+
 bool ACP_BossEnemy::IsFiring() const
 {
 	return bIsFiring;
@@ -158,6 +172,16 @@ bool ACP_BossEnemy::IsReturnedToIdle() const
 void ACP_BossEnemy::SetReturnedToIdle(bool bIsReturned)
 {
 	bIsReturnedToIdle = bIsReturned;
+}
+
+bool ACP_BossEnemy::IsHit() const
+{
+	return bIsHit;
+}
+
+void ACP_BossEnemy::SetHit(bool bNewIsHit)
+{
+	bIsHit = bNewIsHit;
 }
 
 void ACP_BossEnemy::Die()

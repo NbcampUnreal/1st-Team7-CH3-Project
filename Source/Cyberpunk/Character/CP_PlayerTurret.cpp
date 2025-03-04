@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/DamageEvents.h"
+#include "Components/CapsuleComponent.h"
 
 ACP_PlayerTurret::ACP_PlayerTurret()
 {
@@ -27,25 +28,23 @@ void ACP_PlayerTurret::BeginPlay()
 		return;
 	}
 
-	//for (auto& BoneName : UpperBodyBones)
-	//{
-	//	//LowerBodyMeshComp->HideBoneByName(BoneName, EPhysBodyOp::PBO_None);
-	//	CP_LOG(Error, TEXT("Hiding Upper : %s"), *BoneName.ToString());
-	//	HideLowerBone(BoneName);
-	//}
-
-	//for (auto& BoneName : LowerBodyBones)
-	//{
-	//	UpperBodyMeshComp->HideBoneByName(BoneName, EPhysBodyOp::PBO_None);
-	//	//UpperBodyMeshComp->GetBone
-	//	CP_LOG(Error, TEXT("Hiding Lower : %s"), *BoneName.ToString());
-	//	HideUpperBone(BoneName);
-	//}
-
-	////UpperBodyMeshComp->SetVisibility(false);
-	//LowerBodyMeshComp->SetVisibility(false);
-
 	OriginalMeshRelativeYaw = UpperBodyMeshComp->GetRelativeRotation().Yaw;
+
+	TArray<UMaterialInterface*> OriginalMaterials = LowerBodyMeshComp->GetMaterials();
+
+	for (int i = 0; i < OriginalMaterials.Num(); ++i)
+	{
+		UMaterialInterface* OriginalMaterial = OriginalMaterials[i];
+		if (OriginalMaterial == nullptr)
+		{
+			CP_LOG(Warning, TEXT("OriginalMaterial == nullptr, Index : %d"), i);
+			continue;
+		}
+		CP_LOG(Warning, TEXT("Material : %s"), *OriginalMaterial->GetName());
+		UMaterialInstanceDynamic* Dynamic = UMaterialInstanceDynamic::Create(OriginalMaterial, LowerBodyMeshComp);
+		CurrentDissolveMaterialInstanceArray.Emplace(MoveTemp(Dynamic));
+		LowerBodyMeshComp->SetMaterial(i, CurrentDissolveMaterialInstanceArray.Last());
+	}
 }
 
 void ACP_PlayerTurret::Tick(float DeltaTime)
@@ -74,13 +73,33 @@ float ACP_PlayerTurret::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 			BreakBones(PointDamageEvent.HitInfo);
 		}
 	}
-
+	
 	return NewDamage;
 }
 
 void ACP_PlayerTurret::Die()
 {
 	Super::Die();
+
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	if (CapsuleComp == nullptr)
+	{
+		CP_LOG(Warning, TEXT("CapsuleComp == nullptr, Name : "), *GetName());
+		return;
+	}
+
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	FTimerHandle DeadTimerHandle;
+
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, [&]()
+		{
+			if (::IsValid(this) && ::IsValid(GetWorld()))
+			{
+				Destroy();
+			}
+
+		}, 3.0f, false);
 }
 
 void ACP_PlayerTurret::BreakBones(FHitResult HitInfo)
@@ -147,7 +166,7 @@ void ACP_PlayerTurret::Attack()
 	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-
+	
 	bool bIsHit = GetWorld()->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, ObjectQueryParams, QueryParams);
 	if (bIsHit)
 	{
@@ -169,6 +188,8 @@ void ACP_PlayerTurret::Attack()
 	{
 		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 	}
+
+	OnPlayerTurrentAttack.Broadcast(EndPoint);
 }
 
 void ACP_PlayerTurret::RotateTurret(float DeltaRotation)
@@ -182,14 +203,12 @@ void ACP_PlayerTurret::AimTarget(const ACP_Enemy* Target)
 	FVector StartLocation = GetActorLocation();
 	FVector TargetLocation = Target->GetActorLocation();
 
-	//FVector Direction = TargetLocation - StartLocation;
-	//Direction.Z = 0.0f; // ZÃà °íÁ¤
-
 	FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, TargetLocation); // Direction.Rotation();
 	FRotator CurrentRotation = GetActorRotation();
-
-	float DeltaRotation = NewRotation.Yaw - CurrentRotation.Yaw;
-	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed;
+	
+	float DeltaRotation = FMath::UnwindDegrees(NewRotation.Yaw - CurrentRotation.Yaw);
+	float Sign = (DeltaRotation > 0) ? 1 : -1;
+	float DeltaRotationPerTime = GetWorld()->GetDeltaSeconds() * RotateSpeed * Sign;
 
 	if (FMath::Abs(DeltaRotation) < DeltaRotationPerTime)
 	{

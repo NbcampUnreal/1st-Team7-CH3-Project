@@ -12,7 +12,7 @@
 
 class UUniformGridPanel;
 class UButton;
-
+class UCP_Inventory;
 
 
 UCLASS()
@@ -24,6 +24,12 @@ protected:
     // 위젯 생성 시 자동으로 호출되는 함수
     virtual void NativeConstruct() override;
 
+    /** 인벤토리 버튼의 우클릭 이벤트를 바인딩하는 함수 */
+    void BindRightClickEvents();
+
+    /** 아이템을 우클릭했을 때 실행되는 함수 */
+    UFUNCTION()
+    void OnRightClick();
 public:
     // 인벤토리 UI 업데이트 함수
     void UpdateInventory(const TArray<FCP_ItemInfo>& Items);
@@ -79,5 +85,25 @@ public:
     UTextBlock* textblock12;
     UPROPERTY(meta = (BindWidget))
     UTextBlock* textblock13;
+
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_00;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_01;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_02;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_03;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_10;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_11;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_12;
+    UPROPERTY(meta = (BindWidget))
+    UButton* Button_13;
+
+    UPROPERTY()
+    UCP_Inventory* InventoryRef;
 };
 

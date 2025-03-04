@@ -5,6 +5,7 @@
 
 #include "CP_PlayerTurret.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerTurretAttackSignature, const FVector&, BeamEnd);
 /**
  * 
  */
@@ -32,6 +33,7 @@ protected:
 
 public:
 
+	UFUNCTION(BlueprintCallable, Category = "Turret")
 	void Attack();
 
 	// Yaw È¸Àü
@@ -50,10 +52,15 @@ protected:
 	void RotateBody(float DeltaRotation);
 	void RotateLowerBody(float DeltaRotation);
 
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerTurretAttackSignature OnPlayerTurrentAttack;
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Turret")
-	float RotateSpeed = 10;
+	float RotateSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	TSet<FName> UpperBodyBones;
