@@ -22,6 +22,9 @@ public:
     void ReduceItemCount(const FCP_ItemInfo&  ItemInfo);
     bool HasItem(const FString& ItemName) const;
     TArray<FCP_ItemInfo> GetInventoryItems() const;
+    int32 GetItemCount(const FString& ItemName) const;
+    void ReduceItemCountByName(const FString& ItemName, int32 Count);
+    AActor* GetOwner() const { return Owner; }
 
 private:
     // 아이템 목록

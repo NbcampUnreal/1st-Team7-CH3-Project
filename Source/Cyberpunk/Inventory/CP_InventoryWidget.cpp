@@ -25,8 +25,15 @@ FReply UCP_InventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 {
     if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
     {
+       
+        APlayerController* PC = GetOwningPlayer();
+        if (PC)
+        {
+            PC->SetInputMode(FInputModeGameAndUI()); 
+            PC->bShowMouseCursor = true;
+        }
 
-        // InventoryRef 유효성 체크
+    
         if (!InventoryRef)
         {
             return FReply::Handled();
@@ -58,6 +65,7 @@ FReply UCP_InventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry,
 
     return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
+
 
 void UCP_InventoryWidget::SetInventoryReference(UCP_Inventory* Inventory)
 {
@@ -95,8 +103,8 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
     // 초기화: 모든 슬롯을 기본 상태로 설정
     for (int32 i = 0; i < 8; i++)
     {
-        Overlays[i]->SetVisibility(ESlateVisibility::Visible); // 슬롯 유지
-        Images[i]->SetBrush(FSlateBrush()); // 빈 슬롯 처리
+        Overlays[i]->SetVisibility(ESlateVisibility::Hidden);
+        Images[i]->SetBrush(FSlateBrush());
         Images[i]->SetVisibility(ESlateVisibility::Hidden);
         TextBlocks[i]->SetVisibility(ESlateVisibility::Hidden);
         TextBlocks[i]->SetText(FText::FromString(""));
@@ -109,7 +117,7 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         FName ItemName = FName(*Item.ItemName);
         if (ItemMap.Contains(ItemName))
         {
-            ItemMap[ItemName].StackCount += Item.StackCount;
+            ItemMap[ItemName].StackCount += Item.StackCount;  // 같은 아이템이면 개수 증가
         }
         else
         {
@@ -117,7 +125,7 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
         }
     }
 
-    // 슬롯 업데이트
+    // 슬롯 업데이트 (스택 유지)
     int32 SlotIndex = 0;
     for (const auto& Pair : ItemMap)
     {
@@ -141,10 +149,12 @@ void UCP_InventoryWidget::UpdateInventory(const TArray<FCP_ItemInfo>& Items)
             TextBlocks[SlotIndex]->SetVisibility(ESlateVisibility::Visible);
         }
 
-        // **CurrentItems에 올바른 순서로 저장**
+        //  **CurrentItems에 올바른 순서로 저장**
         CurrentItems.Add(Item);
         UE_LOG(LogTemp, Warning, TEXT("[UCP_InventoryWidget] CurrentItems[%d]: %s"), SlotIndex, *Item.ItemName);
 
         SlotIndex++;
     }
 }
+
+
