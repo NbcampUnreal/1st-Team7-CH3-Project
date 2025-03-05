@@ -23,6 +23,10 @@ ACP_Player::ACP_Player()
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
 
+	TimeAcceleratorVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TimeAccelerator Effect"));
+	TimeAcceleratorVFX->SetupAttachment(GetMesh());
+	TimeAcceleratorVFX->bAutoActivate = false;
+
 	EquippedGun = nullptr;  
 	bShouldUseDissolve = false;
 }
@@ -85,6 +89,8 @@ void ACP_Player::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("[ACP_Player] Failed to spawn default gun!"));
 		}
 	}
+
+	//TimeAcceleratorVFX->SetActive(false);
 }
 
 
@@ -211,7 +217,6 @@ void ACP_Player::ActivateTimeAccelerator()
 void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 {
 	UWorld* World = GetWorld();
-
 	if (World == nullptr)
 	{
 		return;
@@ -230,6 +235,8 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 	World->GetWorldSettings()->SetTimeDilation(TimeAcceleratorEffect);
 	CustomTimeDilation = 1 / TimeAcceleratorEffect;
 
+	TimeAcceleratorVFX->SetActive(true);
+	TimeAcceleratorVFX->Activate();
 	World->GetTimerManager().SetTimer(TimeAcceleratorTimerHandle, [this]()
 		{
 			if (::IsValid(GetWorld()) == false)
@@ -239,6 +246,8 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 
 			GetWorld()->GetWorldSettings()->SetTimeDilation(1);
 			CustomTimeDilation = 1;
+			//TimeAcceleratorVFX->SetActive(false);
+			TimeAcceleratorVFX->Deactivate();
 
 		}, TimeAcceleratorDuration * TimeAcceleratorEffect, false);
 }
