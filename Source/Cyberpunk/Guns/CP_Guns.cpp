@@ -30,20 +30,6 @@ ACP_Guns::ACP_Guns()
     AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
     AudioComponent->SetupAttachment(RootScene);
 
-    // Tactical Light 
-    TacticalLightComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TacticalLight"));
-    TacticalLightComponent->SetupAttachment(BodyMesh, FName("Light"));
-    if (TacticalLightComponent)
-    {
-        TacticalLightComponent->SetChildActorClass(ACP_TacticalLight::StaticClass());
-        TacticalLight = Cast<ACP_TacticalLight>(TacticalLightComponent->GetChildActor());
-
-        if (TacticalLight)
-        {
-            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] TacticalLight successfully initialized."));
-        }
-    }
-
     static ConstructorHelpers::FClassFinder<AActor> HitEffectBP(TEXT("Blueprint'/Game/FXVarietyPack/Blueprints/BP_ky_hit2.BP_ky_hit2_C'"));
     if (HitEffectBP.Succeeded())
     {
@@ -78,6 +64,31 @@ ACP_Guns::ACP_Guns()
     //기본 파츠 로드 
     LoadGunParts();
 
+
+}
+
+
+void ACP_Guns::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (!GetWorld())
+    {
+        return;
+    }
+
+    FActorSpawnParameters SpawnParams;
+    SpawnParams.Owner = this;
+    SpawnParams.Instigator = GetInstigator();
+
+    TacticalLight = GetWorld()->SpawnActor<ACP_TacticalLight>(ACP_TacticalLight::StaticClass(), GetActorLocation(), GetActorRotation(), SpawnParams);
+
+    if (TacticalLight)
+    {
+
+        // 총기 바디에 붙이기
+        TacticalLight->AttachToComponent(BodyMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Light"));
+    }
 
 }
 
@@ -430,6 +441,5 @@ void ACP_Guns::Reload()
 
 void ACP_Guns::ToggleLight()
 {
-    UE_LOG(LogTemp, Warning, TEXT("[ACP_guns] ToggleLight() called! TacticalSpotLight exists."));
     TacticalLight->ToggleLight();
 }

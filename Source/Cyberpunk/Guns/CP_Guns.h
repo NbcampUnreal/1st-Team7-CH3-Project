@@ -39,6 +39,8 @@ public:
     void DeactivateNiagaraEffect();
     void ToggleLight();
 
+    virtual void BeginPlay() override;
+
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;
 
