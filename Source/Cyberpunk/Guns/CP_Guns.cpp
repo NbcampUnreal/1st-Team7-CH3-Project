@@ -242,6 +242,52 @@ void ACP_Guns::Fire()
     }
 }
 
+//npc รั น฿ป็
+void ACP_Guns::Fire(FVector FireDirection)
+{
+    if (!BarrelInfo) return;
+
+    if (!TriggerInfo || AmmoCount <= 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("No ammo"));
+        return;
+    }
+
+    AmmoCount--;
+
+    FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
+
+    if (NiagaraEffect)
+    {
+        NiagaraEffect->Activate();
+        GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
+    }
+
+    if (AudioComponent)
+    {
+        AudioComponent->Play();
+    }
+
+    if (ProjectileClass)
+    {
+        FRotator ProjectileRotation = FireDirection.Rotation();
+        ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
+        if (Projectile)
+        {
+            Projectile->SetOwner(this);
+            if (Projectile->ProjectileMovement)
+            {
+                FVector Velocity = FireDirection * 8000.f;
+                Projectile->ProjectileMovement->Velocity = Velocity;
+                Projectile->ProjectileMovement->Activate();
+            }
+        }
+    }
+}
+
+
+
+
 void ACP_Guns::SetInventory(UCP_Inventory* Inventory)
 {
     InventoryRef = Inventory;
