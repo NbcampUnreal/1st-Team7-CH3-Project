@@ -15,14 +15,12 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& ItemInfo)
     ACP_Player* Player = Cast<ACP_Player>(Owner);
     if (!Player)
     {
-        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Owner is not ACP_Player!"));
         return;
     }
 
     ACP_Guns* EquippedGun = Player->EquippedGun;
     if (!EquippedGun)
     {
-        UE_LOG(LogTemp, Warning, TEXT("[UCP_Inventory] WARNING: Player has no EquippedGun!"));
         return;
     }
 
@@ -37,15 +35,8 @@ void UCP_Inventory::AddItem(const FCP_ItemInfo& ItemInfo)
                 UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] MaxAmmo increased by %d, New MaxAmmo: %d"),
                     MagazineCapacity, EquippedGun->MaxAmmo);
             }
-            else
-            {
-                UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: MagazineCapacity is 0! Check if TriggerInfo is set correctly."));
-            }
         }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: TriggerInfo is nullptr! Ammo cannot be added."));
-        }
+
     }
 }
 
@@ -55,7 +46,6 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
 {
     if (!Owner)
     {
-        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Owner is nullptr!"));
         return;
     }
 
@@ -71,21 +61,21 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
     {
         Gun->Reload();
     }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Gun is nullptr!"));
-    }
-
 
     UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Attempting to use item: %s"), *ItemInfo.ItemName);
 
     if (ItemInfo.ItemType == ECP_ItemType::Heal)
     {
-        UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Heal item used."));
-        /*
-        Heal 아이템 사용
-        */
-        
+        if (Player)
+        {
+            int HealAmount = 50; 
+            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Heal item used. Healing for: %d"), HealAmount);
+            Player->Heal(HealAmount);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Player is nullptr! Cannot heal."));
+        }
     }
 
     else if (ItemInfo.ItemType == ECP_ItemType::Ammo)
@@ -98,26 +88,18 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
         return;
     }
 
-    UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Reducing item count for: %s"), *ItemInfo.ItemName);
     ReduceItemCount(ItemInfo);
 
     if (Player)
     {
         if (Player->InventoryWidget)
         {
-            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Updating Inventory UI."));
             Player->InventoryWidget->UpdateInventory(GetInventoryItems());
         }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: InventoryWidget is nullptr!"));
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Player is nullptr!"));
+
     }
 }
+
 
 
 

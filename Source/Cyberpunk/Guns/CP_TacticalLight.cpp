@@ -77,3 +77,12 @@ void ACP_TacticalLight::AddLightPart(UStaticMesh* Mesh, FTransform Transform)
 		NewMeshComponent->RegisterComponent();
 	}
 }
+
+void ACP_TacticalLight::ToggleLight()
+{
+	if (TacticalSpotLight)
+	{
+		bool bIsCurrentlyVisible = TacticalSpotLight->IsVisible();
+		TacticalSpotLight->SetVisibility(!bIsCurrentlyVisible);
+	}
+}
