@@ -31,6 +31,9 @@ public:
 	UFUNCTION(Exec)
 	void RemovePlayerHUDToViewport();
 
+	UFUNCTION(Exec)
+	void AddDeadMenuToViewport();
+
 	void Decrease_AI(); //1씩감소
 	void Increase_AI(); //1씩 증가
 	void Set_AICount(int32 num);
@@ -47,6 +50,12 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UCP_PlayerHUD> PlayerHUDInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UCP_DeadMenu> DeadMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<class UCP_DeadMenu> DeadMenuInstance;
 
 private:
 	int32 AI_Counting;

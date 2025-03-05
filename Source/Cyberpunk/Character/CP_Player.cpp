@@ -8,6 +8,7 @@
 #include "Cyberpunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/CP_PlayerTurret.h"
+#include "Core/CP_GameInstance.h"
 
 ACP_Player::ACP_Player()
 {
@@ -246,6 +247,28 @@ void ACP_Player::Die()
 {
 	Super::Die();
 	ActivateRagdoll();
+
+	FTimerHandle DeadTimer;
+	GetWorldTimerManager().SetTimer(DeadTimer, [&]()
+		{
+			UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+			if (GameInstance == nullptr)
+			{
+				CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+				return;
+			}
+
+			APlayerController* Controller = Cast<APlayerController>(GetController());
+			if (Controller == nullptr)
+			{
+				CP_LOG(Warning, TEXT("Controller == nullptr"));
+				return;
+			}
+
+			GameInstance->AddDeadMenuToViewport();
+			Controller->SetInputMode(FInputModeUIOnly());
+			Controller->bShowMouseCursor = true;
+		}, 3.0f, false);
 }
 
 void ACP_Player::ActivateRagdoll()
