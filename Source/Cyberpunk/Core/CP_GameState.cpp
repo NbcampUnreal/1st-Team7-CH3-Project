@@ -8,6 +8,7 @@
 #include "Character/CP_PlayerController.h"
 #include "Character/CP_NormalEnemy.h"
 #include "Character/CP_CoverEnemy.h"
+#include "Character/CP_Player.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Cyberpunk.h"
@@ -35,7 +36,30 @@ void ACP_GameState::BeginPlay()
 	Super::BeginPlay();
 
 	StartWave();
+	
+	ACP_Player* Player = Cast<ACP_Player>(UGameplayStatics::GetPlayerController(this, 0)->GetPawn());
+	if (Player == nullptr)
+	{
+		CP_LOG(Warning, TEXT("Player == nullptr"));
+		return;
+	}
 
+	UCP_GameInstance* Instance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+	if (Instance == nullptr)
+	{
+		CP_LOG(Warning, TEXT("Instance == nullptr"));
+		return;
+	}
+
+	UCP_PlayerHUD* Hud = Instance->GetPlayerHUD();
+	if (Hud == nullptr)
+	{
+		CP_LOG(Warning, TEXT("Hud == nullptr"));
+		return;
+	}
+
+	Player->OnHpChangedDelegate.AddDynamic(Hud, &UCP_PlayerHUD::UpdateHealth);
+	Hud->UpdateHealth(Player->GetCurrentHp(), Player->GetMaxHP());
 }
 
 void ACP_GameState::StartWave()
