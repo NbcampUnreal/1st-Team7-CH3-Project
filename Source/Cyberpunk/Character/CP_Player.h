@@ -10,7 +10,7 @@
 #include "Guns/CP_Guns.h"
 #include "CP_Player.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, int, CurrentHp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, int, CurrentHp, int, MaxHp);
 
 class UCameraComponent;
 class USpringArmComponent;

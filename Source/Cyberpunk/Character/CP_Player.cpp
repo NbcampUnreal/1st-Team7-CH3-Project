@@ -6,6 +6,7 @@
 #include "CP_PlayerController.h"
 #include "EngineUtils.h"
 #include "Cyberpunk.h"
+#include "Kismet/GameplayStatics.h"
 
 ACP_Player::ACP_Player()
 {
@@ -106,7 +107,7 @@ float ACP_Player::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 
 	CurrentHp = FMath::Clamp(HpAfterDamage, 0, HpAfterDamage);
 
-	OnHpChangedDelegate.Broadcast(CurrentHp);
+	OnHpChangedDelegate.Broadcast(CurrentHp, MaxHp);
 
 	if (CurrentHp == 0)
 	{
@@ -120,7 +121,7 @@ void ACP_Player::Heal(int HealAmount)
 {
 	CurrentHp += HealAmount;
 	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
-	OnHpChangedDelegate.Broadcast(CurrentHp);
+	OnHpChangedDelegate.Broadcast(CurrentHp, MaxHp);
 }
 
 void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
