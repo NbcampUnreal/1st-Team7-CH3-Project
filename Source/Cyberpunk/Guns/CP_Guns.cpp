@@ -106,7 +106,7 @@ void ACP_Guns::BeginPlay()
 void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    
+
 }
 
 void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
@@ -115,7 +115,7 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
     {
         if (BarrelInfo)
         {
-            BarrelInfo->Initialize(PartName);  
+            BarrelInfo->Initialize(PartName);
             BarrelMesh->SetSkeletalMesh(BarrelInfo->GetMesh()->SkeletalMesh);
         }
     }
@@ -123,7 +123,7 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
     {
         if (BodyInfo)
         {
-            BodyInfo->Initialize(PartName);  
+            BodyInfo->Initialize(PartName);
             BodyMesh->SetSkeletalMesh(BodyInfo->GetMesh()->SkeletalMesh);
         }
     }
@@ -131,7 +131,7 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
     {
         if (TriggerInfo)
         {
-            TriggerInfo->Initialize(PartName);  
+            TriggerInfo->Initialize(PartName);
             TriggerMesh->SetSkeletalMesh(TriggerInfo->GetMesh()->SkeletalMesh);
         }
     }
@@ -144,20 +144,6 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
 //기본 파츠 로드 
 void ACP_Guns::LoadGunParts()
 {
-    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
-    if (GameInstance == nullptr)
-    {
-        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
-        return;
-    }
-
-    UCP_PlayerHUD* Hud = GameInstance->GetPlayerHUD();
-    if (Hud == nullptr)
-    {
-        CP_LOG(Warning, TEXT("Hud == nullptr"));
-        return;
-    }
-
     USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
     if (BarrelSkeletalMesh)
     {
@@ -189,8 +175,6 @@ void ACP_Guns::LoadGunParts()
         TriggerInfo->Initialize("SK_TriggerAuto");
         AmmoCount = TriggerInfo->MagazineCapacity;
         MaxAmmo = TriggerInfo->MagazineCapacity * 2;
-        Hud->UpdateAmmo(AmmoCount);
-        Hud->UpdateMaxAmmo(MaxAmmo);
     }
 }
 
@@ -385,14 +369,14 @@ void ACP_Guns::Fire(FVector FireDirection)
         FRotator ProjectileRotation = FireDirection.Rotation();
         ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
 
-        if (Projectile)  
+        if (Projectile)
         {
             Projectile->SetOwner(this);
 
             AActor* OwnerActor = GetOwner();
             if (OwnerActor && OwnerActor->ActorHasTag("Enemy"))
             {
-                Projectile->bIsNPCProjectile = true;  
+                Projectile->bIsNPCProjectile = true;
             }
 
             if (Projectile->ProjectileMovement)
@@ -552,10 +536,10 @@ void ACP_Guns::DestroyWeapon()
 {
     if (TacticalLight)
     {
-        TacticalLight->Destroy(); 
+        TacticalLight->Destroy();
         TacticalLight = nullptr;
     }
 
-    Destroy(); 
+    Destroy();
 }
 
