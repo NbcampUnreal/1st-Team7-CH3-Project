@@ -8,6 +8,7 @@
 #include "Cyberpunk.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/CP_PlayerTurret.h"
+#include "Core/CP_GameInstance.h"
 
 ACP_Player::ACP_Player()
 {
@@ -21,6 +22,10 @@ ACP_Player::ACP_Player()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArmComp);
 	CameraComp->bUsePawnControlRotation = false;
+
+	TimeAcceleratorVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TimeAccelerator Effect"));
+	TimeAcceleratorVFX->SetupAttachment(GetMesh());
+	TimeAcceleratorVFX->bAutoActivate = false;
 
 	EquippedGun = nullptr;  
 	bShouldUseDissolve = false;
@@ -84,6 +89,8 @@ void ACP_Player::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("[ACP_Player] Failed to spawn default gun!"));
 		}
 	}
+
+	//TimeAcceleratorVFX->SetActive(false);
 }
 
 
@@ -210,7 +217,6 @@ void ACP_Player::ActivateTimeAccelerator()
 void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 {
 	UWorld* World = GetWorld();
-
 	if (World == nullptr)
 	{
 		return;
@@ -229,6 +235,8 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 	World->GetWorldSettings()->SetTimeDilation(TimeAcceleratorEffect);
 	CustomTimeDilation = 1 / TimeAcceleratorEffect;
 
+	TimeAcceleratorVFX->SetActive(true);
+	TimeAcceleratorVFX->Activate();
 	World->GetTimerManager().SetTimer(TimeAcceleratorTimerHandle, [this]()
 		{
 			if (::IsValid(GetWorld()) == false)
@@ -238,6 +246,8 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 
 			GetWorld()->GetWorldSettings()->SetTimeDilation(1);
 			CustomTimeDilation = 1;
+			//TimeAcceleratorVFX->SetActive(false);
+			TimeAcceleratorVFX->Deactivate();
 
 		}, TimeAcceleratorDuration * TimeAcceleratorEffect, false);
 }
@@ -246,6 +256,28 @@ void ACP_Player::Die()
 {
 	Super::Die();
 	ActivateRagdoll();
+
+	FTimerHandle DeadTimer;
+	GetWorldTimerManager().SetTimer(DeadTimer, [&]()
+		{
+			UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+			if (GameInstance == nullptr)
+			{
+				CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+				return;
+			}
+
+			APlayerController* Controller = Cast<APlayerController>(GetController());
+			if (Controller == nullptr)
+			{
+				CP_LOG(Warning, TEXT("Controller == nullptr"));
+				return;
+			}
+
+			GameInstance->AddDeadMenuToViewport();
+			Controller->SetInputMode(FInputModeUIOnly());
+			Controller->bShowMouseCursor = true;
+		}, 3.0f, false);
 }
 
 void ACP_Player::ActivateRagdoll()

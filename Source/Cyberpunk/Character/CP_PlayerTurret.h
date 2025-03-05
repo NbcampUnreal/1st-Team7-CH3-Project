@@ -80,6 +80,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Turret")
 	TSet<FName> BreakingBoneExceptionList;
 
+	UPROPERTY(EditAnywhere, Category = "Turret")
+	TObjectPtr<USoundBase> AttackSound;
+
 protected:
 
 	float OriginalMeshRelativeYaw = 0;

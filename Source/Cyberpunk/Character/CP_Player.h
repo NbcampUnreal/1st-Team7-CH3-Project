@@ -96,6 +96,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Spell")
 	TSubclassOf<class ACP_PlayerTurret> PlayerTurretClass;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
+	TObjectPtr<UNiagaraComponent> TimeAcceleratorVFX;
+
 private:
 
 	FTimerHandle TimeAcceleratorTimerHandle;
