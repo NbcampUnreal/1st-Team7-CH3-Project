@@ -47,7 +47,13 @@ void ACP_NormalEnemy::AttackNormal()
 		return;
 	}
 
-	Gun->Fire();
+	FVector TargetPosition = GetActorLocation() + GetActorForwardVector();
+	TargetPosition = UGameplayStatics::GetPlayerPawn(World, 0)->GetActorLocation();
+	TargetPosition.Z -= 50.0f;
+
+	FVector Direction = TargetPosition - GetActorLocation();
+	Direction.Normalize();
+	Gun->Fire(Direction);
 }
 
 void ACP_NormalEnemy::Die()
