@@ -25,6 +25,10 @@ ACP_Guns::ACP_Guns()
     // 나이아가라 이펙트 
     NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
     NiagaraEffect->SetupAttachment(RootScene);
+    NiagaraEffect->SetAutoActivate(false);
+    NiagaraEffect->SetVisibility(false);
+    NiagaraEffect->Deactivate();
+
 
     // 오디오 컴포넌트
     AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
@@ -64,7 +68,6 @@ ACP_Guns::ACP_Guns()
     //기본 파츠 로드 
     LoadGunParts();
 
-
 }
 
 
@@ -97,7 +100,7 @@ void ACP_Guns::BeginPlay()
 void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-    NiagaraEffect->Deactivate();
+    
 }
 
 void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
@@ -169,6 +172,24 @@ void ACP_Guns::LoadGunParts()
     }
 }
 
+//void ACP_Guns::StartFire()
+//{
+//    if (!bIsFiring)
+//    {
+//        bIsFiring = true;
+//        Fire(); // 즉시 한 발 발사
+//        GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ACP_Guns::Fire, FireRate, true);
+//    }
+//}
+//
+//void ACP_Guns::StopFire()
+//{
+//    if (bIsFiring)
+//    {
+//        bIsFiring = false;
+//        GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
+//    }
+//}
 
 
 // 무기 발사 
@@ -212,6 +233,7 @@ void ACP_Guns::Fire()
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate();
+        NiagaraEffect->SetVisibility(true);
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
     }
 
@@ -273,6 +295,31 @@ void ACP_Guns::Fire()
         }
     }
 
+
+    if (OwnerActor)
+    {
+        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+        if (OwnerPawn && OwnerPawn->IsPlayerControlled())
+        {
+            APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
+            if (PC)
+            {
+                FRotator CurrentRotation = PC->GetControlRotation();
+
+                float SpeedFactor = (BodyInfo && BodyInfo->MovementSpeed > 0) ? BodyInfo->MovementSpeed : 1.0f;
+
+                float AdjustedRecoilYaw = RecoilYaw / SpeedFactor;
+                float AdjustedRecoilPitch = RecoilPitch / SpeedFactor;
+
+                float RandomYaw = FMath::RandRange(-AdjustedRecoilYaw, AdjustedRecoilYaw);
+                float RandomPitch = FMath::RandRange(AdjustedRecoilPitch * 0.8f, AdjustedRecoilPitch * 1.2f);
+
+                FRotator NewRotation = CurrentRotation + FRotator(-RandomPitch, RandomYaw, 0);
+                PC->SetControlRotation(NewRotation);
+            }
+        }
+    }
+
 }
 
 
@@ -294,6 +341,7 @@ void ACP_Guns::Fire(FVector FireDirection)
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate();
+        NiagaraEffect->SetVisibility(true);
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
     }
 
@@ -333,6 +381,7 @@ void ACP_Guns::DeactivateNiagaraEffect()
     if (NiagaraEffect)
     {
         NiagaraEffect->Deactivate();
+        NiagaraEffect->SetVisibility(false);
     }
 }
 
