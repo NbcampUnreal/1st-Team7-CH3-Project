@@ -7,6 +7,7 @@
 
 UCP_GameInstance::UCP_GameInstance()
 {
+	KillCount = 0;
 }
 
 void UCP_GameInstance::Init()
@@ -110,4 +111,10 @@ void UCP_GameInstance::Set_Wave(int32 p_Wave)
 int32 UCP_GameInstance::Get_Wave()
 {
 	return Wave;
+}
+
+void UCP_GameInstance::Increase_KillCount()
+{
+	KillCount++;
+	PlayerHUDInstance->UpdateKillCount(KillCount);
 }

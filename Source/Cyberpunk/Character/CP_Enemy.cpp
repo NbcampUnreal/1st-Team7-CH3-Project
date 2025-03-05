@@ -94,6 +94,7 @@ void ACP_Enemy::Die()
 		return;
 	}
 	GameInstance->Decrease_AI();
+	GameInstance->Increase_KillCount();
 
 	OnEnemyDeadDelegate.Broadcast(GetActorLocation());
 }
