@@ -31,7 +31,7 @@ protected:
 
 	virtual void Die() override;
 	
-	virtual void BreakBones(FHitResult HitInfo);
+	virtual void BreakBones();
 
 	// getter, setter
 public:

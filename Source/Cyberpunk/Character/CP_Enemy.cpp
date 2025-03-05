@@ -32,7 +32,6 @@ void ACP_Enemy::BeginPlay()
 	MovementComp->SetRVOAvoidanceUID(AvoidanceUID);
 	AvoidanceUID++;
 	MovementComp->SetAvoidanceGroup((AvoidanceUID % 31));
-	//CP_LOG(Warning, TEXT(" AvoidanceId : %d, Group : %d"), MovementComp->AvoidanceUID, MovementComp->GetAvoidanceGroupMask());
 }
 
 float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -48,11 +47,8 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 	{
 		Die();
 
-		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
-			BreakBones(PointDamageEvent.HitInfo);
-		}
+		const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
+		BreakBones();
 	}
 
 	return NewDamage;
@@ -104,7 +100,7 @@ void ACP_Enemy::Die()
 	OnEnemyDeadDelegate.Broadcast(GetActorLocation());
 }
 
-void ACP_Enemy::BreakBones(FHitResult HitInfo)
+void ACP_Enemy::BreakBones()
 {
 
 	USkeletalMeshComponent* MyMesh = GetMesh();
@@ -121,26 +117,11 @@ void ACP_Enemy::BreakBones(FHitResult HitInfo)
 	FVector Impulse = FVector::ZeroVector;
 	Impulse *= 10.0f;
 
-	FName& BoneName = HitInfo.BoneName;
-
-	FVector HitLocation = MyMesh->GetBoneLocation(BoneName);
-
-	MyMesh->bUpdateJointsFromAnimation = false;
-
-	MyMesh->SetAllBodiesBelowPhysicsBlendWeight(BoneName, 1.0f);
-	MyMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MyMesh->SetAllBodiesBelowSimulatePhysics(BoneName, true, true);
-
-	if (BreakingBoneExceptionList.Contains(BoneName) == false)
-	{
-		MyMesh->BreakConstraint(Impulse, HitLocation, BoneName);
-	}
-
 	int BoneCount = MyMesh->GetNumBones();
 
 	for (int i = 0; i < BoneCount; ++i)
 	{
-		BoneName = MyMesh->GetBoneName(i);
+		FName BoneName = MyMesh->GetBoneName(i);
 
 		if (BreakingBoneExceptionList.Contains(BoneName))
 		{
@@ -149,15 +130,6 @@ void ACP_Enemy::BreakBones(FHitResult HitInfo)
 
 		MyMesh->BreakConstraint(FVector::ZeroVector, FVector::ZeroVector, BoneName);
 	}
-
-	//Mesh->AddRadialForce(HitCharacter->GetActorLocation(), 100.0f, 1000, ERadialImpulseFalloff::RIF_Linear, true);
-
-	//Mesh->WakeAllRigidBodies();
-	//Mesh->SetSimulatePhysics(true);
-	//Mesh->RecreatePhysicsState();
-	//Mesh->HideBoneByName(BoneName, EPhysBodyOp::PBO_None);
-	CP_LOG(Log, TEXT("Hit, BoneName : %s"), *HitInfo.BoneName.ToString());
-	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3.0f);
 }
 
 float ACP_Enemy::GetAttackRange()
