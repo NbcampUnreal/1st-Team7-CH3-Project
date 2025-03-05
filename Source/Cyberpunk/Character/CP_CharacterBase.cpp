@@ -24,7 +24,7 @@ void ACP_CharacterBase::BeginPlay()
 			CP_LOG(Warning, TEXT("OriginalMaterial == nullptr, Index : %d"), i);
 			continue;
 		}
-		CP_LOG(Warning, TEXT("Material : %s"), *OriginalMaterial->GetName());
+
 		UMaterialInstanceDynamic* Dynamic = UMaterialInstanceDynamic::Create(OriginalMaterial, MeshComp);
 		CurrentDissolveMaterialInstanceArray.Emplace(MoveTemp(Dynamic));
 		MeshComp->SetMaterial(i, CurrentDissolveMaterialInstanceArray.Last());
@@ -104,8 +104,6 @@ void ACP_CharacterBase::Dissolve(const float InDissolveTime)
 
 				Dynamic->SetScalarParameterValue(TEXT("Border"), CurrentDissolveBorder);
 				Dynamic->GetScalarParameterValue(TEXT("Border"), CurrentDissolveBorder);
-				CP_LOG(Warning, TEXT("Border : %f, Material : %s"), CurrentDissolveBorder, *Dynamic->GetName());
-				//MeshComp->SetMaterial(i, Dynamic);
 			}
 
 			DissolveProgress += 1;

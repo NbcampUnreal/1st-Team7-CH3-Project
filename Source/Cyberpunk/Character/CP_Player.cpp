@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CP_Player.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -8,6 +5,7 @@
 #include "InputAction.h"
 #include "CP_PlayerController.h"
 #include "EngineUtils.h"
+#include "Cyberpunk.h"
 
 ACP_Player::ACP_Player()
 {
@@ -23,6 +21,7 @@ ACP_Player::ACP_Player()
 	CameraComp->bUsePawnControlRotation = false;
 
 	EquippedGun = nullptr;  
+	bShouldUseDissolve = false;
 }
 
 void ACP_Player::BeginPlay()
@@ -99,6 +98,22 @@ void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+float ACP_Player::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	int32 HpAfterDamage = CurrentHp - NewDamage;
+
+	CurrentHp = FMath::Clamp(HpAfterDamage, 0, HpAfterDamage);
+
+	if (CurrentHp == 0)
+	{
+		Die();
+	}
+
+	return NewDamage;
+}
+
 void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
 {
 	if (PlayerInventory)
@@ -138,7 +153,6 @@ void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 	}
 }
 
-
 void ACP_Player::ActivateTimeAccelerator()
 {
 	SetActivateTimeAccelerator(true);
@@ -177,4 +191,24 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 			CustomTimeDilation = 1;
 
 		}, TimeAcceleratorDuration * TimeAcceleratorEffect, false);
+}
+
+void ACP_Player::Die()
+{
+	Super::Die();
+	ActivateRagdoll();
+}
+
+void ACP_Player::ActivateRagdoll()
+{
+	USkeletalMeshComponent* MyMesh = GetMesh();
+	if (MyMesh == nullptr)
+	{
+		CP_LOG(Error, TEXT("MyMesh == nullptr, Name : "), *GetName());
+		return;
+	}
+
+	MyMesh->SetAnimInstanceClass(nullptr);
+	MyMesh->SetSimulatePhysics(true);
+	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));
 }

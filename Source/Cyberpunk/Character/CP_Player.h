@@ -29,6 +29,10 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
+
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+public:
 	// Camera
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	USpringArmComponent* SpringArmComp;
@@ -63,6 +67,9 @@ public:
 protected:
 
 	void SetActivateTimeAccelerator(bool bShouldActivate);
+	virtual void Die() override;
+
+	void ActivateRagdoll();
 
 protected:
 
