@@ -64,6 +64,11 @@ void ACP_Enemy::AttackNormal(AActor* Target)
 
 void ACP_Enemy::Die()
 {
+	if (bIsDead)
+	{
+		return;
+	}
+
 	Super::Die();
 
 	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();

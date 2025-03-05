@@ -2,6 +2,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/CP_Player.h"
 #include "CP_Projectile.h"
+#include "Cyberpunk.h"
+
+#include "Core/CP_GameInstance.h"
+#include "Core/CP_PlayerHUD.h"
+
 ACP_Guns::ACP_Guns()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -196,6 +201,20 @@ void ACP_Guns::LoadGunParts()
 // 무기 발사 
 void ACP_Guns::Fire()
 {
+    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+    if (GameInstance == nullptr)
+    {
+        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+        return;
+    }
+
+    UCP_PlayerHUD* Hud = GameInstance->GetPlayerHUD();
+    if (Hud == nullptr)
+    {
+        CP_LOG(Warning, TEXT("Hud == nullptr"));
+        return;
+    }
+
     if (!BarrelInfo) return;
 
     if (!TriggerInfo || AmmoCount <= 0)
@@ -205,6 +224,7 @@ void ACP_Guns::Fire()
     }
 
     AmmoCount--;
+    Hud->UpdateAmmo(AmmoCount);
 
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
 
@@ -327,6 +347,20 @@ void ACP_Guns::Fire()
 //npc 총 발사
 void ACP_Guns::Fire(FVector FireDirection)
 {
+    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+    if (GameInstance == nullptr)
+    {
+        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+        return;
+    }
+
+    UCP_PlayerHUD* Hud = GameInstance->GetPlayerHUD();
+    if (Hud == nullptr)
+    {
+        CP_LOG(Warning, TEXT("Hud == nullptr"));
+        return;
+    }
+
     if (!BarrelInfo) return;
 
     if (!TriggerInfo || AmmoCount <= 0)
@@ -336,6 +370,7 @@ void ACP_Guns::Fire(FVector FireDirection)
     }
 
     AmmoCount--;
+    Hud->UpdateAmmo(AmmoCount);
 
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
 
@@ -440,6 +475,20 @@ float ACP_Guns::CalculateTotalDamage()
 
 void ACP_Guns::Reload()
 {
+    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+    if (GameInstance == nullptr)
+    {
+        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+        return;
+    }
+
+    UCP_PlayerHUD* Hud = GameInstance->GetPlayerHUD();
+    if (Hud == nullptr)
+    {
+        CP_LOG(Warning, TEXT("Hud == nullptr"));
+        return;
+    }
+
     UE_LOG(LogTemp, Warning, TEXT("[ACP_guns] Reload() called."));
     if (!TriggerInfo)
     {
@@ -474,6 +523,8 @@ void ACP_Guns::Reload()
 
     AmmoCount += AmmoToLoad;
     MaxAmmo -= AmmoToLoad;
+    Hud->UpdateAmmo(AmmoCount);
+    Hud->UpdateMaxAmmo(MaxAmmo);
 
     // 사운드 재생
     USoundBase* ReloadSound = LoadObject<USoundBase>(nullptr, TEXT("SoundWave'/Game/Gun_BluePrint/Sound/ak_reload.ak_reload'"));
