@@ -13,12 +13,11 @@ void UCP_DeadMenu::NativeConstruct()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CP_PauseMenu: ExitFromPauseButton 위젯이 바인딩되지 않았습니다."));
+		UE_LOG(LogTemp, Warning, TEXT("UCP_DeadMenu: Exit_Button 위젯이 바인딩되지 않았습니다."));
 	}
 }
 
 void UCP_DeadMenu::OnExitButtonClicked()
 {
 	UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
-	UE_LOG(LogTemp, Warning, TEXT("CP_PauseMenu: Exit from Pause Button Clicked"));
 }

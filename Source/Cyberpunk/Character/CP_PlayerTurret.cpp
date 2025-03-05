@@ -146,15 +146,6 @@ void ACP_PlayerTurret::BreakBones(FHitResult HitInfo)
 
 		MyMesh->BreakConstraint(FVector::ZeroVector, FVector::ZeroVector, BoneName);
 	}
-
-	//Mesh->AddRadialForce(HitCharacter->GetActorLocation(), 100.0f, 1000, ERadialImpulseFalloff::RIF_Linear, true);
-
-	//Mesh->WakeAllRigidBodies();
-	//Mesh->SetSimulatePhysics(true);
-	//Mesh->RecreatePhysicsState();
-	//Mesh->HideBoneByName(BoneName, EPhysBodyOp::PBO_None);
-	CP_LOG(Log, TEXT("Hit, BoneName : %s"), *HitInfo.BoneName.ToString());
-	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3.0f);
 }
 
 void ACP_PlayerTurret::Attack(AActor* Target)
@@ -181,16 +172,13 @@ void ACP_PlayerTurret::Attack(AActor* Target)
 
 		FPointDamageEvent DamageEvent;
 		DamagedCharacter->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
-
-		//UGameplayStatics::ApplyDamage(DamagedCharacter, AttackDamage, GetController(), this, nullptr);
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3);
-		CP_LOG(Warning, TEXT("Turret Damaging Target"));
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Red, false, 1);
 	}
 
+	UGameplayStatics::PlaySoundAtLocation(this, AttackSound, GetActorLocation());
 	OnPlayerTurrentAttack.Broadcast(EndPoint);
 }
 
@@ -205,7 +193,7 @@ void ACP_PlayerTurret::AimTarget(const ACP_Enemy* Target)
 	FVector StartLocation = GetActorLocation();
 	FVector TargetLocation = Target->GetActorLocation();
 
-	FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, TargetLocation); // Direction.Rotation();
+	FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(StartLocation, TargetLocation);
 	FRotator CurrentRotation = GetActorRotation();
 	
 	float DeltaRotation = FMath::UnwindDegrees(NewRotation.Yaw - CurrentRotation.Yaw);
