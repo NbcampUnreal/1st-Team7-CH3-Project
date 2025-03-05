@@ -85,4 +85,6 @@ void ACP_TacticalLight::ToggleLight()
 		bool bIsCurrentlyVisible = TacticalSpotLight->IsVisible();
 		TacticalSpotLight->SetVisibility(!bIsCurrentlyVisible);
 	}
+	
 }
+

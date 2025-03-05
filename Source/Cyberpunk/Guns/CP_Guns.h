@@ -39,6 +39,8 @@ public:
     void DeactivateNiagaraEffect();
     void ToggleLight();
 
+    virtual void BeginPlay() override;
+
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;
 
@@ -59,9 +61,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun Parts")
     ACP_TriggerInfo* TriggerInfo;
-
-    UPROPERTY(VisibleAnywhere, Category = "Gun Parts")
-    UChildActorComponent* TacticalLightComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sound")
     UAudioComponent* AudioComponent;
@@ -87,6 +86,18 @@ public:
     UCP_Inventory* InventoryRef;
 
     void SetInventory(UCP_Inventory* Inventory);
+
+    UPROPERTY(EditAnywhere, Category = "Recoil")
+    float RecoilPitch = 5.0f; 
+
+    UPROPERTY(EditAnywhere, Category = "Recoil")
+    float RecoilYaw = 2.0f; 
+
+    FTimerHandle FireTimerHandle; 
+    bool bIsFiring = false; 
+
+    UPROPERTY(EditAnywhere, Category = "Fire")
+    float FireRate = 0.1f; 
 
     UPROPERTY()
     ACP_TacticalLight* TacticalLight;

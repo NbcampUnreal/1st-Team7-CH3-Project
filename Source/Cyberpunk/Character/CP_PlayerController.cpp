@@ -87,20 +87,21 @@ void ACP_PlayerController::SetupInputComponent()
         {
             EnhancedInput->BindAction(CraftingMenuAction, ETriggerEvent::Triggered, this, &ACP_PlayerController::ToggleCraftingMenu);
         }
-        if (ToggleLightAction)  
+        if (ToggleLightAction)
         {
             EnhancedInput->BindAction(ToggleLightAction, ETriggerEvent::Triggered, this, &ACP_PlayerController::ToggleLight);
         }
-        if (FireAction)  
+        if (FireAction)
         {
             EnhancedInput->BindAction(FireAction, ETriggerEvent::Triggered, this, &ACP_PlayerController::Fire);
         }
-        if (ReloadAction)  
+        if (ReloadAction)
         {
             EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ACP_PlayerController::Reload);
         }
     }
 }
+
 
 void ACP_PlayerController::ToggleLight()
 {
@@ -121,6 +122,7 @@ void ACP_PlayerController::Fire()
     }
 }
 
+
 void ACP_PlayerController::Reload()
 {
     ACP_Player* PlayerCharacter = Cast<ACP_Player>(GetPawn());
@@ -128,6 +130,7 @@ void ACP_PlayerController::Reload()
     {
         PlayerCharacter->ReloadWeapon();
     }
+
 }
 
 

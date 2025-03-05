@@ -34,10 +34,10 @@ public:
 	void ToggleLight();  
 
 	UFUNCTION()
-	void Fire();  
+	void Reload();  
 
 	UFUNCTION()
-	void Reload();  
+	void Fire();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
