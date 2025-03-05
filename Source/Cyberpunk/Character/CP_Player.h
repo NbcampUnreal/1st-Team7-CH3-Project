@@ -34,6 +34,9 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void Heal(int HealAmount);
+	void FireWeapon();
+	void ReloadWeapon();
+	void ToggleTactical();
 	
 	FOnHpChangedDelegate OnHpChangedDelegate;
 
@@ -47,7 +50,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
-
 
 	UPROPERTY()
 	UCP_Inventory* PlayerInventory;
@@ -67,7 +69,7 @@ public:
 	void ActivateTimeAccelerator();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
-	TSubclassOf<ACP_Guns> DefaultGunClass;  // ±âº» ÃÑ Å¬·¡½º
+	TSubclassOf<ACP_Guns> DefaultGunClass;  // ï¿½âº» ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½
 
 	UFUNCTION(BlueprintCallable, Category = "Spell")
 	void CreateTurret();
@@ -84,8 +86,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Spell")
 	float TimeAcceleratorDuration = 5.0f;
 
-	// 0~1 »çÀÌÀÇ °ªÀ¸·Î ¼¼°è°¡ ¾ó¸¸Å­ÀÇ ºñÀ²·Î ´À·ÁÁúÁö °áÁ¤
-	// 0.1ÀÌ¸é ¼¼°è°¡ Æò»ó½ÃÀÇ 10%·Î ¿òÁ÷ÀÓ
+	// 0~1 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½è°¡ ï¿½ï¿½Å­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	// 0.1ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½è°¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 10%ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	UPROPERTY(EditAnywhere, Category = "Spell")
 	float TimeAcceleratorEffect = 0.1f;
 

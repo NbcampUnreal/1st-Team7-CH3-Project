@@ -33,7 +33,7 @@ ACP_Guns::ACP_Guns()
     // Tactical Light 
     TacticalLightComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TacticalLight"));
     TacticalLightComponent->SetupAttachment(BodyMesh, FName("Light"));
-
+    TacticalLight = Cast<ACP_TacticalLight>(TacticalLightComponent->GetChildActor());
     static ConstructorHelpers::FClassFinder<AActor> HitEffectBP(TEXT("Blueprint'/Game/FXVarietyPack/Blueprints/BP_ky_hit2.BP_ky_hit2_C'"));
     if (HitEffectBP.Succeeded())
     {
@@ -390,4 +390,13 @@ void ACP_Guns::Reload()
     InventoryRef->ReduceItemCountByName("Ammo", 1);
 
     UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reload complete. AmmoCount: %d, MaxAmmo: %d"), AmmoCount, MaxAmmo);
+}
+
+
+void ACP_Guns::ToggleLight()
+{
+    if (TacticalLight)
+    {
+        TacticalLight->ToggleLight();
+    }
 }

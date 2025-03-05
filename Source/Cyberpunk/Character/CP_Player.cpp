@@ -156,6 +156,31 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 	}
 }
 
+void ACP_Player::FireWeapon()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->Fire();
+	}
+}
+
+void ACP_Player::ReloadWeapon()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->Reload();
+	}
+}
+
+void ACP_Player::ToggleTactical()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->ToggleLight();
+	}
+}
+
+
 void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 {
 	if (NewGun)
@@ -236,3 +261,4 @@ void ACP_Player::ActivateRagdoll()
 	MyMesh->SetSimulatePhysics(true);
 	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));
 }
+
