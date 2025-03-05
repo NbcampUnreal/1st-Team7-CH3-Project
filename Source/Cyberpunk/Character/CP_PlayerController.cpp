@@ -121,6 +121,9 @@ void ACP_PlayerController::Fire()
     }
 }
 
+
+
+
 void ACP_PlayerController::Reload()
 {
     ACP_Player* PlayerCharacter = Cast<ACP_Player>(GetPawn());
@@ -128,6 +131,7 @@ void ACP_PlayerController::Reload()
     {
         PlayerCharacter->ReloadWeapon();
     }
+
 }
 
 

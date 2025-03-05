@@ -1,4 +1,4 @@
-#include "CP_Guns.h"
+ï»¿#include "CP_Guns.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/CP_Player.h"
 ACP_Guns::ACP_Guns()
@@ -17,23 +17,33 @@ ACP_Guns::ACP_Guns()
     TriggerMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("TriggerMesh"));
     TriggerMesh->SetupAttachment(RootScene);
 
-    // ÆÄÃ÷ Á¤º¸ 
+    // íŒŒì¸  ì •ë³´ 
     BarrelInfo = CreateDefaultSubobject<ACP_BarrelInfo>(TEXT("BarrelInfo"));
     BodyInfo = CreateDefaultSubobject<ACP_BodyInfo>(TEXT("BodyInfo"));
     TriggerInfo = CreateDefaultSubobject<ACP_TriggerInfo>(TEXT("TriggerInfo"));
 
-    // ³ªÀÌ¾Æ°¡¶ó ÀÌÆåÆ® 
+    // ë‚˜ì´ì•„ê°€ë¼ ì´í™íŠ¸ 
     NiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraEffect"));
     NiagaraEffect->SetupAttachment(RootScene);
 
-    // ¿Àµğ¿À ÄÄÆ÷³ÍÆ®
+    // ì˜¤ë””ì˜¤ ì»´í¬ë„ŒíŠ¸
     AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
     AudioComponent->SetupAttachment(RootScene);
 
     // Tactical Light 
     TacticalLightComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TacticalLight"));
     TacticalLightComponent->SetupAttachment(BodyMesh, FName("Light"));
-    TacticalLight = Cast<ACP_TacticalLight>(TacticalLightComponent->GetChildActor());
+    if (TacticalLightComponent)
+    {
+        TacticalLightComponent->SetChildActorClass(ACP_TacticalLight::StaticClass());
+        TacticalLight = Cast<ACP_TacticalLight>(TacticalLightComponent->GetChildActor());
+
+        if (TacticalLight)
+        {
+            UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] TacticalLight successfully initialized."));
+        }
+    }
+
     static ConstructorHelpers::FClassFinder<AActor> HitEffectBP(TEXT("Blueprint'/Game/FXVarietyPack/Blueprints/BP_ky_hit2.BP_ky_hit2_C'"));
     if (HitEffectBP.Succeeded())
     {
@@ -47,32 +57,32 @@ ACP_Guns::ACP_Guns()
         InventoryRef = Player->PlayerInventory;
         UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] InventoryRef successfully set."));
     }
-    // ¹ß»ç Å¸ÀÌ¸Ó
+    // ë°œì‚¬ íƒ€ì´ë¨¸
     AmmoCount = 0;
     MaxAmmo = 0;
 
-    //¹ß»çÇÒ ÇÁ·ÎÁ§Å¸ÀÏ 
+    //ë°œì‚¬í•  í”„ë¡œì íƒ€ì¼ 
     static ConstructorHelpers::FClassFinder<ACP_Projectile> ProjectileBPClass(TEXT("Blueprint'/Game/Gun_BluePrint/BP_Projectile.BP_Projectile_C'"));
     if (ProjectileBPClass.Succeeded())
     {
         ProjectileClass = ProjectileBPClass.Class;
     }
 
-    // ¹ß»ç »ç¿îµå 
+    // ë°œì‚¬ ì‚¬ìš´ë“œ 
     static ConstructorHelpers::FObjectFinder<USoundCue> FireSoundCueAsset(TEXT("SoundCue'/Game/Gun_BluePrint/MuzzleFlash/Demo/FPWeapon/Cue/FirstPersonTemplateWeaponFire02_Cue.FirstPersonTemplateWeaponFire02_Cue'"));
     if (FireSoundCueAsset.Succeeded() && AudioComponent)
     {
         AudioComponent->SetSound(FireSoundCueAsset.Object);
     }
 
-    //±âº» ÆÄÃ÷ ·Îµå 
+    //ê¸°ë³¸ íŒŒì¸  ë¡œë“œ 
     LoadGunParts();
 
 
 }
 
 
-// Æ½ ÇÔ¼ö 
+// í‹± í•¨ìˆ˜ 
 void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
@@ -111,7 +121,7 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
 
 
 
-//±âº» ÆÄÃ÷ ·Îµå 
+//ê¸°ë³¸ íŒŒì¸  ë¡œë“œ 
 void ACP_Guns::LoadGunParts()
 {
     USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
@@ -120,7 +130,7 @@ void ACP_Guns::LoadGunParts()
         BarrelMesh->SetSkeletalMesh(BarrelSkeletalMesh);
         if (BarrelInfo)
         {
-            BarrelInfo->Initialize("SK_BarrelBeam");
+            BarrelInfo->Initialize("SK_BarrelBulletScatter");
         }
 
         UNiagaraSystem* NiagaraAsset = Cast<UNiagaraSystem>(StaticLoadObject(UNiagaraSystem::StaticClass(), nullptr, TEXT("NiagaraSystem'/Game/Gun_BluePrint/MuzzleFlash/MuzzleFlash/Niagara/NS_MuzzleFlash.NS_MuzzleFlash'")));
@@ -150,7 +160,7 @@ void ACP_Guns::LoadGunParts()
 
 
 
-// ¹«±â ¹ß»ç 
+// ë¬´ê¸° ë°œì‚¬ 
 void ACP_Guns::Fire()
 {
     if (!BarrelInfo) return;
@@ -164,19 +174,43 @@ void ACP_Guns::Fire()
     AmmoCount--;
 
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
-    FVector MuzzleDirection = BarrelMesh->GetSocketTransform(FName("Muzzle")).GetRotation().GetRightVector();
-    
+
+    //  ì¹´ë©”ë¼ ë°©í–¥ ê°€ì ¸ì˜¤ê¸°
+    AActor* OwnerActor = GetOwner();
+    FVector AimDirection = FVector::ZeroVector;
+    if (OwnerActor)
+    {
+        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+        if (OwnerPawn && OwnerPawn->IsPlayerControlled())
+        {
+            APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
+            if (PC)
+            {
+                FVector CameraLocation;
+                FRotator CameraRotation;
+                PC->GetPlayerViewPoint(CameraLocation, CameraRotation);  //  ì¹´ë©”ë¼ ìœ„ì¹˜ ë° íšŒì „ ê°€ì ¸ì˜¤ê¸°
+                AimDirection = CameraRotation.Vector();  //  ì¹´ë©”ë¼ê°€ ë°”ë¼ë³´ëŠ” ë°©í–¥ ì‚¬ìš©
+            }
+        }
+    }
+
+    // ì´êµ¬ ë°©í–¥ì„ ì—ì„ ë°©í–¥ê³¼ ì¼ì¹˜ì‹œí‚´
+    FVector MuzzleDirection = AimDirection.IsNearlyZero() ? BarrelMesh->GetSocketRotation(FName("Muzzle")).Vector() : AimDirection;
+
+    // ë‚˜ì´ì•„ê°€ë¼ ì´í™íŠ¸ ì‹¤í–‰
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate();
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
     }
 
+    // ë°œì‚¬ ì‚¬ìš´ë“œ ì‹¤í–‰
     if (AudioComponent)
     {
         AudioComponent->Play();
     }
 
+    // íˆíŠ¸ìŠ¤ìº” ë¬´ê¸° ì²˜ë¦¬
     if (BarrelInfo->bIsHitscan)
     {
         FHitResult HitResult;
@@ -187,7 +221,7 @@ void ACP_Guns::Fire()
 
         FVector EndPoint = MuzzleLocation + (MuzzleDirection * 2000.0f);
         bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, MuzzleLocation, EndPoint, ECC_GameTraceChannel1, QueryParams);
-    
+
         if (bHit)
         {
             EndPoint = HitResult.ImpactPoint;
@@ -202,16 +236,13 @@ void ACP_Guns::Fire()
                 AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, EndPoint, FRotator::ZeroRotator);
                 if (HitEffect)
                 {
-                    HitEffect->SetActorScale3D(FVector(0.2f, 0.2f, 0.2f));
+                    HitEffect->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
                 }
             }
         }
-
-
-       
     }
-    
-    else if (!BarrelInfo->bIsHitscan)
+    //  íˆ¬ì‚¬ì²´ ë°œì‚¬
+    else 
     {
         if (ProjectileClass)
         {
@@ -222,16 +253,19 @@ void ACP_Guns::Fire()
                 Projectile->SetOwner(this);
                 if (Projectile->ProjectileMovement)
                 {
-                    FVector Velocity = MuzzleDirection * 8000.f;
+                    FVector Velocity = MuzzleDirection * 12000.f;
                     Projectile->ProjectileMovement->Velocity = Velocity;
                     Projectile->ProjectileMovement->Activate();
                 }
             }
+
         }
     }
+
 }
 
-//npc ÃÑ ¹ß»ç
+
+//npc ì´ ë°œì‚¬
 void ACP_Guns::Fire(FVector FireDirection)
 {
     if (!BarrelInfo) return;
@@ -309,12 +343,12 @@ void ACP_Guns::ApplyDamage(AActor* HitActor)
         }
     }
 
-    // ÇÇ°İ ´ë»óÀÌ ACP_CharacterBase¸¦ »ó¼Ó¹Ş´ÂÁö È®ÀÎ
+    // í”¼ê²© ëŒ€ìƒì´ ACP_CharacterBaseë¥¼ ìƒì†ë°›ëŠ”ì§€ í™•ì¸
     ACP_CharacterBase* Character = Cast<ACP_CharacterBase>(HitActor);
     if (Character)
     {
         float AppliedDamage = UGameplayStatics::ApplyDamage(
-            Character,  // ÀûÀÌµç ÇÃ·¹ÀÌ¾îµç ¸ğµÎ Ã³¸® °¡´É
+            Character,  // ì ì´ë“  í”Œë ˆì´ì–´ë“  ëª¨ë‘ ì²˜ë¦¬ ê°€ëŠ¥
             TotalDamage,
             OwnerController,
             this,
@@ -336,6 +370,7 @@ float ACP_Guns::CalculateTotalDamage()
 
 void ACP_Guns::Reload()
 {
+    UE_LOG(LogTemp, Warning, TEXT("[ACP_guns] Reload() called."));
     if (!TriggerInfo)
     {
         UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] ERROR: TriggerInfo is nullptr! Cannot reload."));
@@ -349,9 +384,9 @@ void ACP_Guns::Reload()
     }
 
     int32 MagazineCapacity = TriggerInfo->MagazineCapacity;
-    int32 CurrentAmmoCount = InventoryRef->GetItemCount("Ammo");
+    int32 AmmoBox = InventoryRef->GetItemCount("Ammo Pack");
 
-    if (CurrentAmmoCount <= 0)
+    if (AmmoBox <= 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] No ammo available for reload!"));
         return;
@@ -365,12 +400,12 @@ void ACP_Guns::Reload()
 
 
     int32 AmmoNeeded = MagazineCapacity - AmmoCount;
-    int32 AmmoToLoad = FMath::Min(AmmoNeeded, MaxAmmo); // MaxAmmo¿Í ÇÊ¿äÇÑ Åº¾à Áß ÀÛÀº °ª ¼±ÅÃ
+    int32 AmmoToLoad = FMath::Min(AmmoNeeded, MaxAmmo); // MaxAmmoì™€ í•„ìš”í•œ íƒ„ì•½ ì¤‘ ì‘ì€ ê°’ ì„ íƒ
 
     AmmoCount += AmmoToLoad;
     MaxAmmo -= AmmoToLoad;
 
-    // »ç¿îµå Àç»ı
+    // ì‚¬ìš´ë“œ ì¬ìƒ
     USoundBase* ReloadSound = LoadObject<USoundBase>(nullptr, TEXT("SoundWave'/Game/Gun_BluePrint/Sound/ak_reload.ak_reload'"));
     if (ReloadSound)
     {
@@ -382,12 +417,12 @@ void ACP_Guns::Reload()
         UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Failed to load reload sound! Check path."));
     }
 
-    // ÀÎº¥Åä¸®¿¡¼­ `Ammo` 1°³¸¸ Á¦°Å
+    // ì¸ë²¤í† ë¦¬ì—ì„œ `Ammo` 1ê°œë§Œ ì œê±°
     UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Removing 1 Ammo from inventory."));
     FCP_ItemInfo AmmoItem;
-    AmmoItem.ItemName = "Ammo";
+    AmmoItem.ItemName = "Ammo Pack";
     AmmoItem.ItemType = ECP_ItemType::Ammo;
-    InventoryRef->ReduceItemCountByName("Ammo", 1);
+    InventoryRef->ReduceItemCountByName("Ammo Pack", 1);
 
     UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Reload complete. AmmoCount: %d, MaxAmmo: %d"), AmmoCount, MaxAmmo);
 }
@@ -395,8 +430,6 @@ void ACP_Guns::Reload()
 
 void ACP_Guns::ToggleLight()
 {
-    if (TacticalLight)
-    {
-        TacticalLight->ToggleLight();
-    }
+    UE_LOG(LogTemp, Warning, TEXT("[ACP_guns] ToggleLight() called! TacticalSpotLight exists."));
+    TacticalLight->ToggleLight();
 }

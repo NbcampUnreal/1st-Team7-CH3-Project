@@ -82,7 +82,11 @@ void ACP_TacticalLight::ToggleLight()
 {
 	if (TacticalSpotLight)
 	{
-		bool bIsCurrentlyVisible = TacticalSpotLight->IsVisible();
-		TacticalSpotLight->SetVisibility(!bIsCurrentlyVisible);
+		UE_LOG(LogTemp, Warning, TEXT("[ACP_TacticalLight] ToggleLight() called! TacticalSpotLight exists."));
+		TacticalSpotLight->SetVisibility(true);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("[ACP_TacticalLight] ERROR: TacticalSpotLight is nullptr!"));
 	}
 }

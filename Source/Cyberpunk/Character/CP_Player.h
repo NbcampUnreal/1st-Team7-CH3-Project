@@ -69,7 +69,7 @@ public:
 	void ActivateTimeAccelerator();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
-	TSubclassOf<ACP_Guns> DefaultGunClass;  // �⺻ �� Ŭ����
+	TSubclassOf<ACP_Guns> DefaultGunClass;  
 
 	UFUNCTION(BlueprintCallable, Category = "Spell")
 	void CreateTurret();
@@ -86,8 +86,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Spell")
 	float TimeAcceleratorDuration = 5.0f;
 
-	// 0~1 ������ ������ ���谡 ��ŭ�� ������ �������� ����
-	// 0.1�̸� ���谡 ������ 10%�� ������
 	UPROPERTY(EditAnywhere, Category = "Spell")
 	float TimeAcceleratorEffect = 0.1f;
 
