@@ -58,15 +58,10 @@ void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
     }
 }
 
-
-
-
-// 충돌 시 호출될 함수
 void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
     if (OtherActor && OtherActor != this && OtherActor != GetOwner())
     {
-        // 데미지 적용
         AActor* OwnerActor = GetOwner();
         AController* OwnerController = nullptr;
 
@@ -79,11 +74,15 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
             }
         }
 
-        float TotalDamage = 0.0f;
-        ACP_Guns* Gun = Cast<ACP_Guns>(OwnerActor);
-        if (Gun)
+        float TotalDamage = 10.0f;  // 기본값 10 (NPC)
+
+        if (!bIsNPCProjectile)  
         {
-            TotalDamage = Gun->CalculateTotalDamage();
+            ACP_Guns* Gun = Cast<ACP_Guns>(OwnerActor);
+            if (Gun)
+            {
+                TotalDamage = Gun->CalculateTotalDamage();
+            }
         }
 
         if (TotalDamage > 0.0f)
@@ -101,4 +100,5 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
         Destroy();
     }
 }
+
 
