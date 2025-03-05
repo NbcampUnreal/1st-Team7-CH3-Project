@@ -115,7 +115,7 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(IgnoredActor);
 
-	bool bIsHit = GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity, ObjectQueryParams, FCollisionShape::MakeSphere(ExplosionRadius));
+	bool bIsHit = GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity, ObjectQueryParams, FCollisionShape::MakeSphere(ExplosionRadius), QueryParams);
 
 	if (bIsHit == false)
 	{
