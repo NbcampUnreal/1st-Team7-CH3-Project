@@ -38,8 +38,8 @@ public:
     void LoadGunParts();
     void DeactivateNiagaraEffect();
     void ToggleLight();
+    void DestroyWeapon();
 
-    virtual void BeginPlay() override;
 
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;

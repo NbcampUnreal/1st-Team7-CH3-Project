@@ -531,3 +531,15 @@ void ACP_Guns::ToggleLight()
 {
     TacticalLight->ToggleLight();
 }
+
+void ACP_Guns::DestroyWeapon()
+{
+    if (TacticalLight)
+    {
+        TacticalLight->Destroy(); 
+        TacticalLight = nullptr;
+    }
+
+    Destroy(); 
+}
+
