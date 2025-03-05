@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "Cyberpunk.h"
 #include "Kismet/GameplayStatics.h"
+#include "Character/CP_PlayerTurret.h"
 
 ACP_Player::ACP_Player()
 {
@@ -122,6 +123,19 @@ void ACP_Player::Heal(int HealAmount)
 	CurrentHp += HealAmount;
 	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
 	OnHpChangedDelegate.Broadcast(CurrentHp, MaxHp);
+}
+
+void ACP_Player::CreateTurret()
+{
+	if (PlayerTurretClass == nullptr)
+	{
+		CP_LOG(Warning, TEXT("PlayerTurretClass == nullptr"));
+		return;
+	}
+
+	FVector CreateLocation = GetActorLocation() + GetActorForwardVector() * 100.0f;
+
+	GetWorld()->SpawnActor<ACP_PlayerTurret>(PlayerTurretClass, CreateLocation, FRotator::ZeroRotator);
 }
 
 void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)

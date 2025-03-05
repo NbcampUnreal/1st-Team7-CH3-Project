@@ -34,7 +34,7 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Turret")
-	void Attack();
+	void Attack(AActor* Target);
 
 	// Yaw È¸Àü
 	void RotateTurret(float DeltaRotation);
