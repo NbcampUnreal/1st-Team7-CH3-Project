@@ -34,7 +34,9 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void Heal(int HealAmount);
-
+	void FireWeapon();
+	void ReloadWeapon();
+	void ToggleTactical();
 	FOnHpChangedDelegate OnHpChangedDelegate;
 
 public:
@@ -47,7 +49,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	float SpringArmLength;
-
 
 	UPROPERTY()
 	UCP_Inventory* PlayerInventory;
