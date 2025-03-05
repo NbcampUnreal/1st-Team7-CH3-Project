@@ -21,6 +21,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+
 private:
 
 	UFUNCTION()
@@ -33,4 +35,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "BossProjectile")
 	TObjectPtr<USoundBase> ExplosionSound;
+
+	UPROPERTY(EditAnywhere, Category = "BossProjectile")
+	float ProjectileDamage = 100.0f;
 };
