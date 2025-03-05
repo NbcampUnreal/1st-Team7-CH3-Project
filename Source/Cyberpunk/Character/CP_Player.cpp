@@ -105,6 +105,25 @@ void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		ACP_PlayerController* PlayerController = Cast<ACP_PlayerController>(Controller);
+		if (PlayerController == nullptr)
+		{
+			CP_LOG(Warning, TEXT("PlayerController == nullptr"));
+			return;
+		}
+
+		if (PlayerController->SkillAction)
+		{
+			EnhancedInput->BindAction(PlayerController->SkillAction, ETriggerEvent::Started, this, &ACP_Player::ActivateTimeAccelerator);
+		}
+
+		if (PlayerController->CreateTurretAction)
+		{
+			EnhancedInput->BindAction(PlayerController->CreateTurretAction, ETriggerEvent::Started, this, &ACP_Player::CreateTurret);
+		}
+	}
 }
 
 float ACP_Player::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

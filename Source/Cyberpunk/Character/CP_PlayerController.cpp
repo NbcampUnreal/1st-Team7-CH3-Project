@@ -100,23 +100,6 @@ void ACP_PlayerController::SetupInputComponent()
         {
             EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ACP_PlayerController::Reload);
         }
-
-        ACP_Player* PlayerPawn = Cast<ACP_Player>(GetPawn());
-        if (PlayerPawn == nullptr)
-        {
-            CP_LOG(Warning, TEXT("PlayerPawn== nullptr"));
-            return;
-        }
-
-        if (SkillAction)
-        {
-            EnhancedInput->BindAction(SkillAction, ETriggerEvent::Triggered, PlayerPawn, &ACP_Player::ActivateTimeAccelerator);
-        }
-
-        if (CreateTurretAction)
-        {
-            EnhancedInput->BindAction(CreateTurretAction, ETriggerEvent::Triggered, PlayerPawn, &ACP_Player::CreateTurret);
-        }
     }
 }
 
