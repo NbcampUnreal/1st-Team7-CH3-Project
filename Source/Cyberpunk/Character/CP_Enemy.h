@@ -26,7 +26,7 @@ protected:
 public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void AttackNormal();
+	virtual void AttackNormal(AActor* Target);
 protected:
 
 	virtual void Die() override;

@@ -3,6 +3,7 @@
 #include "Character/CP_Enemy.h"
 #include "Cyberpunk.h"
 #include "AI/AIController/CP_AIControllerBase.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UCP_BTTEnemyNormalAttack::UCP_BTTEnemyNormalAttack()
 {
@@ -28,7 +29,16 @@ EBTNodeResult::Type UCP_BTTEnemyNormalAttack::ExecuteTask(UBehaviorTreeComponent
 		return ResultType;
 	}
 
-	Enemy->AttackNormal();
+	AActor* Target = Cast<AActor>(Controller->GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPlayer")));
+	if (Target == nullptr)
+	{
+		CP_LOG(Warning, TEXT("Enemy == nullptr, Controller : %s"), *Controller->GetName());
+		ResultType = EBTNodeResult::Failed;
+		return ResultType;
+	}
+
+
+	Enemy->AttackNormal(Target);
 	ResultType = EBTNodeResult::Succeeded;
 	return ResultType;
 }
