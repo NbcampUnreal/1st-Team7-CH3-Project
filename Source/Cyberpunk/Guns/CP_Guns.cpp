@@ -1,6 +1,7 @@
 ﻿#include "CP_Guns.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/CP_Player.h"
+#include "CP_Projectile.h"
 ACP_Guns::ACP_Guns()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -354,9 +355,17 @@ void ACP_Guns::Fire(FVector FireDirection)
     {
         FRotator ProjectileRotation = FireDirection.Rotation();
         ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
-        if (Projectile)
+
+        if (Projectile)  
         {
             Projectile->SetOwner(this);
+
+            AActor* OwnerActor = GetOwner();
+            if (OwnerActor && OwnerActor->ActorHasTag("Enemy"))
+            {
+                Projectile->bIsNPCProjectile = true;  
+            }
+
             if (Projectile->ProjectileMovement)
             {
                 FVector Velocity = FireDirection * 8000.f;
@@ -365,6 +374,7 @@ void ACP_Guns::Fire(FVector FireDirection)
             }
         }
     }
+
 }
 
 
