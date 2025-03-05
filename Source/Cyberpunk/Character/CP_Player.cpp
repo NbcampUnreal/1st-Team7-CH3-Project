@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CP_Player.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -8,6 +5,9 @@
 #include "InputAction.h"
 #include "CP_PlayerController.h"
 #include "EngineUtils.h"
+#include "Cyberpunk.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/CP_PlayerTurret.h"
 
 ACP_Player::ACP_Player()
 {
@@ -23,6 +23,7 @@ ACP_Player::ACP_Player()
 	CameraComp->bUsePawnControlRotation = false;
 
 	EquippedGun = nullptr;  
+	bShouldUseDissolve = false;
 }
 
 void ACP_Player::BeginPlay()
@@ -99,6 +100,44 @@ void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
+float ACP_Player::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float NewDamage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	int32 HpAfterDamage = CurrentHp - NewDamage;
+
+	CurrentHp = FMath::Clamp(HpAfterDamage, 0, HpAfterDamage);
+
+	OnHpChangedDelegate.Broadcast(CurrentHp, MaxHp);
+
+	if (CurrentHp == 0)
+	{
+		Die();
+	}
+
+	return NewDamage;
+}
+
+void ACP_Player::Heal(int HealAmount)
+{
+	CurrentHp += HealAmount;
+	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
+	OnHpChangedDelegate.Broadcast(CurrentHp, MaxHp);
+}
+
+void ACP_Player::CreateTurret()
+{
+	if (PlayerTurretClass == nullptr)
+	{
+		CP_LOG(Warning, TEXT("PlayerTurretClass == nullptr"));
+		return;
+	}
+
+	FVector CreateLocation = GetActorLocation() + GetActorForwardVector() * 100.0f;
+
+	GetWorld()->SpawnActor<ACP_PlayerTurret>(PlayerTurretClass, CreateLocation, FRotator::ZeroRotator);
+}
+
 void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
 {
 	if (PlayerInventory)
@@ -116,6 +155,31 @@ void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture
 		}
 	}
 }
+
+void ACP_Player::FireWeapon()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->Fire();
+	}
+}
+
+void ACP_Player::ReloadWeapon()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->Reload();
+	}
+}
+
+void ACP_Player::ToggleTactical()
+{
+	if (EquippedGun)
+	{
+		EquippedGun->ToggleLight();
+	}
+}
+
 
 void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 {
@@ -137,7 +201,6 @@ void ACP_Player::SetEquippedGun(ACP_Guns* NewGun)
 		}
 	}
 }
-
 
 void ACP_Player::ActivateTimeAccelerator()
 {
@@ -178,3 +241,24 @@ void ACP_Player::SetActivateTimeAccelerator(bool bShouldActivate)
 
 		}, TimeAcceleratorDuration * TimeAcceleratorEffect, false);
 }
+
+void ACP_Player::Die()
+{
+	Super::Die();
+	ActivateRagdoll();
+}
+
+void ACP_Player::ActivateRagdoll()
+{
+	USkeletalMeshComponent* MyMesh = GetMesh();
+	if (MyMesh == nullptr)
+	{
+		CP_LOG(Error, TEXT("MyMesh == nullptr, Name : "), *GetName());
+		return;
+	}
+
+	MyMesh->SetAnimInstanceClass(nullptr);
+	MyMesh->SetSimulatePhysics(true);
+	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+}
+

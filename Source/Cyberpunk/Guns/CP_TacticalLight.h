@@ -25,6 +25,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Light")
 	USpotLightComponent* TacticalSpotLight;
 
+	void ToggleLight();
 
 	UPROPERTY()
 	TArray<UStaticMesh*> PreloadedMeshes;

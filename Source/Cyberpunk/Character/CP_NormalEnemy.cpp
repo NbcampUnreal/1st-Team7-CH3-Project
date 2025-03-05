@@ -35,9 +35,9 @@ float ACP_NormalEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent,
 	return NewDamage;
 }
 
-void ACP_NormalEnemy::AttackNormal()
+void ACP_NormalEnemy::AttackNormal(AActor* Target)
 {
-	Super::AttackNormal();
+	Super::AttackNormal(Target);
 
 	UWorld* World = GetWorld();
 
@@ -47,7 +47,12 @@ void ACP_NormalEnemy::AttackNormal()
 		return;
 	}
 
-	Gun->Fire();
+	FVector TargetPosition = TargetPosition = Target->GetActorLocation();// UGameplayStatics::GetPlayerPawn(World, 0)->GetActorLocation();
+	TargetPosition.Z -= 50.0f;
+
+	FVector Direction = TargetPosition - GetActorLocation();
+	Direction.Normalize();
+	Gun->Fire(Direction);
 }
 
 void ACP_NormalEnemy::Die()

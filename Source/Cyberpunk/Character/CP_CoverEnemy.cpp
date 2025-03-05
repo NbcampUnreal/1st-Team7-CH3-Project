@@ -36,9 +36,9 @@ float ACP_CoverEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	return NewDamage;
 }
 
-void ACP_CoverEnemy::AttackNormal()
+void ACP_CoverEnemy::AttackNormal(AActor* Target)
 {
-	Super::AttackNormal();
+	Super::AttackNormal(Target);
 
 	UWorld* World = GetWorld();
 
@@ -48,13 +48,16 @@ void ACP_CoverEnemy::AttackNormal()
 		return;
 	}
 
-	Gun->Fire();
+	FVector TargetPosition = TargetPosition = Target->GetActorLocation();
+	TargetPosition.Z -= 50.0f;
+
+	FVector Direction = TargetPosition - GetActorLocation();
+	Direction.Normalize();
+	Gun->Fire(Direction);
 }
 
 void ACP_CoverEnemy::Die()
 {
-	
-	
 	FTimerHandle DeadTimerHandle;
 	GetWorldTimerManager().SetTimer(DeadTimerHandle, [&]()
 		{

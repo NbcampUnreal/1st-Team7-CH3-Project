@@ -53,9 +53,9 @@ float ACP_BossEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, A
 	return NewDamage;
 }
 
-void ACP_BossEnemy::AttackNormal()
+void ACP_BossEnemy::AttackNormal(AActor* Target)
 {
-	Super::AttackNormal();
+	Super::AttackNormal(Target);
 }
 
 void ACP_BossEnemy::FireDirectionalProjectile(AActor* Target)

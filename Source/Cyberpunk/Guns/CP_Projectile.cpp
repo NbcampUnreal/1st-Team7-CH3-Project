@@ -1,5 +1,5 @@
 #include "CP_Projectile.h"
-
+#include "CP_Guns.h"
 
 
 ACP_Projectile::ACP_Projectile()
@@ -64,11 +64,41 @@ void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
 // 충돌 시 호출될 함수
 void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    if (OtherActor && OtherActor != this)
+    if (OtherActor && OtherActor != this && OtherActor != GetOwner())
     {
+        // 데미지 적용
+        AActor* OwnerActor = GetOwner();
+        AController* OwnerController = nullptr;
 
-        // 여기서 충돌 효과 추가 가능
-        // 
-        Destroy();  // 충돌 시 삭제
+        if (OwnerActor)
+        {
+            APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+            if (OwnerPawn)
+            {
+                OwnerController = OwnerPawn->GetController();
+            }
+        }
+
+        float TotalDamage = 0.0f;
+        ACP_Guns* Gun = Cast<ACP_Guns>(OwnerActor);
+        if (Gun)
+        {
+            TotalDamage = Gun->CalculateTotalDamage();
+        }
+
+        if (TotalDamage > 0.0f)
+        {
+            UGameplayStatics::ApplyDamage(
+                OtherActor,
+                TotalDamage,
+                OwnerController,
+                this,
+                UDamageType::StaticClass()
+            );
+        }
+
+        // 프로젝타일 소멸
+        Destroy();
     }
 }
+

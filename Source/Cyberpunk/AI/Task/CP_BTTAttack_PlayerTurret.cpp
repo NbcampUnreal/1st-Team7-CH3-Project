@@ -3,6 +3,7 @@
 #include "Cyberpunk.h"
 #include "AI/AIController/CP_AIControllerBase.h"
 #include "Character/CP_PlayerTurret.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UCP_BTTAttack_PlayerTurret::UCP_BTTAttack_PlayerTurret()
 {
@@ -28,7 +29,15 @@ EBTNodeResult::Type UCP_BTTAttack_PlayerTurret::ExecuteTask(UBehaviorTreeCompone
 		return ResultType;
 	}
 
-	Turret->Attack();
+	AActor* Target = Cast<AActor>(Controller->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+	if (Target == nullptr)
+	{
+		CP_LOG(Warning, TEXT("Target == nullptr"));
+		ResultType = EBTNodeResult::Failed;
+		return ResultType;
+	}
+
+	Turret->Attack(Target);
 	ResultType = EBTNodeResult::Succeeded;
 	return ResultType;
 }

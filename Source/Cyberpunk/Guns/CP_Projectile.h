@@ -8,6 +8,8 @@
 #include "NiagaraFunctionLibrary.h"  
 #include "CP_Projectile.generated.h"
 
+
+class ACP_GUNS;
 UCLASS()
 class CYBERPUNK_API ACP_Projectile : public AActor
 {

@@ -33,10 +33,11 @@ public:
     void ApplyDamage(AActor* HitActor);
     float CalculateTotalDamage();
     void Fire();
-
+    void Fire(FVector FireDirection);
     virtual void Tick(float DeltaTime) override;
     void LoadGunParts();
     void DeactivateNiagaraEffect();
+    void ToggleLight();
 
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;
@@ -65,11 +66,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sound")
     UAudioComponent* AudioComponent;
 
-    float FireTimer;
-
-    UPROPERTY(EditAnywhere, Category = "Gun Properties")
-    float FireRate;
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
     TSubclassOf<ACP_Projectile> ProjectileClass;
 
@@ -91,4 +87,7 @@ public:
     UCP_Inventory* InventoryRef;
 
     void SetInventory(UCP_Inventory* Inventory);
+
+    UPROPERTY()
+    ACP_TacticalLight* TacticalLight;
 };

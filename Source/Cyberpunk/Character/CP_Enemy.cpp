@@ -58,7 +58,7 @@ float ACP_Enemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACont
 	return NewDamage;
 }
 
-void ACP_Enemy::AttackNormal()
+void ACP_Enemy::AttackNormal(AActor* Target)
 {
 }
 
