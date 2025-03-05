@@ -196,7 +196,7 @@ void ACP_GameState::AI_Spawn_Owner()
 	TArray<AActor*> FoundActors;
 	TArray<ACP_AISpawnPoint*> Portal;
 	TArray<FVector>SpawnLocation;
-	if (Wave < MAX_Wave) Number_AI = ((Wave * 3) + 1) / 2; // 2, 3, 5, 6
+	if (Wave < MAX_Wave) Number_AI = ((Wave * 2) - 1) ; //스폰시킬 ai 수
 	else Number_AI = 1;
 
 	UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
