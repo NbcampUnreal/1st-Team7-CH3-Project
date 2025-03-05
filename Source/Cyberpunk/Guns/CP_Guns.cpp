@@ -197,7 +197,6 @@ void ACP_Guns::LoadGunParts()
 void ACP_Guns::Fire()
 {
     if (!BarrelInfo) return;
-
     if (!TriggerInfo || AmmoCount <= 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("No ammo"));
@@ -206,31 +205,36 @@ void ACP_Guns::Fire()
 
     AmmoCount--;
 
-    FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
-
-    //  카메라 방향 가져오기
     AActor* OwnerActor = GetOwner();
-    FVector AimDirection = FVector::ZeroVector;
-    if (OwnerActor)
-    {
-        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
-        if (OwnerPawn && OwnerPawn->IsPlayerControlled())
-        {
-            APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
-            if (PC)
-            {
-                FVector CameraLocation;
-                FRotator CameraRotation;
-                PC->GetPlayerViewPoint(CameraLocation, CameraRotation);  //  카메라 위치 및 회전 가져오기
-                AimDirection = CameraRotation.Vector();  //  카메라가 바라보는 방향 사용
-            }
-        }
-    }
+    if (!OwnerActor) return;
 
-    // 총구 방향을 에임 방향과 일치시킴
-    FVector MuzzleDirection = AimDirection.IsNearlyZero() ? BarrelMesh->GetSocketRotation(FName("Muzzle")).Vector() : AimDirection;
+    APawn* OwnerPawn = Cast<APawn>(OwnerActor);
+    if (!OwnerPawn) return;
 
-    // 나이아가라 이펙트 실행
+    APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
+    if (!PC) return;
+
+    // 카메라 위치와 회전값
+    FVector CameraLocation;
+    FRotator CameraRotation;
+    PC->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+    FVector TraceEnd = CameraLocation + (CameraRotation.Vector() * 5000.0f); // 카메라 방향으로 5000 유닛 거리 체크
+
+    // 레이캐스트
+    FHitResult HitResult;
+    FCollisionQueryParams QueryParams;
+    QueryParams.AddIgnoredActor(this);
+    QueryParams.AddIgnoredActor(GetOwner()); // 플레이어 무시
+
+    bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_Visibility, QueryParams);
+
+    FVector HitLocation = bHit ? HitResult.ImpactPoint : TraceEnd; // 히트한 지점이 있으면 그곳을 사용, 없으면 최대 거리 사용
+
+    // 총구 위치에서 목표 지점까지의 방향 설정
+    FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
+    FVector FireDirection = (HitLocation - MuzzleLocation).GetSafeNormal(); // 단위 벡터로 변환
+
     if (NiagaraEffect)
     {
         NiagaraEffect->Activate();
@@ -238,90 +242,64 @@ void ACP_Guns::Fire()
         GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ACP_Guns::DeactivateNiagaraEffect, 0.1f, false);
     }
 
-    // 발사 사운드 실행
     if (AudioComponent)
     {
         AudioComponent->Play();
     }
 
-    // 히트스캔 무기 처리
     if (BarrelInfo->bIsHitscan)
     {
-        FHitResult HitResult;
-        FCollisionQueryParams QueryParams;
-        QueryParams.AddIgnoredActor(this);
-        QueryParams.AddIgnoredActor(GetOwner());
-        QueryParams.bTraceComplex = true;
+        FHitResult BulletHit;
+        bool bBulletHit = GetWorld()->LineTraceSingleByChannel(BulletHit, MuzzleLocation, HitLocation, ECC_GameTraceChannel1, QueryParams);
 
-        FVector EndPoint = MuzzleLocation + (MuzzleDirection * 2000.0f);
-        bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, MuzzleLocation, EndPoint, ECC_GameTraceChannel1, QueryParams);
+        FVector FinalHitLocation = bBulletHit ? BulletHit.ImpactPoint : HitLocation;
 
-        if (bHit)
+        if (bBulletHit && BulletHit.GetActor())
         {
-            EndPoint = HitResult.ImpactPoint;
+            ApplyDamage(BulletHit.GetActor());
+        }
 
-            if (HitResult.GetActor())
+        if (HitEffectBPClass)
+        {
+            AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, FinalHitLocation, FRotator::ZeroRotator);
+            if (HitEffect)
             {
-                ApplyDamage(HitResult.GetActor());
-            }
-
-            if (HitEffectBPClass)
-            {
-                AActor* HitEffect = GetWorld()->SpawnActor<AActor>(HitEffectBPClass, EndPoint, FRotator::ZeroRotator);
-                if (HitEffect)
-                {
-                    HitEffect->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
-                }
+                HitEffect->SetActorScale3D(FVector(0.5f, 0.5f, 0.5f));
             }
         }
     }
-    //  투사체 발사
-    else 
+    else
     {
         if (ProjectileClass)
         {
-            FRotator ProjectileRotation = MuzzleDirection.Rotation();
+            FRotator ProjectileRotation = FireDirection.Rotation();
             ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
             if (Projectile)
             {
                 Projectile->SetOwner(this);
                 if (Projectile->ProjectileMovement)
                 {
-                    FVector Velocity = MuzzleDirection * 12000.f;
+                    FVector Velocity = FireDirection * 12000.f;
                     Projectile->ProjectileMovement->Velocity = Velocity;
                     Projectile->ProjectileMovement->Activate();
                 }
             }
-
         }
     }
 
-
-    if (OwnerActor)
+    if (PC)
     {
-        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
-        if (OwnerPawn && OwnerPawn->IsPlayerControlled())
-        {
-            APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
-            if (PC)
-            {
-                FRotator CurrentRotation = PC->GetControlRotation();
-
-                float SpeedFactor = (BodyInfo && BodyInfo->MovementSpeed > 0) ? BodyInfo->MovementSpeed : 1.0f;
-
-                float AdjustedRecoilYaw = RecoilYaw / SpeedFactor;
-                float AdjustedRecoilPitch = RecoilPitch / SpeedFactor;
-
-                float RandomYaw = FMath::RandRange(-AdjustedRecoilYaw, AdjustedRecoilYaw);
-                float RandomPitch = FMath::RandRange(AdjustedRecoilPitch * 0.8f, AdjustedRecoilPitch * 1.2f);
-
-                FRotator NewRotation = CurrentRotation + FRotator(-RandomPitch, RandomYaw, 0);
-                PC->SetControlRotation(NewRotation);
-            }
-        }
+        FRotator CurrentRotation = PC->GetControlRotation();
+        float SpeedFactor = (BodyInfo && BodyInfo->MovementSpeed > 0) ? BodyInfo->MovementSpeed : 1.0f;
+        float AdjustedRecoilYaw = RecoilYaw / SpeedFactor;
+        float AdjustedRecoilPitch = RecoilPitch / SpeedFactor;
+        float RandomYaw = FMath::RandRange(-AdjustedRecoilYaw, AdjustedRecoilYaw);
+        float RandomPitch = FMath::RandRange(AdjustedRecoilPitch * 0.8f, AdjustedRecoilPitch * 1.2f);
+        FRotator NewRotation = CurrentRotation + FRotator(-RandomPitch, RandomYaw, 0);
+        PC->SetControlRotation(NewRotation);
     }
-
 }
+
 
 
 //npc 총 발사
