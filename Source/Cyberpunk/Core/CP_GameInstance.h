@@ -38,6 +38,8 @@ public:
 
 	void Set_Wave(int32 Wave);
 	int32 Get_Wave();
+
+	void Increase_KillCount();
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "UI")
@@ -49,4 +51,5 @@ protected:
 private:
 	int32 AI_Counting;
 	int32 Wave;
+	int32 KillCount;
 };
