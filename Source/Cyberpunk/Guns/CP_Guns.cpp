@@ -48,7 +48,6 @@ ACP_Guns::ACP_Guns()
         UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] InventoryRef successfully set."));
     }
     // 발사 타이머
-    FireTimer = 0.0f;
     AmmoCount = 0;
     MaxAmmo = 0;
 
@@ -78,13 +77,6 @@ void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     NiagaraEffect->Deactivate();
-
-    FireTimer += DeltaTime;
-    if (FireTimer >= 10.0f)
-    {
-        Fire();
-        FireTimer = 0.0f;
-    }
 }
 
 void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
@@ -112,10 +104,6 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
             TriggerInfo->Initialize(PartName);  
             TriggerMesh->SetSkeletalMesh(TriggerInfo->GetMesh()->SkeletalMesh);
         }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Invalid part type: %s"), *PartName);
     }
 }
 
@@ -155,6 +143,8 @@ void ACP_Guns::LoadGunParts()
     {
         TriggerMesh->SetSkeletalMesh(TriggerSkeletalMesh);
         TriggerInfo->Initialize("SK_TriggerAuto");
+        AmmoCount = TriggerInfo->MagazineCapacity;
+        MaxAmmo = TriggerInfo->MagazineCapacity * 2;
     }
 }
 
@@ -204,7 +194,6 @@ void ACP_Guns::Fire()
 
             if (HitResult.GetActor())
             {
-                //UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Hit actor: %s"), *HitResult.GetActor()->GetName());
                 ApplyDamage(HitResult.GetActor());
             }
 
@@ -291,14 +280,6 @@ void ACP_Guns::Fire(FVector FireDirection)
 void ACP_Guns::SetInventory(UCP_Inventory* Inventory)
 {
     InventoryRef = Inventory;
-    if (InventoryRef)
-    {
-        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Inventory reference set successfully."));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Failed to set InventoryRef!"));
-    }
 }
 
 
@@ -332,8 +313,6 @@ void ACP_Guns::ApplyDamage(AActor* HitActor)
     ACP_CharacterBase* Character = Cast<ACP_CharacterBase>(HitActor);
     if (Character)
     {
-        //UE_LOG(LogTemp, Error, TEXT("[ACP_Guns] Character hit: %s, Damage: %f"), *Character->GetName(), TotalDamage);
-
         float AppliedDamage = UGameplayStatics::ApplyDamage(
             Character,  // 적이든 플레이어든 모두 처리 가능
             TotalDamage,
@@ -341,13 +320,7 @@ void ACP_Guns::ApplyDamage(AActor* HitActor)
             this,
             UDamageType::StaticClass()
         );
-
-        //UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Damage Applied: %f"), AppliedDamage);
     }
-    //else
-    //{
-    //    UE_LOG(LogTemp, Warning, TEXT("[ACP_Guns] Hit actor is not an ACP_CharacterBase: %s"), *HitActor->GetName());
-    //}
 }
 
 

@@ -65,11 +65,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sound")
     UAudioComponent* AudioComponent;
 
-    float FireTimer;
-
-    UPROPERTY(EditAnywhere, Category = "Gun Properties")
-    float FireRate;
-
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
     TSubclassOf<ACP_Projectile> ProjectileClass;
 
