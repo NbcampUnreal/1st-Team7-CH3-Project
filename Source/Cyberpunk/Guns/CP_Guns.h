@@ -37,6 +37,7 @@ public:
     virtual void Tick(float DeltaTime) override;
     void LoadGunParts();
     void DeactivateNiagaraEffect();
+    void ToggleLight();
 
     UPROPERTY(VisibleAnywhere)
     USceneComponent* RootScene;
@@ -86,4 +87,7 @@ public:
     UCP_Inventory* InventoryRef;
 
     void SetInventory(UCP_Inventory* Inventory);
+
+    UPROPERTY()
+    ACP_TacticalLight* TacticalLight;
 };
