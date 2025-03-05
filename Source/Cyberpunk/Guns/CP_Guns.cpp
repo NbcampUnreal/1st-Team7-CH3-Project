@@ -144,6 +144,20 @@ void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
 //기본 파츠 로드 
 void ACP_Guns::LoadGunParts()
 {
+    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+    if (GameInstance == nullptr)
+    {
+        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+        return;
+    }
+
+    UCP_PlayerHUD* Hud = GameInstance->GetPlayerHUD();
+    if (Hud == nullptr)
+    {
+        CP_LOG(Warning, TEXT("Hud == nullptr"));
+        return;
+    }
+
     USkeletalMesh* BarrelSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BarrelBulletScatter.SK_BarrelBulletScatter")));
     if (BarrelSkeletalMesh)
     {
@@ -175,6 +189,8 @@ void ACP_Guns::LoadGunParts()
         TriggerInfo->Initialize("SK_TriggerAuto");
         AmmoCount = TriggerInfo->MagazineCapacity;
         MaxAmmo = TriggerInfo->MagazineCapacity * 2;
+        Hud->UpdateAmmo(AmmoCount);
+        Hud->UpdateMaxAmmo(MaxAmmo);
     }
 }
 
