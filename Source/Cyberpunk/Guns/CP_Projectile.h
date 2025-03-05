@@ -37,6 +37,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Projectile")
     void LaunchProjectile(const FVector& LaunchDirection);
 
+    bool bIsNPCProjectile = false;
+
 protected:
     // 충돌 발생 시 호출될 함수
     UFUNCTION()
