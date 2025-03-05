@@ -33,7 +33,7 @@ public:
     void ApplyDamage(AActor* HitActor);
     float CalculateTotalDamage();
     void Fire();
-
+    void Fire(FVector FireDirection);
     virtual void Tick(float DeltaTime) override;
     void LoadGunParts();
     void DeactivateNiagaraEffect();
