@@ -38,9 +38,9 @@ void ACP_Turret::BeginPlay()
 	OriginalMeshRelativeYaw = UpperBodyMeshComp->GetRelativeRotation().Yaw;
 }
 
-void ACP_Turret::AttackNormal()
+void ACP_Turret::AttackNormal(AActor* Target)
 {
-	Super::AttackNormal();
+	Super::AttackNormal(Target);
 
 
 	FHitResult HitResult;

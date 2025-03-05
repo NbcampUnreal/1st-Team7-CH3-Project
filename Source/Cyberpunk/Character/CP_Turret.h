@@ -21,7 +21,7 @@ public:
 
 	virtual void BeginPlay() override;
 	
-	virtual void AttackNormal() override;
+	virtual void AttackNormal(AActor* Target) override;
 
 	// Yaw È¸Àü
 	void RotateTurret(float DeltaRotation);

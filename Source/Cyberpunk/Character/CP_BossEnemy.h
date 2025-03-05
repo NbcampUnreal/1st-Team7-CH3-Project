@@ -33,7 +33,7 @@ protected:
 public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void AttackNormal() override;
+	virtual void AttackNormal(AActor* Target) override;
 
 public:
 

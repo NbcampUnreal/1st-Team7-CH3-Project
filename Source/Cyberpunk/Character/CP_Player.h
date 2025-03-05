@@ -34,7 +34,7 @@ public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void Heal(int HealAmount);
-
+	
 	FOnHpChangedDelegate OnHpChangedDelegate;
 
 public:
@@ -69,6 +69,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gun")
 	TSubclassOf<ACP_Guns> DefaultGunClass;  // 기본 총 클래스
 
+	UFUNCTION(BlueprintCallable, Category = "Spell")
+	void CreateTurret();
+
 protected:
 
 	void SetActivateTimeAccelerator(bool bShouldActivate);
@@ -87,6 +90,9 @@ protected:
 	float TimeAcceleratorEffect = 0.1f;
 
 	bool bIsTimeAcceleratorActivated = false;
+
+	UPROPERTY(EditAnywhere, Category = "Spell")
+	TSubclassOf<class ACP_PlayerTurret> PlayerTurretClass;
 
 private:
 

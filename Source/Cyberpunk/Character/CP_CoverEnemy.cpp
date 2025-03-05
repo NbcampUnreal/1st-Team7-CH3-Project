@@ -36,9 +36,9 @@ float ACP_CoverEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, 
 	return NewDamage;
 }
 
-void ACP_CoverEnemy::AttackNormal()
+void ACP_CoverEnemy::AttackNormal(AActor* Target)
 {
-	Super::AttackNormal();
+	Super::AttackNormal(Target);
 
 	UWorld* World = GetWorld();
 
@@ -48,8 +48,7 @@ void ACP_CoverEnemy::AttackNormal()
 		return;
 	}
 
-	FVector TargetPosition = GetActorLocation() + GetActorForwardVector();
-	TargetPosition = UGameplayStatics::GetPlayerPawn(World, 0)->GetActorLocation();
+	FVector TargetPosition = TargetPosition = Target->GetActorLocation();
 	TargetPosition.Z -= 50.0f;
 
 	FVector Direction = TargetPosition - GetActorLocation();

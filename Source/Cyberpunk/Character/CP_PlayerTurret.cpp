@@ -157,11 +157,13 @@ void ACP_PlayerTurret::BreakBones(FHitResult HitInfo)
 	//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Green, false, 3.0f);
 }
 
-void ACP_PlayerTurret::Attack()
+void ACP_PlayerTurret::Attack(AActor* Target)
 {
 	FHitResult HitResult;
 	FVector StartPoint = GetActorLocation();
 	FVector EndPoint = StartPoint + GetActorForwardVector() * AttackRange;
+	EndPoint.Z = Target->GetActorLocation().Z;
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
 	FCollisionQueryParams QueryParams;
