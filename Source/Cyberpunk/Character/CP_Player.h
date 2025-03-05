@@ -10,6 +10,8 @@
 #include "Guns/CP_Guns.h"
 #include "CP_Player.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHpChangedDelegate, int, CurrentHp);
+
 class UCameraComponent;
 class USpringArmComponent;
 struct FInputActionValue;
@@ -31,6 +33,9 @@ protected:
 public:
 
 	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	void Heal(int HealAmount);
+
+	FOnHpChangedDelegate OnHpChangedDelegate;
 
 public:
 	// Camera

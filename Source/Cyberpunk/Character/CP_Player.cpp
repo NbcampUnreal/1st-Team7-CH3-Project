@@ -106,12 +106,21 @@ float ACP_Player::TakeDamage(float Damage, FDamageEvent const& DamageEvent, ACon
 
 	CurrentHp = FMath::Clamp(HpAfterDamage, 0, HpAfterDamage);
 
+	OnHpChangedDelegate.Broadcast(CurrentHp);
+
 	if (CurrentHp == 0)
 	{
 		Die();
 	}
 
 	return NewDamage;
+}
+
+void ACP_Player::Heal(int HealAmount)
+{
+	CurrentHp += HealAmount;
+	CurrentHp = FMath::Clamp(CurrentHp, 0, MaxHp);
+	OnHpChangedDelegate.Broadcast(CurrentHp);
 }
 
 void ACP_Player::PickupItem(ECP_ItemType ItemType, const FString& Name, UTexture2D* Icon)
