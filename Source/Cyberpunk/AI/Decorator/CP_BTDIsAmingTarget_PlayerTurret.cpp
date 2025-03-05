@@ -43,11 +43,11 @@ bool UCP_BTDIsAmingTarget_PlayerTurret::CalculateRawConditionValue(UBehaviorTree
 
 	if (bIsHit)
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Blue, false, 3);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Blue, false, 3);
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Black, false, 1);
+		//DrawDebugLine(GetWorld(), StartPoint, EndPoint, FColor::Black, false, 1);
 	}
 
 	return bIsHit;

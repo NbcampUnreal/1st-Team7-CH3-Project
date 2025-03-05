@@ -1,6 +1,7 @@
 #include "Core/CP_GameInstance.h"
 #include "Core/CP_PlayerHUD.h"
 #include "Core/CP_GameState.h"
+#include "Core/CP_DeadMenu.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Cyberpunk.h"
@@ -66,6 +67,38 @@ void UCP_GameInstance::RemovePlayerHUDToViewport()
 	}
 
 	PlayerHUDInstance->RemoveFromParent();
+}
+
+void UCP_GameInstance::AddDeadMenuToViewport()
+{
+	if (DeadMenuClass == nullptr)
+	{
+		CP_LOG(Error, TEXT("DeadMenuClass == nullptr"));
+		return;
+	}
+
+	if (DeadMenuInstance)
+	{
+		DeadMenuInstance->AddToViewport();
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		CP_LOG(Error, TEXT("World is Null"));
+		return;
+	}
+
+	DeadMenuInstance = CreateWidget<UCP_DeadMenu>(World, DeadMenuClass);
+
+	if (DeadMenuInstance == nullptr)
+	{
+		CP_LOG(Error, TEXT("DeadMenuInstance == nullptr"));
+		return;
+	}
+
+	DeadMenuInstance->AddToViewport();
 }
 
 void UCP_GameInstance::Decrease_AI()
