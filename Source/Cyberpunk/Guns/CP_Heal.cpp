@@ -16,4 +16,8 @@ ACP_Heal::ACP_Heal()
 	{
 		HealMesh->SetStaticMesh(HealMeshAsset.Object);
 	}
+
+	/*HealMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	HealMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	HealMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);*/
 }

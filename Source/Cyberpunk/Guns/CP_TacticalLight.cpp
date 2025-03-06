@@ -45,6 +45,9 @@ ACP_TacticalLight::ACP_TacticalLight()
 			PreloadedMeshes.Add(LoadedMesh);
 		}
 	}
+
+
+
 }
 
 
@@ -59,6 +62,8 @@ void ACP_TacticalLight::BeginPlay()
 			AddLightPart(Mesh);
 		}
 	}
+
+
 }
 
 
@@ -74,9 +79,14 @@ void ACP_TacticalLight::AddLightPart(UStaticMesh* Mesh, FTransform Transform)
 		NewMeshComponent->SetupAttachment(RootScene);
 		NewMeshComponent->SetRelativeTransform(Transform);
 		NewMeshComponent->SetRelativeScale3D(FVector(0.3f, 0.3f, 0.3f));
+		NewMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		NewMeshComponent->SetGenerateOverlapEvents(false);
+		NewMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+
 		NewMeshComponent->RegisterComponent();
 	}
 }
+
 
 void ACP_TacticalLight::ToggleLight()
 {

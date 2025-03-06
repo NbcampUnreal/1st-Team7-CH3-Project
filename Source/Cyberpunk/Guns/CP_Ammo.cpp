@@ -16,4 +16,9 @@ ACP_Ammo::ACP_Ammo()
 	{
 		AmmoMesh->SetStaticMesh(AmmoMeshAsset.Object);
 	}
+
+
+	/*AmmoMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AmmoMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AmmoMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);*/
 }

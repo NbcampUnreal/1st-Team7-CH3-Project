@@ -106,8 +106,9 @@ void ACP_Guns::BeginPlay()
 void ACP_Guns::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
-
 }
+
+
 
 void ACP_Guns::EquipPart(const FString& PartName, EGunPartType PartType)
 {
@@ -165,7 +166,7 @@ void ACP_Guns::LoadGunParts()
     if (BodySkeletalMesh)
     {
         BodyMesh->SetSkeletalMesh(BodySkeletalMesh);
-        BodyInfo->Initialize("SK_BodyFire");
+        BodyInfo->Initialize("SK_BodyTesla");
     }
 
     USkeletalMesh* TriggerSkeletalMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_TriggerSingle.SK_TriggerSingle")));
@@ -177,25 +178,6 @@ void ACP_Guns::LoadGunParts()
         MaxAmmo = TriggerInfo->MagazineCapacity * 2;
     }
 }
-
-//void ACP_Guns::StartFire()
-//{
-//    if (!bIsFiring)
-//    {
-//        bIsFiring = true;
-//        Fire(); // 즉시 한 발 발사
-//        GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &ACP_Guns::Fire, FireRate, true);
-//    }
-//}
-//
-//void ACP_Guns::StopFire()
-//{
-//    if (bIsFiring)
-//    {
-//        bIsFiring = false;
-//        GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
-//    }
-//}
 
 
 // 무기 발사 
@@ -307,18 +289,67 @@ void ACP_Guns::Fire()
         }
     }
 
-    if (PC)
+    if (!PC) return;
+
+    OriginalRotation = PC->GetControlRotation();
+
+    float BodyRecoilFactor = 1.0f; // 기본값
+    if (BodyInfo && BodyInfo->MovementSpeed > 0)
     {
-        FRotator CurrentRotation = PC->GetControlRotation();
-        float SpeedFactor = (BodyInfo && BodyInfo->MovementSpeed > 0) ? BodyInfo->MovementSpeed : 1.0f;
-        float AdjustedRecoilYaw = RecoilYaw / SpeedFactor;
-        float AdjustedRecoilPitch = RecoilPitch / SpeedFactor;
-        float RandomYaw = FMath::RandRange(-AdjustedRecoilYaw, AdjustedRecoilYaw);
-        float RandomPitch = FMath::RandRange(AdjustedRecoilPitch * 0.8f, AdjustedRecoilPitch * 1.2f);
-        FRotator NewRotation = CurrentRotation + FRotator(-RandomPitch, RandomYaw, 0);
-        PC->SetControlRotation(NewRotation);
+        BodyRecoilFactor = 1.0f / BodyInfo->MovementSpeed;  
+        BodyRecoilFactor = FMath::Clamp(BodyRecoilFactor, 0.2f, 4.0f);  
+    }
+
+    float AdjustedRecoilYaw = RecoilYaw * BodyRecoilFactor;
+    float AdjustedRecoilPitch = RecoilPitch * BodyRecoilFactor;
+
+    float RandomYaw = FMath::RandRange(-AdjustedRecoilYaw, AdjustedRecoilYaw);
+    float RandomPitch = FMath::RandRange(AdjustedRecoilPitch * 0.8f, AdjustedRecoilPitch * 1.2f);
+
+    CurrentRecoilOffset += FRotator(RandomPitch, RandomYaw, 0);
+
+    bIsRecoiling = true;
+    GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::ApplyRecoil, 0.016f, true);
+
+
+}
+
+
+void ACP_Guns::ApplyRecoil()
+{
+    APlayerController* PC = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+    if (!PC) return;
+
+    FRotator TargetRotation = OriginalRotation + CurrentRecoilOffset;
+    FRotator SmoothedRotation = FMath::RInterpTo(PC->GetControlRotation(), TargetRotation, 1.0f, RecoilSmoothSpeed);
+    PC->SetControlRotation(SmoothedRotation);
+
+    if (PC->GetControlRotation().Equals(TargetRotation, 0.1f))
+    {
+        GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
+        GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::RecoverRecoil, 0.016f, true);
     }
 }
+
+void ACP_Guns::RecoverRecoil()
+{
+    APlayerController* PC = Cast<APlayerController>(GetOwner()->GetInstigatorController());
+    if (!PC) return;
+
+    CurrentRecoilOffset *= RecoilDamping;
+
+    FRotator TargetRotation = OriginalRotation + CurrentRecoilOffset;
+    FRotator SmoothedRotation = FMath::RInterpTo(PC->GetControlRotation(), TargetRotation, 1.0f, RecoilRecoverySpeed);
+    PC->SetControlRotation(SmoothedRotation);
+
+    if (FMath::Abs(CurrentRecoilOffset.Pitch) + FMath::Abs(CurrentRecoilOffset.Yaw) + FMath::Abs(CurrentRecoilOffset.Roll) < 0.05f)
+    {
+        CurrentRecoilOffset = FRotator::ZeroRotator;
+        GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
+        bIsRecoiling = false;
+    }
+}
+
 
 
 
@@ -426,12 +457,11 @@ void ACP_Guns::ApplyDamage(AActor* HitActor)
         }
     }
 
-    // 피격 대상이 ACP_CharacterBase를 상속받는지 확인
     ACP_CharacterBase* Character = Cast<ACP_CharacterBase>(HitActor);
     if (Character)
     {
         float AppliedDamage = UGameplayStatics::ApplyDamage(
-            Character,  // 적이든 플레이어든 모두 처리 가능
+            Character,  
             TotalDamage,
             OwnerController,
             this,

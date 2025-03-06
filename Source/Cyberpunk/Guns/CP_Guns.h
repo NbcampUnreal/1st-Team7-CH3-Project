@@ -25,6 +25,28 @@ class CYBERPUNK_API ACP_Guns : public AActor
 {
     GENERATED_BODY()
 
+
+
+private:
+    FRotator OriginalRotation; // 원래 카메라 회전 값
+    FRotator RecoilTargetRotation; // 반동 목표 값
+    FRotator CurrentRecoilOffset; // 현재 반동 오프셋
+    float RecoilSmoothSpeed = 5.0f; // 반동 적용 속도
+    float RecoilRecoverySpeed = 2.0f; // 반동 복구 속도
+    float RecoilDamping = 0.8f; //  반동 감속 비율 (1.0이면 감속 없음, 0.8이면 점점 느려짐)
+    bool bIsRecoiling = false; // 반동 중인지 여부
+    FTimerHandle RecoilTimerHandle; // 타이머 핸들
+
+
+
+
+
+    UPROPERTY(EditAnywhere, Category = "Recoil")
+    float RecoilPitch = 5.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Recoil")
+    float RecoilYaw = 2.0f;
+
 public:
     ACP_Guns();
    
@@ -39,7 +61,8 @@ public:
     void DeactivateNiagaraEffect();
     void ToggleLight();
     void DestroyWeapon();
-
+    void ApplyRecoil();
+    void RecoverRecoil();
     virtual void BeginPlay() override;
 
     UPROPERTY(VisibleAnywhere)
@@ -88,11 +111,8 @@ public:
 
     void SetInventory(UCP_Inventory* Inventory);
 
-    UPROPERTY(EditAnywhere, Category = "Recoil")
-    float RecoilPitch = 5.0f; 
 
-    UPROPERTY(EditAnywhere, Category = "Recoil")
-    float RecoilYaw = 2.0f; 
+
 
     FTimerHandle FireTimerHandle; 
     bool bIsFiring = false; 
