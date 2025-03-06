@@ -111,6 +111,7 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel1);
 	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_GameTraceChannel2);
+	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(IgnoredActor);
@@ -119,12 +120,12 @@ void ACP_CurveProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponen
 
 	if (bIsHit == false)
 	{
-		//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Red, false, 1);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Red, false, 1);
 		Destroy();
 		return;
 	}
 
-	//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Green, false, 3);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 8, FColor::Green, false, 3);
 	
 	TSet<ACP_CharacterBase*> DamagedCharacter;
 	for (auto& OverlapResult : OverlapResults)

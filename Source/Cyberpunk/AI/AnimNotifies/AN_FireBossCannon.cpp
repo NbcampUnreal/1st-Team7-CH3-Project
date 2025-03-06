@@ -34,6 +34,6 @@ void UAN_FireBossCannon::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 		CP_LOG(Warning, TEXT("Player == nullptr"));
 		return;
 	}
-	CP_LOG(Warning, TEXT("Fire Cannon!!!!!!!!!!!"));
+
 	Boss->FireCurveProjectile(Player);
 }
