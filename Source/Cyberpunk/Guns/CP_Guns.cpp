@@ -323,9 +323,20 @@ void ACP_Guns::Fire()
         {
             FRotator ProjectileRotation = FireDirection.Rotation();
             ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
+
             if (Projectile)
             {
-                Projectile->SetOwner(GetOwner()); 
+                Projectile->SetOwner(GetOwner());  
+
+                AActor* GunOwner = GetOwner();
+                if (GunOwner && GunOwner->ActorHasTag("Player"))
+                {
+                    Projectile->bIsNPCProjectile = false;
+                }
+                else if (GunOwner && GunOwner->ActorHasTag("Enemy"))
+                {
+                    Projectile->bIsNPCProjectile = true;
+                }
 
                 if (Projectile->ProjectileMovement)
                 {
@@ -335,6 +346,7 @@ void ACP_Guns::Fire()
                 }
             }
         }
+
 
     }
 
