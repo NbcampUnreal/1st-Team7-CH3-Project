@@ -33,7 +33,7 @@ void UCP_MainMenu::NativeConstruct()
 
 void UCP_MainMenu::OnStartButtonClicked()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), TEXT("Demo_Map"));
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("Demo_Map_Final"));
 
 	// 게임 시작 시 HUD 위젯 표시 (CP_PlayerHUD)
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
