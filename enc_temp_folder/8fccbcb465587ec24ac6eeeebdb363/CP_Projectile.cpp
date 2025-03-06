@@ -43,25 +43,9 @@ void ACP_Projectile::BeginPlay()
         NiagaraEffect->Activate(true);
     }
 
-    AActor* OwnerActor = GetOwner();
-    if (OwnerActor)
-    {
-        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
-        if (OwnerPawn)
-        {
-            if (OwnerPawn->ActorHasTag(TEXT("Player")))  // 플레이어가 쏜 경우
-            {
-                CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);  // 플레이어 무시
-            }
-            //else if (OwnerPawn->ActorHasTag(TEXT("Enemy")))  // NPC가 쏜 경우
-            //{
-            //    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);  // 기본적으로 충돌
-            //    CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);  // NPC끼리 무시
-            //}
-        }
-    }
-}
+    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 
+}
 
 // 발사 함수
 void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
@@ -69,7 +53,7 @@ void ACP_Projectile::LaunchProjectile(const FVector& LaunchDirection)
     if (ProjectileMovement)
     {
         // 발사 방향 설정
-        FVector LaunchVelocity = LaunchDirection * 9000.f;
+        FVector LaunchVelocity = LaunchDirection * 2000.f;
         ProjectileMovement->Velocity = LaunchVelocity;
         ProjectileMovement->Activate();
 

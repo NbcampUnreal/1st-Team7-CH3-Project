@@ -29,8 +29,6 @@ ACP_Player::ACP_Player()
 
 	EquippedGun = nullptr;  
 	bShouldUseDissolve = false;
-
-	Tags.Add(TEXT("Player"));
 }
 
 void ACP_Player::BeginPlay()
