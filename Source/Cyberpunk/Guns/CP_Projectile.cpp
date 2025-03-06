@@ -2,6 +2,7 @@
 #include "CP_Guns.h"
 
 
+
 ACP_Projectile::ACP_Projectile()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -76,6 +77,7 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
     {
         AActor* OwnerActor = GetOwner();
         AController* OwnerController = nullptr;
+        float TotalDamage = 10.0f;  
 
         if (OwnerActor)
         {
@@ -84,23 +86,15 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
             {
                 OwnerController = OwnerPawn->GetController();
             }
-        }
 
-        UE_LOG(LogTemp, Warning, TEXT("[ACP_Projectile] Hit: %s, Location: %s, Bone: %s"),
-            *OtherActor->GetName(),
-            *Hit.ImpactPoint.ToString(),
-            (Hit.BoneName.IsNone() ? TEXT("None") : *Hit.BoneName.ToString()));
-
-        float TotalDamage = 10.0f;  // 기본값 10 (NPC)
-
-        if (!bIsNPCProjectile)  
-        {
-            ACP_Guns* Gun = Cast<ACP_Guns>(OwnerActor);
-            if (Gun)
+            if (GunReference && !bIsNPCProjectile)
             {
-                TotalDamage = Gun->CalculateTotalDamage();
+                TotalDamage = GunReference->CalculateTotalDamage();
             }
         }
+
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Projectile] Hit: %s, Damage: %.2f, Causer: %s"),
+            *OtherActor->GetName(), TotalDamage, *GetName());
 
         if (TotalDamage > 0.0f)
         {
@@ -113,9 +107,9 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
             );
         }
 
-        // 프로젝타일 소멸
         Destroy();
     }
 }
+
 
 

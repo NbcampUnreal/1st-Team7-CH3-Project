@@ -326,17 +326,23 @@ void ACP_Guns::Fire()
 
             if (Projectile)
             {
-                Projectile->SetOwner(GetOwner());  
-
                 AActor* GunOwner = GetOwner();
-                if (GunOwner && GunOwner->ActorHasTag("Player"))
+
+                if (GunOwner)
                 {
-                    Projectile->bIsNPCProjectile = false;
+                    Projectile->SetOwner(GunOwner);  
+
+                    if (GunOwner->ActorHasTag("Player"))
+                    {
+                        Projectile->bIsNPCProjectile = false;
+                    }
+                    else if (GunOwner->ActorHasTag("Enemy"))
+                    {
+                        Projectile->bIsNPCProjectile = true;
+                    }
                 }
-                else if (GunOwner && GunOwner->ActorHasTag("Enemy"))
-                {
-                    Projectile->bIsNPCProjectile = true;
-                }
+
+                Projectile->SetGunReference(this);
 
                 if (Projectile->ProjectileMovement)
                 {
@@ -346,6 +352,8 @@ void ACP_Guns::Fire()
                 }
             }
         }
+
+
 
 
     }
@@ -481,23 +489,32 @@ void ACP_Guns::Fire(FVector FireDirection)
 
         if (Projectile)
         {
-            Projectile->SetOwner(this);
+            AActor* GunOwner = GetOwner();
 
-            AActor* OwnerActor = GetOwner();
-            if (OwnerActor && OwnerActor->ActorHasTag("Enemy"))
+            if (GunOwner)
             {
-                Projectile->bIsNPCProjectile = true;
+                Projectile->SetOwner(GunOwner);
+
+                if (GunOwner->ActorHasTag("Player"))
+                {
+                    Projectile->bIsNPCProjectile = false;
+                }
+                else if (GunOwner->ActorHasTag("Enemy"))
+                {
+                    Projectile->bIsNPCProjectile = true;
+                }
             }
+
+            Projectile->SetGunReference(this);
 
             if (Projectile->ProjectileMovement)
             {
-                FVector Velocity = FireDirection * 8000.f;
+                FVector Velocity = FireDirection * 12000.f;
                 Projectile->ProjectileMovement->Velocity = Velocity;
                 Projectile->ProjectileMovement->Activate();
             }
         }
     }
-
 }
 
 
