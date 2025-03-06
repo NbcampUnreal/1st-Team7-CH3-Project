@@ -2,6 +2,7 @@
 #include "Core/CP_PlayerHUD.h"
 #include "Core/CP_GameState.h"
 #include "Core/CP_DeadMenu.h"
+#include "Core/CP_EscapeMenu.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Cyberpunk.h"
@@ -99,6 +100,55 @@ void UCP_GameInstance::AddDeadMenuToViewport()
 	}
 
 	DeadMenuInstance->AddToViewport();
+}
+
+void UCP_GameInstance::AddEscapeMenuToViewport()
+{
+	if (::IsValid(EscapeMenuClass) == false)
+	{
+		CP_LOG(Error, TEXT("::IsValid(EscapeMenuClass) == false"));
+		return;
+	}
+
+	if (EscapeMenuInstance)
+	{
+		EscapeMenuInstance->AddToViewport();
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		CP_LOG(Error, TEXT("World is Null"));
+		return;
+	}
+
+	EscapeMenuInstance = CreateWidget<UCP_EscapeMenu>(World, EscapeMenuClass);
+
+	if (EscapeMenuInstance == nullptr)
+	{
+		CP_LOG(Error, TEXT("EscapeMenuInstance == nullptr"));
+		return;
+	}
+
+	EscapeMenuInstance->AddToViewport();
+}
+
+void UCP_GameInstance::RemoveEscapeMenuToViewport()
+{
+	if (EscapeMenuClass == nullptr)
+	{
+		CP_LOG(Error, TEXT("EscapeMenuClass == nullptr"));
+		return;
+	}
+
+	if (EscapeMenuInstance == nullptr)
+	{
+		CP_LOG(Error, TEXT("EscapeMenuInstance == nullptr"));
+		return;
+	}
+
+	EscapeMenuInstance->RemoveFromParent();
 }
 
 void UCP_GameInstance::Decrease_AI()

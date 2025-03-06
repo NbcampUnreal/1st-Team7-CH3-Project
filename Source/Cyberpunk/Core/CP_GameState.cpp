@@ -161,14 +161,43 @@ void ACP_GameState::OnGameOver()//게임 종료 함수
 {
 	CP_LOG(Warning, TEXT("GameOver"));
 
-	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
-	{
-		if (ACP_PlayerController* CP_PlayerController = Cast<ACP_PlayerController>(PlayerController))
+	FTimerHandle GameOverTimerHandle;
+	GetWorldTimerManager().SetTimer(GameOverTimerHandle, [&]()
 		{
-			CP_PlayerController->SetPause(true);
-			// CP_PlayerHUD->ShowMainMenu(); //미구현
-		}
-	}
+			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+			if (PlayerController == nullptr)
+			{
+				CP_LOG(Warning, TEXT("PlayerController == nullptr"));
+				return;
+			}
+
+			ACP_Player* Player = Cast<ACP_Player>(UGameplayStatics::GetPlayerController(this, 0)->GetPawn());
+			if (Player == nullptr)
+			{
+				CP_LOG(Warning, TEXT("Player == nullptr"));
+				return;
+			}
+
+			UCP_GameInstance* Instance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+			if (Instance == nullptr)
+			{
+				CP_LOG(Warning, TEXT("Instance == nullptr"));
+				return;
+			}
+
+			UCP_PlayerHUD* Hud = Instance->GetPlayerHUD();
+			if (Hud == nullptr)
+			{
+				CP_LOG(Warning, TEXT("Hud == nullptr"));
+				return;
+			}
+
+			Instance->AddEscapeMenuToViewport();
+			PlayerController->SetPause(true);
+			PlayerController->SetInputMode(FInputModeUIOnly());
+			PlayerController->bShowMouseCursor = true;
+
+		}, 3.0f, false);
 }
 
 void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출

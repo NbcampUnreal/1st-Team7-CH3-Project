@@ -302,7 +302,7 @@ void ACP_Player::Die()
 
 void ACP_Player::ActivateRagdoll()
 {
-	USkeletalMeshComponent* MyMesh = GetMesh();
+	/*USkeletalMeshComponent* MyMesh = GetMesh();
 	if (MyMesh == nullptr)
 	{
 		CP_LOG(Error, TEXT("MyMesh == nullptr, Name : "), *GetName());
@@ -311,6 +311,6 @@ void ACP_Player::ActivateRagdoll()
 
 	MyMesh->SetAnimInstanceClass(nullptr);
 	MyMesh->SetSimulatePhysics(true);
-	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));*/
 }
 

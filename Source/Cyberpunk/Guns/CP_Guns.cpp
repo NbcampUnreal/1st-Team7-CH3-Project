@@ -99,6 +99,27 @@ void ACP_Guns::BeginPlay()
         TacticalLight->AttachToComponent(BodyMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Light"));
     }
 
+    if (Cast<ACP_Player>(GetOwner()) == nullptr)
+    {
+        return;
+    }
+
+    UCP_GameInstance* GameInstance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
+    if (GameInstance == nullptr)
+    {
+        CP_LOG(Warning, TEXT("GameInstance == nullptr"));
+        return;
+    }
+
+    UCP_PlayerHUD* HUD = GameInstance->GetPlayerHUD();
+    if (HUD == nullptr)
+    {
+        CP_LOG(Warning, TEXT("HUD == nullptr"));
+        return;
+    }
+
+    HUD->UpdateAmmo(AmmoCount);
+    HUD->UpdateMaxAmmo(MaxAmmo);
 }
 
 
@@ -205,13 +226,17 @@ void ACP_Guns::Fire()
     }
 
     AmmoCount--;
-    Hud->UpdateAmmo(AmmoCount);
-
+    
     AActor* OwnerActor = GetOwner();
     if (!OwnerActor) return;
 
     APawn* OwnerPawn = Cast<APawn>(OwnerActor);
     if (!OwnerPawn) return;
+
+    if (Cast<ACP_Player>(GetOwner()))
+    {
+        Hud->UpdateAmmo(AmmoCount);
+    }
 
     APlayerController* PC = Cast<APlayerController>(OwnerPawn->GetController());
     if (!PC) return;
@@ -379,7 +404,11 @@ void ACP_Guns::Fire(FVector FireDirection)
     }
 
     AmmoCount--;
-    Hud->UpdateAmmo(AmmoCount);
+
+    if (Cast<ACP_Player>(GetOwner()))
+    {
+        Hud->UpdateAmmo(AmmoCount);
+    }
 
     FVector MuzzleLocation = BarrelMesh->GetSocketLocation(FName("Muzzle"));
 
@@ -531,8 +560,12 @@ void ACP_Guns::Reload()
 
     AmmoCount += AmmoToLoad;
     MaxAmmo -= AmmoToLoad;
-    Hud->UpdateAmmo(AmmoCount);
-    Hud->UpdateMaxAmmo(MaxAmmo);
+
+    if (Cast<ACP_Player>(GetOwner()))
+    {
+        Hud->UpdateAmmo(AmmoCount);
+        Hud->UpdateMaxAmmo(MaxAmmo);
+    }
 
     // 사운드 재생
     USoundBase* ReloadSound = LoadObject<USoundBase>(nullptr, TEXT("SoundWave'/Game/Gun_BluePrint/Sound/ak_reload.ak_reload'"));

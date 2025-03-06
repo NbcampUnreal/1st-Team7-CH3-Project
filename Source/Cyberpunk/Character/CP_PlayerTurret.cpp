@@ -40,7 +40,7 @@ void ACP_PlayerTurret::BeginPlay()
 			CP_LOG(Warning, TEXT("OriginalMaterial == nullptr, Index : %d"), i);
 			continue;
 		}
-		CP_LOG(Warning, TEXT("Material : %s"), *OriginalMaterial->GetName());
+
 		UMaterialInstanceDynamic* Dynamic = UMaterialInstanceDynamic::Create(OriginalMaterial, LowerBodyMeshComp);
 		CurrentDissolveMaterialInstanceArray.Emplace(MoveTemp(Dynamic));
 		LowerBodyMeshComp->SetMaterial(i, CurrentDissolveMaterialInstanceArray.Last());

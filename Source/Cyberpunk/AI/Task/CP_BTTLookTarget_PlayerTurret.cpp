@@ -35,29 +35,3 @@ EBTNodeResult::Type UCP_BTTLookTarget_PlayerTurret::ExecuteTask(UBehaviorTreeCom
 	Turret->AimTarget(Target);
 	return EBTNodeResult::Succeeded;
 }
-
-void UCP_BTTLookTarget_PlayerTurret::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
-	/*AAIController* AIController = OwnerComp.GetAIOwner();
-
-	ACP_PlayerTurret* Turret = Cast<ACP_PlayerTurret>(AIController->GetPawn());
-	if (Turret == nullptr)
-	{
-		CP_LOG(Warning, TEXT("Turret == nullptr, Name : "), *AIController->GetPawn()->GetName());
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
-	ACP_Enemy* Target = Cast<ACP_Enemy>(AIController->GetBlackboardComponent()->GetValueAsObject(TEXT("TargetActor")));
-	if (Target == nullptr)
-	{
-		CP_LOG(Warning, TEXT("Target == nullptr, Name : "), *AIController->GetPawn()->GetName());
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
-	Turret->AimTarget(Target);
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);*/
-}
