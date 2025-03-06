@@ -12,7 +12,7 @@ void UCP_PlayerHUD::NativeConstruct()
 {
     Super::NativeConstruct();
     if (WaveText) WaveText->SetText(FText::AsNumber(0));
-    if (WeaponNameText) WeaponNameText->SetText(FText::FromString("No Weapon"));
+    //if (WeaponNameText) WeaponNameText->SetText(FText::FromString("No Weapon"));
     if (AmmoText) AmmoText->SetText(FText::AsNumber(0));
     if (MaxAmmoText) MaxAmmoText->SetText(FText::AsNumber(0)); // 최대 탄약량 초기값 설정
     if (HealthText) HealthText->SetText(FText::AsNumber(100));
