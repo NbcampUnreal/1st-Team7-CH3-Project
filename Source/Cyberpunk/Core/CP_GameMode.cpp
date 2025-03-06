@@ -40,7 +40,7 @@ void ACP_GameMode::BeginPlay()
 //  몬스터가 죽으면 아이템 드랍
 void ACP_GameMode::SpawnItemOnEnemyDeath(const FVector& DeathLocation)
 {
-    float DropChance = 0.5f; // 50% 확률
+    float DropChance = 1.0f; // 50% 확률
 
     if (FMath::RandRange(0.0f, 1.0f) <= DropChance)
     {
