@@ -67,11 +67,8 @@ float ACP_PlayerTurret::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	{
 		Die();
 
-		if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
-		{
-			const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
-			BreakBones(PointDamageEvent.HitInfo);
-		}
+		const FPointDamageEvent& PointDamageEvent = (const FPointDamageEvent&)DamageEvent;
+		BreakBones(PointDamageEvent.HitInfo);
 	}
 	
 	return NewDamage;
