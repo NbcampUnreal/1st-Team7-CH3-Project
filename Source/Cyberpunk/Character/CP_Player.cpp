@@ -91,6 +91,7 @@ void ACP_Player::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("[ACP_Player] Failed to spawn default gun!"));
 		}
 	}
+	
 
 	//TimeAcceleratorVFX->SetActive(false);
 }

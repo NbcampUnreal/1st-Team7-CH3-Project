@@ -86,6 +86,27 @@ void ACP_Guns::BeginPlay()
         return;
     }
 
+    ACP_Player* Player = Cast<ACP_Player>(GetOwner());
+    if (!Player)
+    {
+        CP_LOG(Warning, TEXT("ACP_Guns::BeginPlay() - Player is nullptr"));
+        return;
+    }
+
+    if (Player->PlayerInventory)
+    {
+        FCP_ItemInfo AmmoItem;
+        AmmoItem.ItemName = "Ammo Pack";
+        AmmoItem.ItemType = ECP_ItemType::Ammo;
+        AmmoItem.StackCount = 2;  // 2개 시작
+        AmmoItem.ItemIcon = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Gun_BluePrint/RenderTargets/RT_Ammo.RT_Ammo")); 
+        
+        Player->PlayerInventory->AddItem(AmmoItem);
+
+        UE_LOG(LogTemp, Log, TEXT("[ACP_Guns] Ammo Pack 2개 지급됨"));
+    }
+
+
     FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
     SpawnParams.Instigator = GetInstigator();
@@ -120,6 +141,7 @@ void ACP_Guns::BeginPlay()
 
     HUD->UpdateAmmo(AmmoCount);
     HUD->UpdateMaxAmmo(MaxAmmo);
+
 }
 
 
@@ -303,7 +325,8 @@ void ACP_Guns::Fire()
             ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
             if (Projectile)
             {
-                Projectile->SetOwner(this);
+                Projectile->SetOwner(GetOwner()); 
+
                 if (Projectile->ProjectileMovement)
                 {
                     FVector Velocity = FireDirection * 12000.f;
@@ -312,18 +335,15 @@ void ACP_Guns::Fire()
                 }
             }
         }
+
     }
 
     if (!PC) return;
 
-    OriginalRotation = PC->GetControlRotation();
+    FRotator CurrentRotation = PC->GetControlRotation();
 
-    float BodyRecoilFactor = 1.0f; // 기본값
-    if (BodyInfo && BodyInfo->MovementSpeed > 0)
-    {
-        BodyRecoilFactor = 1.0f / BodyInfo->MovementSpeed;  
-        BodyRecoilFactor = FMath::Clamp(BodyRecoilFactor, 0.2f, 4.0f);  
-    }
+    float BodyRecoilFactor = (BodyInfo && BodyInfo->MovementSpeed > 0) ? 1.0f / BodyInfo->MovementSpeed : 1.0f;
+    BodyRecoilFactor = FMath::Clamp(BodyRecoilFactor, 0.3f, 4.0f);
 
     float AdjustedRecoilYaw = RecoilYaw * BodyRecoilFactor;
     float AdjustedRecoilPitch = RecoilPitch * BodyRecoilFactor;
@@ -333,11 +353,17 @@ void ACP_Guns::Fire()
 
     CurrentRecoilOffset += FRotator(RandomPitch, RandomYaw, 0);
 
+    CurrentRecoilOffset.Pitch = FMath::Clamp(CurrentRecoilOffset.Pitch, -20.0f, 20.0f);
+    CurrentRecoilOffset.Yaw = FMath::Clamp(CurrentRecoilOffset.Yaw, -10.0f, 10.0f);
+
+    PC->SetControlRotation(CurrentRotation + CurrentRecoilOffset);
+
     bIsRecoiling = true;
-    GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::ApplyRecoil, 0.016f, true);
+    GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::RecoverRecoil, 0.02f, true);
 
 
 }
+
 
 
 void ACP_Guns::ApplyRecoil()
@@ -345,31 +371,43 @@ void ACP_Guns::ApplyRecoil()
     APlayerController* PC = Cast<APlayerController>(GetOwner()->GetInstigatorController());
     if (!PC) return;
 
-    FRotator TargetRotation = OriginalRotation + CurrentRecoilOffset;
-    FRotator SmoothedRotation = FMath::RInterpTo(PC->GetControlRotation(), TargetRotation, 1.0f, RecoilSmoothSpeed);
+    FRotator PlayerRotation = PC->GetControlRotation();
+
+    FRotator TargetRotation = PlayerRotation + CurrentRecoilOffset;
+
+    FRotator SmoothedRotation = FMath::RInterpTo(PlayerRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), RecoilSmoothSpeed);
+
     PC->SetControlRotation(SmoothedRotation);
 
-    if (PC->GetControlRotation().Equals(TargetRotation, 0.1f))
+    if (FMath::Abs(CurrentRecoilOffset.Pitch) < 0.1f && FMath::Abs(CurrentRecoilOffset.Yaw) < 0.1f)
     {
         GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
-        GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::RecoverRecoil, 0.016f, true);
+        GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &ACP_Guns::RecoverRecoil, 0.02f, true);
     }
 }
+
+
+
 
 void ACP_Guns::RecoverRecoil()
 {
     APlayerController* PC = Cast<APlayerController>(GetOwner()->GetInstigatorController());
     if (!PC) return;
 
-    CurrentRecoilOffset *= RecoilDamping;
+    FRotator PlayerRotation = PC->GetControlRotation();
 
-    FRotator TargetRotation = OriginalRotation + CurrentRecoilOffset;
-    FRotator SmoothedRotation = FMath::RInterpTo(PC->GetControlRotation(), TargetRotation, 1.0f, RecoilRecoverySpeed);
+    CurrentRecoilOffset.Pitch *= 0.95f;  
+    CurrentRecoilOffset.Yaw *= 0.95f;
+
+    if (FMath::Abs(CurrentRecoilOffset.Pitch) < 0.5f) CurrentRecoilOffset.Pitch = 0.2f;
+    if (FMath::Abs(CurrentRecoilOffset.Yaw) < 0.5f) CurrentRecoilOffset.Yaw = 0.2f;
+
+    FRotator TargetRotation = PlayerRotation + CurrentRecoilOffset;
+    FRotator SmoothedRotation = FMath::RInterpTo(PlayerRotation, TargetRotation, GetWorld()->GetDeltaSeconds(), RecoilRecoverySpeed);
     PC->SetControlRotation(SmoothedRotation);
 
-    if (FMath::Abs(CurrentRecoilOffset.Pitch) + FMath::Abs(CurrentRecoilOffset.Yaw) + FMath::Abs(CurrentRecoilOffset.Roll) < 0.05f)
+    if (FMath::Abs(CurrentRecoilOffset.Pitch) < 0.1f && FMath::Abs(CurrentRecoilOffset.Yaw) < 0.1f)
     {
-        CurrentRecoilOffset = FRotator::ZeroRotator;
         GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
         bIsRecoiling = false;
     }

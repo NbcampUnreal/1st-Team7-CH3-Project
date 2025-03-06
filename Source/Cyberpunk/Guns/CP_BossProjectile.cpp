@@ -63,3 +63,4 @@ void ACP_BossProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherA
         Destroy();
     }
 }
+
