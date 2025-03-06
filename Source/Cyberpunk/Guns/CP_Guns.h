@@ -37,19 +37,17 @@ private:
     bool bIsRecoiling = false; // 반동 중인지 여부
     FTimerHandle RecoilTimerHandle; // 타이머 핸들
 
-
-
-
-
     UPROPERTY(EditAnywhere, Category = "Recoil")
     float RecoilPitch = 5.0f;
 
     UPROPERTY(EditAnywhere, Category = "Recoil")
     float RecoilYaw = 2.0f;
 
+   
+
 public:
     ACP_Guns();
-   
+    
     void EquipPart(const FString& PartName, EGunPartType PartType);
     void Reload();
     void ApplyDamage(AActor* HitActor);

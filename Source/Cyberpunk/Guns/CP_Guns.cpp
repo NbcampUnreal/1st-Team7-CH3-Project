@@ -573,3 +573,12 @@ void ACP_Guns::DestroyWeapon()
     Destroy();
 }
 
+void ACP_Guns::StartAiming()
+{
+    bIsAiming = true;
+}
+
+void ACP_Guns::StopAiming()
+{
+    bIsAiming = false;
+}

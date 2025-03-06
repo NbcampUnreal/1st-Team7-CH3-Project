@@ -42,6 +42,9 @@ void ACP_Projectile::BeginPlay()
     {
         NiagaraEffect->Activate(true);
     }
+
+    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+
 }
 
 // 발사 함수

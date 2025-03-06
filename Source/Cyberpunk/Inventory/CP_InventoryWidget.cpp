@@ -7,6 +7,7 @@ void UCP_InventoryWidget::NativeConstruct()
     BindRightClickEvents();
 }
 
+
 void UCP_InventoryWidget::BindRightClickEvents()
 {
     InventoryButtons = { Button_00, Button_01, Button_02, Button_03,

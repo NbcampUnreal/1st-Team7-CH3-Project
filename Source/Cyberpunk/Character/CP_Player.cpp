@@ -123,6 +123,7 @@ void ACP_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		{
 			EnhancedInput->BindAction(PlayerController->CreateTurretAction, ETriggerEvent::Started, this, &ACP_Player::CreateTurret);
 		}
+
 	}
 }
 
