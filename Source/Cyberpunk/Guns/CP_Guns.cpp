@@ -325,7 +325,8 @@ void ACP_Guns::Fire()
             ACP_Projectile* Projectile = GetWorld()->SpawnActor<ACP_Projectile>(ProjectileClass, MuzzleLocation, ProjectileRotation);
             if (Projectile)
             {
-                Projectile->SetOwner(this);
+                Projectile->SetOwner(GetOwner()); 
+
                 if (Projectile->ProjectileMovement)
                 {
                     FVector Velocity = FireDirection * 12000.f;
@@ -334,6 +335,7 @@ void ACP_Guns::Fire()
                 }
             }
         }
+
     }
 
     if (!PC) return;

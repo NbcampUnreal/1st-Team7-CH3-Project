@@ -34,33 +34,26 @@ void ACP_Projectile::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 2초 후 자동 제거
-    SetLifeSpan(2.0f);
-
-    // 나이아가라 이펙트 시작
-    if (NiagaraEffect)
-    {
-        NiagaraEffect->Activate(true);
-    }
+    SetLifeSpan(1.0f);
 
     AActor* OwnerActor = GetOwner();
-    if (OwnerActor)
+
+    if (!OwnerActor)
     {
-        APawn* OwnerPawn = Cast<APawn>(OwnerActor);
-        if (OwnerPawn)
-        {
-            if (OwnerPawn->ActorHasTag(TEXT("Player")))  // 플레이어가 쏜 경우
-            {
-                CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);  // 플레이어 무시
-            }
-            //else if (OwnerPawn->ActorHasTag(TEXT("Enemy")))  // NPC가 쏜 경우
-            //{
-            //    CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);  // 기본적으로 충돌
-            //    CollisionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Ignore);  // NPC끼리 무시
-            //}
-        }
+        return;
+    }
+
+    if (OwnerActor->ActorHasTag("Player"))
+    {
+        CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+    }
+    else if (OwnerActor->ActorHasTag("Enemy"))
+    {
+        CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
     }
 }
+
+
 
 
 // 발사 함수
@@ -92,6 +85,11 @@ void ACP_Projectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
                 OwnerController = OwnerPawn->GetController();
             }
         }
+
+        UE_LOG(LogTemp, Warning, TEXT("[ACP_Projectile] Hit: %s, Location: %s, Bone: %s"),
+            *OtherActor->GetName(),
+            *Hit.ImpactPoint.ToString(),
+            (Hit.BoneName.IsNone() ? TEXT("None") : *Hit.BoneName.ToString()));
 
         float TotalDamage = 10.0f;  // 기본값 10 (NPC)
 

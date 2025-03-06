@@ -8,6 +8,7 @@
 #include "Inventory/CP_InventoryWidget.h"
 #include "CP_CraftingMenuWidget.h"
 #include "Guns/CP_Guns.h"
+#include "Components/CapsuleComponent.h"
 #include "CP_Player.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHpChangedDelegate, int, CurrentHp, int, MaxHp);
