@@ -56,6 +56,38 @@ void ACP_CoverEnemy::AttackNormal(AActor* Target)
 	Gun->Fire(Direction);
 }
 
+void ACP_CoverEnemy::BreakBones()
+{
+
+	USkeletalMeshComponent* MyMesh = GetMesh();
+	if (MyMesh == nullptr)
+	{
+		CP_LOG(Error, TEXT("MyMesh == nullptr, Name : "), *GetName());
+		return;
+	}
+
+	MyMesh->SetAnimInstanceClass(nullptr);
+	MyMesh->SetSimulatePhysics(true);
+	MyMesh->SetCollisionProfileName(TEXT("Ragdoll"));
+
+	/*FVector Impulse = FVector::ZeroVector;
+	Impulse *= 10.0f;
+
+	int BoneCount = MyMesh->GetNumBones();
+
+	for (int i = 0; i < BoneCount; ++i)
+	{
+		FName BoneName = MyMesh->GetBoneName(i);
+
+		if (BreakingBoneExceptionList.Contains(BoneName))
+		{
+			continue;
+		}
+
+		MyMesh->BreakConstraint(FVector::ZeroVector, FVector::ZeroVector, BoneName);
+	}*/
+}
+
 void ACP_CoverEnemy::Die()
 {
 	FTimerHandle DeadTimerHandle;

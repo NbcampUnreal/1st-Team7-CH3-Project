@@ -28,7 +28,9 @@ public:
 
 protected:
 
+	virtual void BreakBones() override;
 	virtual void Die() override;
+
 
 	UPROPERTY()
 	ACP_Guns* Gun;  // 무기 인스턴스
