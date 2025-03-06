@@ -168,13 +168,6 @@ void ACP_GameState::OnGameOver()//게임 종료 함수
 				return;
 			}
 
-			ACP_Player* Player = Cast<ACP_Player>(UGameplayStatics::GetPlayerController(this, 0)->GetPawn());
-			if (Player == nullptr)
-			{
-				CP_LOG(Warning, TEXT("Player == nullptr"));
-				return;
-			}
-
 			UCP_GameInstance* Instance = Cast<UCP_GameInstance>(UGameplayStatics::GetGameInstance(this));
 			if (Instance == nullptr)
 			{
@@ -213,7 +206,6 @@ void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 
 	}
 	Instance->Set_Wave(Wave);
-
 }
 
 //AI 스폰 함수
