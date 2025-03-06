@@ -90,7 +90,6 @@ void ACP_GameState::StartWave()
 void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 저장후 랜덤좌표에 portal 생성
 {
 	TArray<AActor*> FoundActors;
-	TArray<ACP_PotalSpawnPoint*> Portal;
 	TArray<FVector>PortalSpawnLocation;
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACP_PotalSpawnPoint::StaticClass(), FoundActors);
@@ -99,17 +98,15 @@ void ACP_GameState::SpawnPortal() //월드에 있는 Spawn Portal Point를 모두 찾아 �
 		return;  // 아무 것도 없으면 그냥 리턴
 	}
 
-	Portal.SetNum(FoundActors.Num());
-	if (Portal_Nums > Portal.Num())
+	if (Portal_Nums > FoundActors.Num())
 	{
 		CP_LOG(Warning, TEXT("Over Portal Spawn. add more BP_PortalSpawnPoint"));
 	}
-
+	ACP_PotalSpawnPoint* SpawnPoint;
 	for (int32 i = 0; i < FoundActors.Num(); i++)
 	{
-		ACP_PotalSpawnPoint* SpawnPoint = Cast<ACP_PotalSpawnPoint>(FoundActors[i]);
+	SpawnPoint = Cast<ACP_PotalSpawnPoint>(FoundActors[i]);
 		if (!SpawnPoint) continue; // 캐스팅 실패하면 건너뛰기
-		Portal[i] = SpawnPoint;
 		PortalSpawnLocation.Push(SpawnPoint->PortalLocation());
 	}
 
@@ -223,8 +220,8 @@ void ACP_GameState::KillAll()//AI가 모두 죽었을 시 호출
 void ACP_GameState::AI_Spawn_Owner()
 {
 	TArray<AActor*> FoundActors;
-	TArray<ACP_AISpawnPoint*> Portal;
 	TArray<FVector>SpawnLocation;
+
 	if (Wave < MAX_Wave) Number_AI = ((Wave * 2) - 1) ; //스폰시킬 ai 수
 	else Number_AI = 1;
 
@@ -236,17 +233,15 @@ void ACP_GameState::AI_Spawn_Owner()
 		return;
 	}
 
-	//월드상에서 ACP_AISpawnPoint 객체를 모두 찾아 FoundActors에 Push
+	//월드상에서 ACP_AISpawnPoint(Portal) 객체를 모두 찾아 FoundActors에 Push
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACP_AISpawnPoint::StaticClass(), FoundActors);
 	int Portal_Number = FoundActors.Num(); //에디터 내 포털 갯수
 
 	if (Portal_Number > 0)
 	{
-		Portal.SetNum(Portal_Number);
 		for (int32 i = 0; i < Portal_Number; i++)
 		{
-			Portal[i] = Cast<ACP_AISpawnPoint>(FoundActors[i]);
-			SpawnLocation.Push(Portal[i]->PortalLocation());
+			SpawnLocation.Push(Cast<ACP_AISpawnPoint>(FoundActors[i])->PortalLocation());
 		}
 
 		if (Wave < MAX_Wave)
