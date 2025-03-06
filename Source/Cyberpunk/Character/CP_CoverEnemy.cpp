@@ -65,7 +65,7 @@ void ACP_CoverEnemy::Die()
 			{
 				if (Gun)
 				{
-					Gun->Destroy();
+					Gun->DestroyWeapon();
 					Gun = nullptr;
 				}
 			}

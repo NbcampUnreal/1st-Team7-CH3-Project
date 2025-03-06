@@ -64,7 +64,7 @@ void ACP_NormalEnemy::Die()
 			{
 				if (Gun)
 				{
-					Gun->Destroy();
+					Gun->DestroyWeapon();
 					Gun = nullptr;
 				}
 			}

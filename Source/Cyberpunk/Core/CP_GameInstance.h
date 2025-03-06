@@ -34,6 +34,12 @@ public:
 	UFUNCTION(Exec)
 	void AddDeadMenuToViewport();
 
+	UFUNCTION(Exec)
+	void AddEscapeMenuToViewport();
+
+	UFUNCTION(Exec)
+	void RemoveEscapeMenuToViewport();
+
 	void Decrease_AI(); //1씩감소
 	void Increase_AI(); //1씩 증가
 	void Set_AICount(int32 num);
@@ -56,6 +62,12 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UCP_DeadMenu> DeadMenuInstance;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UCP_EscapeMenu> EscapeMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<class UCP_EscapeMenu> EscapeMenuInstance;
 
 private:
 	int32 AI_Counting;
