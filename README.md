@@ -18,6 +18,9 @@
     
 - 개발 언어 및 도구 : C++, Unreal Engine
 
+[시연 영상](https://youtu.be/TT6TkHSnpaQ)
+
+
 # 팀원 소개
 
 |              백의현                |             신중은                 |               정완훈              |         한상혁                    |          홍성래                    |
