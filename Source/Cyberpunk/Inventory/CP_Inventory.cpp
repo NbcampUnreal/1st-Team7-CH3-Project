@@ -57,10 +57,11 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
         Gun = Player->EquippedGun;
     }
 
-    if (Gun)
-    {
-        Gun->Reload();
-    }
+    
+    //if (Gun)
+    //{
+    //    Gun->Reload();
+    //}
 
     UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Attempting to use item: %s"), *ItemInfo.ItemName);
 
@@ -69,12 +70,13 @@ void UCP_Inventory::UseItem(const FCP_ItemInfo& ItemInfo)
         if (Player)
         {
             int HealAmount = 50; 
-            UE_LOG(LogTemp, Log, TEXT("[UCP_Inventory] Heal item used. Healing for: %d"), HealAmount);
             Player->Heal(HealAmount);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Error, TEXT("[UCP_Inventory] ERROR: Player is nullptr! Cannot heal."));
+
+            USoundBase* HealSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Gun_BluePrint/healSound.healSound"));
+            if (HealSound)
+            {
+                UGameplayStatics::PlaySoundAtLocation(this, HealSound, Player->GetActorLocation());
+            }
         }
     }
 
