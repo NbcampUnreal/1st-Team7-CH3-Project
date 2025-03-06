@@ -16,4 +16,10 @@ ACP_Gear::ACP_Gear()
 	{
 		GearMesh->SetStaticMesh(GearMeshAsset.Object);
 	}
+
+    /*GearMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    GearMesh->SetCollisionResponseToAllChannels(ECR_Ignore); 
+    GearMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);  */
 }
+
+

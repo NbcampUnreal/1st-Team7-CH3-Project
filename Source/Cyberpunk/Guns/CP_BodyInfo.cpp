@@ -31,7 +31,7 @@ void ACP_BodyInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BodyNormal";
         Damage = 130.0f;
-        MovementSpeed = 0.9f;
+        MovementSpeed = 0.6f;
         GearCost = 4;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BodyNormal.SK_BodyNormal")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BodyNormal.SK_BodyNormal");
@@ -40,7 +40,7 @@ void ACP_BodyInfo::Initialize(const FString& MeshName)
     {
         PartName = "SK_BodyFire";
         Damage = 200.0f;
-        MovementSpeed = 0.5f;
+        MovementSpeed = 0.3f;
         GearCost = 5;
         LoadedMesh = Cast<USkeletalMesh>(StaticLoadObject(USkeletalMesh::StaticClass(), nullptr, TEXT("/Game/DUWepCustSys/Meshes/SK_BodyFire.SK_BodyFire")));
         IconTexturePath = TEXT("/Game/Gun_BluePrint/RenderTargets/SK_BodyFire.SK_BodyFire");
