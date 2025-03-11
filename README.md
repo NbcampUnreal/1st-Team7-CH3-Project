@@ -18,7 +18,7 @@
     
 - 개발 언어 및 도구 : C++, Unreal Engine
 
-[시연 & 시스템 소개](https://youtu.be/SnrPjFUvvFs)
+- [시연 & 시스템 소개](https://youtu.be/SnrPjFUvvFs)
 
 
 # 팀원 소개
